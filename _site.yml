@@ -1,0 +1,6 @@
+name: "nlp-using-r"
+title: "NLPusingR"
+repository_url: https://github.com/paithiov909/nlp-using-r
+twitter:
+  site: "@paithiov909"
+output: distill::distill_article

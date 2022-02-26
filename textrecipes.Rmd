@@ -121,15 +121,15 @@ corpus <- corpus %>%
 データを分割します。
 
 ```{r prep_data}
-dat <- rsample::initial_split(corpus, prop = .8)
-train <- rsample::training(dat)
-test <- rsample::testing(dat)
+corpus_split <- rsample::initial_split(corpus, prop = .8)
+corpus_train <- rsample::training(corpus_split)
+corpus_test <- rsample::testing(corpus_split)
 ```
 
 以下のレシピとモデルで学習します。ハッシュトリックを使っています。デフォルトだとパラメータは[ここに書いている感じ](https://parsnip.tidymodels.org/reference/boost_tree.html)になります。
 
 ```{r prep_model_1}
-model <-
+corpus_spec <-
   parsnip::boost_tree(
     sample_size = tune::tune(),
     loss_reduction = tune::tune(),
@@ -142,10 +142,10 @@ space_tokenizer <- function(x) {
   strsplit(x, " +")
 }
 
-rec_fh <-
+corpus_rec <-
   recipes::recipe(
     category ~ text,
-    data = train
+    data = corpus_train
   ) %>%
     textrecipes::step_tokenize(text, custom_token = space_tokenizer) %>%
     textrecipes::step_tokenfilter(text, min_times = 10L, max_tokens = 200L) %>%
@@ -156,19 +156,19 @@ rec_fh <-
 
 
 ```{r workflow_1}
-wl <-
+corpus_wflow <-
   workflows::workflow() %>%
-  workflows::add_model(model) %>%
-  workflows::add_recipe(rec_fh)
+  workflows::add_model(corpus_spec) %>%
+  workflows::add_recipe(corpus_rec)
 ```
 
 ```{r tune_wl}
-doParallel::registerDoParallel(cores = parallel::detectCores())
+doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
 
-res <-
-  wl %>%
+corpus_tune_res <-
+  corpus_wflow %>%
   tune::tune_grid(
-    resamples = rsample::vfold_cv(train, v = 5L),
+    resamples = rsample::vfold_cv(corpus_train, v = 5L),
     grid = dials::grid_latin_hypercube(
       dials::sample_prop(),
       dials::loss_reduction(),
@@ -183,22 +183,21 @@ doParallel::stopImplicitCluster()
 ```
 
 ```{r autoplot}
-ggplot2::autoplot(res)
+ggplot2::autoplot(corpus_tune_res)
 ```
 
 
 ```{r fit_tfidf}
-res_tfidf <-
-  tune::finalize_workflow(wl, tune::select_best(res, metric = "accuracy"))
+corpus_wflow <-
+  tune::finalize_workflow(corpus_wflow, tune::select_best(corpus_tune_res, metric = "accuracy"))
 
-res_tfidf <- parsnip::fit(res_tfidf, train)
+corpus_fit <- parsnip::fit(corpus_wflow, train)
 ```
 
 ```{r pred_tfidf}
-pred <-
-  dplyr::bind_cols(dplyr::select(test, category), predict(res_tfidf, test))
-
-yardstick::accuracy(pred, truth = category, estimate = .pred_class)
+dplyr::select(corpus_test, category) %>% 
+  dplyr::bind_cols(predict(corpus_fit, test)) %>% 
+  yardstick::accuracy(truth = category, estimate = .pred_class)
 ```
 
 

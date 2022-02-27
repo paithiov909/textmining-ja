@@ -1,5 +1,5 @@
 ---
-title: "Rによる自然言語処理（textrecipes, neologd, GloVe, XGBoost）"
+title: "Rによる自然言語処理（RcppMeCab, neologd, textrecipes, XGBoost）"
 author: "paithiov909"
 date: "`r Sys.Date()`"
 output: html_document
@@ -31,9 +31,9 @@ https://twitter.com/dataandme/status/1092509662384189441
 
 ## パッケージの選定にあたって
 
-### Tokenization
+この記事では、RcppMeCabをforkしたパッケージを使用して、テキストの分かち書きをしています。
 
-形態素解析などをやるパッケージとしては次に挙げるようなものがあります。知るかぎりではぜんぶ個人開発で、環境や使用する辞書、解析する文字列などによって上手く動いたり動かなかったりします。Neologd辞書を使うならRcppMeCabにすべきですが、メンテナの人が最近忙しいとかで、あまりアクティブに開発されていません。
+形態素解析などをやるパッケージとしては他にも次に挙げるようなものがあります。知るかぎりではぜんぶ個人開発で、環境や使用する辞書、解析する文字列などによって上手く動いたり動かなかったりします。Neologd辞書を使うならRcppMeCabにすべきですが、メンテナの人が最近忙しいとかで、あまりアクティブに開発されていません。
 
 - [IshidaMotohiro/RMeCab: Interface to MeCab](https://github.com/IshidaMotohiro/RMeCab)
 - [junhewk/RcppMeCab: RcppMeCab: Rcpp Interface of CJK Morpheme Analyzer MeCab](https://github.com/junhewk/RcppMeCab)
@@ -48,16 +48,6 @@ Universal Dependenciesなら次が使えます。udpipeはC++実装のラッパ�
 
 - [bnosac/tokenizers.bpe: R package for Byte Pair Encoding based on YouTokenToMe](https://github.com/bnosac/tokenizers.bpe)
 - [bnosac/sentencepiece: R package for Byte Pair Encoding / Unigram modelling based on Sentencepiece](https://github.com/bnosac/sentencepiece)
-
-### Language Representations
-
-アクティブに開発されていそうなものとして、このあたりのパッケージがあります。
-
-- [dselivanov/text2vec: Fast vectorization, topic modeling, distances and GloVe word embeddings in R.](https://github.com/dselivanov/text2vec)
-- [bnosac/ruimtehol: R package to Embed All the Things! using StarSpace](https://github.com/bnosac/ruimtehol)
-- [bnosac/doc2vec: Distributed Representations of Sentences and Documents](https://github.com/bnosac/doc2vec)
-- [bnosac/golgotha: Contextualised Embeddings and Language Modelling using BERT and Friends using R](https://github.com/bnosac/golgotha)
-- [jonathanbratt/RBERT: Implementation of BERT in R](https://github.com/jonathanbratt/RBERT)
 
 ## セットアップ
 
@@ -96,7 +86,9 @@ corpus <- corpus %>%
   tibble::rowid_to_column()
 ```
 
-この記事を書いた当初はRcppMeCab + Neologdでの形態素解析を試そうとして上手くいかず、[rjavacmecab](https://github.com/paithiov909/rjavacmecab)という自作パッケージで代用していました（動くけど非常に遅い）。その後、RcppMeCabを使う場合には次のような感じでできるのを確認しました。ただし、2021年1月現在CRANにあるバージョン（0.0.1.2）は未知語の処理にバグがあるようなので、ここでは[ソースを修正したもの](https://github.com/paithiov909/RcppMeCab)を使っています。
+表層形の分かち書きにすることが目的なので、ここでは脳死でNEologd辞書を使います。
+
+この記事を書いた当初はRcppMeCab + NEologdでの形態素解析を試そうとして上手くいかず、[rjavacmecab](https://github.com/paithiov909/rjavacmecab)という自作パッケージで代用していました（動くけど非常に遅い）。その後、RcppMeCabを使う場合には次のような感じでできるのを確認しました。ただし、2021年1月現在CRANにあるバージョン（0.0.1.2）は未知語の処理にバグがあるようなので、ここでは[ソースを修正したもの](https://github.com/paithiov909/RcppMeCab)を使っています。
 
 ```{r prep_corpus_3}
 corpus <- corpus %>%
@@ -116,7 +108,7 @@ corpus <- corpus %>%
   dplyr::glimpse()
 ```
 
-## モデルの学習１（FeatureHashing）
+## モデルの学習（FeatureHashing）
 
 データを分割します。
 
@@ -126,9 +118,11 @@ corpus_train <- rsample::training(corpus_split)
 corpus_test <- rsample::testing(corpus_split)
 ```
 
-以下のレシピとモデルで学習します。ハッシュトリックを使っています。デフォルトだとパラメータは[ここに書いている感じ](https://parsnip.tidymodels.org/reference/boost_tree.html)になります。
+以下のレシピとモデルで学習します。ここでは、ハッシュトリックを使っています。デフォルトだとパラメータは[ここに書いている感じ](https://parsnip.tidymodels.org/reference/boost_tree.html)になります。
 
-```{r prep_model_1}
+なお、tidymodelsの枠組みの外であらかじめ分かち書きを済ませましたが、`textrecipes::step_tokenize`の`custom_token`引数に独自にトークナイザを指定することで、一つのstepとして分かち書きすることもできます。
+
+```{r prep_model}
 corpus_spec <-
   parsnip::boost_tree(
     sample_size = tune::tune(),
@@ -149,18 +143,17 @@ corpus_rec <-
   ) %>%
     textrecipes::step_tokenize(text, custom_token = space_tokenizer) %>%
     textrecipes::step_tokenfilter(text, min_times = 10L, max_tokens = 200L) %>%
-    textrecipes::step_tfidf(text) %>%
-    embed::step_pca_sparse(recipes::all_numeric(), num_comp = 10L, predictor_prop = 2/3)
+    textrecipes::step_texthash(text, num_terms = 200L)
 ```
 
-
-
-```{r workflow_1}
+```{r workflow}
 corpus_wflow <-
   workflows::workflow() %>%
   workflows::add_model(corpus_spec) %>%
   workflows::add_recipe(corpus_rec)
 ```
+
+精度（accuracy）をメトリクスにして学習します。5分割CVで、簡単にですが、ハイパーパラメータ探索をします。
 
 ```{r tune_wl}
 doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
@@ -182,107 +175,32 @@ corpus_tune_res <-
 doParallel::stopImplicitCluster()
 ```
 
+ハイパラ探索の要約を確認します。
+
 ```{r autoplot}
 ggplot2::autoplot(corpus_tune_res)
 ```
 
+`fit`します。
 
-```{r fit_tfidf}
+```{r fit_wl}
 corpus_wflow <-
   tune::finalize_workflow(corpus_wflow, tune::select_best(corpus_tune_res, metric = "accuracy"))
 
-corpus_fit <- parsnip::fit(corpus_wflow, train)
+corpus_fit <- parsnip::fit(corpus_wflow, corpus_train)
 ```
 
-```{r pred_tfidf}
-dplyr::select(corpus_test, category) %>% 
-  dplyr::bind_cols(predict(corpus_fit, test)) %>% 
+学習したモデルの精度を見てみます。
+
+```{r pred_wl}
+dplyr::select(corpus_test, category) %>%
+  dplyr::bind_cols(predict(corpus_fit, corpus_test)) %>%
   yardstick::accuracy(truth = category, estimate = .pred_class)
-```
-
-
-## モデルの学習２（fasttext）
-
-BPEでサブワード分割した文書について、fasttextで埋め込みを得てから学習してみます。あくまで試してみる目的のため、ここでは50次元のベクトルにします。
-
-```{r make_ft_model}
-temp <- tempfile(fileext = ".txt")
-readr::write_lines(
-  corpus_bpe$text,
-  file = temp
-)
-fastrtext::execute(c("skipgram", "-input", temp, "-output", "model", "-dim", 50L))
-```
-
-モデルの読み込み。
-
-```{r load_ft_model}
-ft_model <- fastrtext::load_model("model.bin")
-```
-
-データフレームに整形します。
-
-```{r reshape_ft_model}
-vocab <- fastrtext::get_dictionary(ft_model)
-Encoding(vocab) <- "UTF-8" ## For Windows machine
-embeddings <- ft_model %>%
-  fastrtext::get_word_vectors(vocab) %>%
-  as.data.frame() %>%
-  dplyr::bind_cols(tibble::tibble(vocab = vocab)) %>%
-  dplyr::select(vocab, everything())
-
-remove(ft_model)
-```
-
-今度は次のようなレシピで学習します。上でやったのと同じように素直にやろうとすると手元の環境ではメモリが足りなかったので、ここでは`textrecipes::step_tokenfilter`で語彙を削っています。
-
-```{r prep_model_2}
-fit_corpus_b <- function(corpus, model) {
-  recipe <- recipes::recipe(
-    category ~ text,
-    data = rsample::training(corpus)
-  ) %>%
-    textrecipes::step_tokenize(text) %>%
-    textrecipes::step_tokenfilter(text, min_times = 3L, max_tokens = 50L) %>%
-    textrecipes::step_word_embeddings(
-      text,
-      embeddings = tibble::as_tibble(embeddings)
-    ) %>%
-    recipes::prep()
-
-  split <- prep_corpus(corpus, recipe)
-
-  fitted <- model %>%
-    parsnip::fit(category ~ ., data = split$train)
-
-  fitted %>%
-    predict(split$test) %>%
-    dplyr::bind_cols(split$test) %>%
-    yardstick::metrics(truth = category, estimate = .pred_class) %>%
-    print()
-}
-```
-
-`fit`します（なんか思ったほど精度がよくないのでどこか間違っているのかもしれない）。
-
-```{r cleanup, include=FALSE}
-remove(corpus_bpe)
-remove(corpus_mecab)
-remove(data)
-remove(token_model)
-gc()
-gc()
-```
-
-```{r fit_and_predict_2}
-fit_corpus_b(corpus$bpe, model)
 ```
 
 ## 所感
 
-livedoorニュースコーパスはそんなに大きなコーパスじゃないのでサクッとできてほしいのですが、textrecipesで埋め込みを扱うには手元の環境では不足なようでした（たぶん私が使っているPCが古いだけですが）。
-
-このコーパスのカテゴリ分類はかなり易しいタスクであることが知られている（というか、一部のカテゴリではそのカテゴリを同定できる単語が本文に含まれてしまっている）ので相性もあるのでしょうが、ハッシュトリックしてXGBoostに投入するだけで簡単によい精度の予測ができる点は気持ちよいです。bnosac/sentencepieceもtokenizer.bpeと同じノリで使えるようなので、サブワード分割でよければRでも簡単にできるとわかりました。
+このコーパスのカテゴリ分類はかなり易しいタスクであることが知られている（というか、一部のカテゴリではそのカテゴリを同定できる単語が本文に含まれてしまっている）ので相性もあるのでしょうが、ハッシュトリックしてXGBoostに投入するだけで簡単によい精度の予測ができる点は気持ちよいです。
 
 一方で、RcppMeCabは使えるようにするまでが依然としてめんどくさいということもあり、分かち書きするだけならほかの手段のほうが簡単な気がします。
 

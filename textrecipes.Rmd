@@ -1,9 +1,11 @@
 ---
-title: "Rによる自然言語処理（RcppMeCab, neologd, textrecipes, XGBoost）"
+title: "Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）"
 author: "paithiov909"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+
+# Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(

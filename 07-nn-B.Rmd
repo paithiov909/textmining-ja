@@ -1,0 +1,3 @@
+# RNNとCNN
+
+> work in progress...

@@ -1,0 +1,6 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+*.pdf binary
+*.png binary
+*.svg binary
+*.jpg binary

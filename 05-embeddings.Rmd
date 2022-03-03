@@ -1,0 +1,3 @@
+# 単語ベクトル
+
+> work in progress...

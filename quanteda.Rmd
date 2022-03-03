@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
+# R（quanteda）によるテキスト解析
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   tidy = "styler",

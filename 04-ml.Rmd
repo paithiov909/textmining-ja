@@ -1,0 +1,208 @@
+# 機械学習
+
+## tidymodelsによる多項ロジスティック回帰
+
+[News Aggregator Data Set](https://archive.ics.uci.edu/ml/datasets/News+Aggregator)の一部について、
+4カテゴリの分類問題を解くセクションです。
+
+### 50. データの入手・整形
+
+`newsCorpora.csv`は、8カラム（id, title, url, publisher, category, story, hostname, timestamp）で413,840行あるテーブルデータです。CSVと言いつつタブ区切りなので注意。
+
+```{r ml-50-a}
+temp <- tempfile(fileext = ".zip")
+download.file("https://archive.ics.uci.edu/ml/machine-learning-databases/00359/NewsAggregatorDataset.zip", temp, quiet = TRUE)
+unzip(temp, files = "newsCorpora.csv", exdir = "cache")
+```
+
+データ型が既知であり、かつ、ここではid+3カラムだけあればよいので、読み込む列を`col_types`で指定してしまうと速く読めます。
+
+```{r ml-50-b}
+corpus <-
+  readr::read_tsv(
+    "cache/newsCorpora.csv",
+    col_names = c("doc_id", "text", "publisher", "category"),
+    col_types = list(
+      readr::col_integer(), ## id
+      readr::col_character(), ## title
+      readr::col_skip(), ## url
+      readr::col_character(), ## publisher
+      readr::col_character(), ## category
+      readr::col_skip(), ## story
+      readr::col_skip(), ## hostname
+      readr::col_skip() ## timestamp
+    ),
+    locale = readr::locale(encoding = "UTF-8")) %>%
+  dplyr::filter(
+    publisher %in% c(
+      "Reuters",
+      "Huffington Post",
+      "Businessweek",
+      "Contactmusic.com",
+      "Daily Mail"
+    )
+  ) %>%
+  dplyr::mutate(category = as.factor(category)) %>%
+  dplyr::select(-publisher) %>%
+  dplyr::mutate(text = stringi::stri_trans_general(text, "latin-ascii")) %>%
+  dplyr::mutate(text = stringr::str_replace_all(text, "[\\']+", " "))
+```
+
+```{r ml-50-c}
+corpus %>% 
+  dplyr::count(category) %>% 
+  ggpubr::ggdotchart(
+    x = "category",
+    y = "n",
+    rotate = TRUE,
+    add = "segments",
+    sorting = "descending",
+    ggtheme = ggpubr::theme_pubr()
+  )
+```
+
+ここでは、一度quantedaの'dfm'オブジェクトを経由して単語文書行列をデータフレームのかたちで得ます。
+
+英語テキストなので`stopwords::stopwords("en")`を使ってストップワードを除外します。そのほかに全体の出現数が20回に満たない語彙を除外し、TF-IDFで重み付けした頻度を特徴量にします。
+
+```{r ml-50-c}
+corpus <- corpus %>% 
+  quanteda::corpus() %>% 
+  quanteda::tokens(
+    remove_punct = TRUE,
+    remove_symbols = TRUE,
+    remove_numbers = TRUE,
+    split_hyphens = TRUE
+  ) %>% 
+  quanteda::dfm() %>%
+  quanteda::dfm_select("[:script=latin:]", selection = "keep", valuetype = "regex") %>% 
+  quanteda::dfm_wordstem("en") %>% 
+  quanteda::dfm_remove(
+    c(stopwords::stopwords("en"),
+      "if", "else", "repeat", "while", "function", "for", "in", "next", "break")
+  ) %>%
+  quanteda::dfm_trim(min_termfreq = 20L, termfreq_type = "count") %>%
+  quanteda::dfm_tfidf(scheme_tf = "prop") %>%
+  quanteda::convert(to = "data.frame") %>%
+  dplyr::mutate(doc_id = as.integer(doc_id)) %>%
+  dplyr::left_join(dplyr::select(corpus, doc_id, category), by = "doc_id")
+```
+
+training:validation:testing = 8:1:1で分割します。
+
+tidymodels（rsample）の枠組みでは、一度testingとnot testingに分割してから、必要に応じてnot testingをtrainingとvalidationに分けるのがセオリー？のようです。
+
+```{r}
+corpus <-  dplyr::select(corpus, -doc_id) %>%
+  rsample::initial_split(prop = .9, strata = category)
+
+train <- rsample::training(corpus)
+test <- rsample::testing(corpus)
+```
+
+### 51. 特徴量抽出
+
+
+```{r}
+rec <-
+  recipes::recipe(category ~ ., data = train) %>%
+  recipes::step_zv(recipes::all_numeric_predictors()) %>% 
+  recipes::step_YeoJohnson(recipes::all_numeric_predictors()) %>% 
+  recipes::step_normalize(recipes::all_numeric_predictors()) %>% 
+  embed::step_pca_sparse(recipes::all_numeric_predictors(), options = list(center = FALSE), num_comp = 10, predictor_prop = 2/3)
+```
+
+### 52. 学習
+
+エンジンによって挙動が異なるようだが、大雑把には`mixture = 1`だとlasso回帰、`mixture = 0`だとridge回帰になるらしい。
+
+今回のテキストは「見出し文」であり、各文書の分量的にもスパース推定したいので`mixture = 1`にする。
+
+L1正則化とL2正則化
+
+
+```{r}
+model <-
+  parsnip::multinom_reg(penalty = tune::tune(), mixture = 1) %>%
+  parsnip::set_mode("classification") %>% 
+  parsnip::set_engine("glmnet")
+```
+
+```{r}
+wl <- workflows::workflow() %>%
+  workflows::add_model(model) %>% 
+  workflows::add_recipe(rec)
+```
+
+```{r}
+res <-
+  wl %>% 
+  tune::tune_grid(
+    resamples = rsample::validation_split(train, prop = .12),
+    grid = dials::grid_regular(dials::penalty(), levels = 10L),
+    control = tune::control_grid(save_pred = TRUE)
+  )
+```
+
+
+```{r}
+res %>% tune::collect_metrics() %>% 
+    dplyr::filter(.metric == "roc_auc") %>% 
+    ggpubr::ggdotplot(x = "penalty", y = "mean", sorting = "descending")
+```
+
+```{r}
+wl <- tune::finalize_workflow(wl, tune::select_best(res, metric = "roc_auc"))
+```
+
+```{r}
+fitted <- fit(wl, train)
+```
+
+### 53. 予測
+
+```{r}
+pred <-
+  dplyr::bind_cols(dplyr::select(test, category), predict(fitted, test))
+```
+
+### 54. 正解率の計測
+
+正解率（accuracy）
+
+```{r}
+yardstick::accuracy(pred, truth = category, estimate = .pred_class)
+```
+
+### 55. 混同行列の作成
+
+```{r}
+yardstick::conf_mat(pred, truth = category, estimate = .pred_class) %>% 
+  autoplot(type = "heatmap")
+```
+
+### 56. 適合率、再現率、F1スコアの計測
+
+適合率（precision）
+
+```{r}
+yardstick::precision(pred, truth = category, estimate = .pred_class)
+```
+
+F1 (F measures)
+
+```{r}
+yardstick::f_meas(pred, truth = category, estimate = .pred_class)
+```
+
+
+### 57. 特徴量の重みの確認
+
+```{r}
+tidy(workflows::extract_fit_parsnip(fitted))
+```
+
+### 58. 正則化パラメータの変更
+
+
+### 59. ハイパーパラメータの探索

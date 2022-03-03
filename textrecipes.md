@@ -1,11 +1,11 @@
 ---
-title: "Rによる自然言語処理（RcppMeCab, neologd, textrecipes, XGBoost）"
+title: "Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）"
 author: "paithiov909"
 date: "2022-02-27"
 output: html_document
 ---
 
-
+# Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）
 
 ## この記事について
 

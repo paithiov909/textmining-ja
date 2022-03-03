@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
   #, fig.keep = "none" ## Run all chunks but never save new figures.
 )
 require(magrittr)
+require(ggplot2)
 ```
 
 ## データの読み込み

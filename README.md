@@ -2,8 +2,8 @@
 
 ## Rによる自然言語処理・テキスト分析の練習
 
-- [Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）](https://paithiov909.github.io/nlp-using-r/#/textrecipes.md)
-- [R（quanteda）によるテキスト解析](https://paithiov909.github.io/nlp-using-r/#/quanteda.md)
+- [Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）](https://paithiov909.github.io/nlp-using-r/#/textrecipes)
+- [R（quanteda）によるテキスト解析](https://paithiov909.github.io/nlp-using-r/#/quanteda)
 
 ## Rで言語処理100本ノックを解くわけがない
 
@@ -11,8 +11,8 @@ Rで[言語処理100本ノック 2020](https://nlp100.github.io/ja/)に取り組
 
 Rでやっているコードの例を示すにとどまるもので、丁寧な解説を添えているようなものではありません。中盤以降もできそうなのでやろうとは思っていますが、実際にやる見通しは立てていません。
 
-- [NLP100knocks：準備運動・UNIXコマンド・正規表現](https://paithiov909.github.io/nlp-using-r/#/01-exercise.md)
-- [NLP100knocks：形態素解析](https://paithiov909.github.io/nlp-using-r/#/02-morph-analysis.md)
+- [NLP100knocks：準備運動・UNIXコマンド・正規表現](https://paithiov909.github.io/nlp-using-r/#/01-exercise)
+- [NLP100knocks：形態素解析](https://paithiov909.github.io/nlp-using-r/#/02-morph-analysis)
 
 ググって出てくる範囲では2015年版にはyamano357さんが取り組んでいます。RcppでMeCabとCaboChaのバインディングを自分で書いて解いている本格派です。
 

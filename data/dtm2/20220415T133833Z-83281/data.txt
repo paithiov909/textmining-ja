@@ -1,0 +1,8 @@
+file: dtm2.arrow
+file_size: 530330
+pin_hash: 832813b8985bb776
+type: arrow
+title: 'dtm2: a pinned 699 x 164 data frame'
+description: ~
+created: 20220415T133833Z
+api_version: 1.0

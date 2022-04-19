@@ -4,3 +4,5 @@
 *.png binary
 *.svg binary
 *.jpg binary
+*.zip binary
+*.arrow binary

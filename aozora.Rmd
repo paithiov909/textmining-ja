@@ -1,0 +1,320 @@
+---
+title: "文体的特徴にもとづく青空文庫作品の著者分類"
+author: "paithiov909"
+date: "2022/4/14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  tidy = "styler",
+  collapse = TRUE,
+  comment = "#>"
+  #, fig.keep = "none" ## Run all chunks but never save new figures.
+)
+tidymodels::tidymodels_prefer()
+board <- pins::board_folder("data")
+```
+
+## この記事について
+
+青空文庫の作品を使って機械学習の練習をします。
+
+ここでは、TF-IDFで重み付けしたBoWのほかに、品詞のngram（bi-gram）の相対頻度を特徴量とした機械学習を試してみます。
+
+
+
+## 使用するテキスト
+
+先の研究はいずれも小サンプルかつ高次元のデータから書き手の同定を試みた研究であり、小説については、10人の作家の小説各20篇（計200篇）の中から、わずかなサンプルだけを抽出して学習データとしていました。
+
+実際にデータとして用いられた文章は研究によってやや異なりますが、書き手としては以下の10人の作家の小説が用いられています。
+
+- 芥川龍之介（芥川竜之介）
+- 太宰治
+- 泉鏡花
+- 菊池寛
+- 森鴎外
+- 夏目漱石
+- 岡本綺堂
+- 佐々木味津三
+- 島崎藤村
+- 海野十三
+
+一方で、ここではそれなりの分量のテキストを用意します。上記の作家による「新字新仮名」の文章は青空文庫上に合わせて1000篇ほどあるようですが、
+
+
+```{r prep_data}
+if (file.exists("data/aozora.csv.zip")) {
+  tbl <- readr::read_csv("data/aozora.csv.zip", col_types = "cccf") |> 
+    dplyr::mutate(author = as.factor(author))
+} else {
+  authors <- c("芥川竜之介",
+               "太宰治",
+               "泉鏡花",
+               "菊池寛",
+               "森鴎外",
+               "夏目漱石",
+               "岡本綺堂",
+               "佐々木味津三",
+               "島崎藤村",
+               "海野十三")
+    # c("岡本綺堂", "海野十三", "泉鏡花", "太宰治")
+  works <- ldccr::AozoraBunkoSnapshot |> 
+    dplyr::filter(文字遣い種別 == "新字新仮名") |> 
+    dplyr::mutate(
+      id = 作品ID,
+      author = paste0(姓, 名),
+      title = 作品名,
+      url = テキストファイルURL
+    ) |>
+    dplyr::select(id, author, title, url) |> 
+    dplyr::filter(author %in% authors) |> 
+    dplyr::mutate(author = as.factor(author)) |>
+    dplyr::slice_sample(n = 700L)
+  tbl <-
+    purrr::map2_dfr(works$id, works$url, \(x, y) {
+      tibble::tibble(
+        doc_id = x,
+        raw_text = ldccr::read_aozora(y) |> 
+          readr::read_lines()
+      )
+    }) |> 
+    dplyr::filter(nchar(raw_text) > 10, !stringr::str_detect(raw_text, "^「[^「」]*」$")) |>
+    gibasa::pack(raw_text) |> 
+    dplyr::right_join(works, by = c("doc_id" = "id")) |> 
+    dplyr::select(doc_id, title, text, author) |> 
+    tidyr::drop_na()
+}
+```
+
+作家ごとの大まかな文章量は次のようになっています。作家によって作品数にやや偏りがあります。
+
+```{r stats_data}
+tbl |> 
+  dplyr::mutate(nchar = nchar(text)) |>
+  dplyr::group_by(author) |> 
+  dplyr::summarise(nchar_mean = mean(nchar),
+                   nchar_median = median(nchar),
+                   nchar_min = min(nchar),
+                   nchar_max = max(nchar),
+                   n = dplyr::n()) |> 
+  dplyr::mutate(across(where(is.numeric), trunc))
+```
+
+## 前処理
+
+外字は「※」や「■」のまま残る
+
+```{r prep_dtm1}
+if (pins::pin_exists(board, "dtm1")) {
+  dtm1 <- pins::pin_read(board, "dtm1")
+} else {
+  dtm1 <- tbl |>
+    dplyr::slice_sample(n = 20) |>
+    dplyr::mutate(text = audubon::strj_normalize(text)) |> 
+    dplyr::group_by(doc_id) |>
+    dplyr::group_map(\(x,y) {
+      data.frame(
+        doc_id = y$doc_id,
+        text = x$text
+      ) |> 
+      gibasa::tokenize() |> 
+      gibasa::prettify(col_select = "Original") |>
+      dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+      gibasa::pack(token)
+    }) |> 
+    purrr::map_dfr(~.) |>
+    quanteda::corpus() |> 
+    quanteda::tokens(what = "fastestword") |>
+    quanteda::dfm() |>
+    quanteda::dfm_trim(min_termfreq = 20L, max_termfreq = 50L) |>
+    quanteda::dfm_tfidf() |>
+    quanteda::convert(to = "data.frame") |>
+    dplyr::left_join(dplyr::select(tbl, doc_id, author), by = "doc_id") |>
+    dplyr::select(-doc_id)
+
+  pins::pin_write(board, dtm1, "dtm1", type = "arrow")
+}
+```
+
+
+
+```{r prep_dtm2}
+if (pins::pin_exists(board, "dtm2")) {
+  dtm2 <- pins::pin_read(board, "dtm2")
+} else {
+  dtm2 <- tbl |>
+    dplyr::mutate(text = audubon::strj_normalize(text)) |> 
+    dplyr::group_by(doc_id) |>
+    dplyr::group_map(\(x,y) {
+      data.frame(
+        doc_id = y$doc_id,
+        text = x$text
+      ) |> 
+      gibasa::tokenize() |> 
+      gibasa::prettify(col_select = "POS1") |> 
+      gibasa::pack(POS1)
+    }) |> 
+    purrr::map_dfr(~.) |>
+    quanteda::corpus() |> 
+    quanteda::tokens(what = "fastestword") |> 
+    quanteda::tokens_ngrams(n = 2L) |> 
+    quanteda::dfm() |>
+    quanteda::dfm_weight(scheme = "prop") |> 
+    quanteda::convert(to = "data.frame") |> 
+    dplyr::left_join(dplyr::select(tbl, doc_id, author), by = "doc_id") |>
+    dplyr::select(-doc_id)
+  
+  pins::pin_write(board, dtm2, "dtm2", type = "arrow")
+}
+```
+
+
+```{r dim}
+dim(dtm1)
+dim(dtm2)
+```
+
+## モデリング1
+
+
+```{r wflow1}
+dtm_split <- rsample::initial_split(dtm1, prop = .7)
+dtm_train <- rsample::training(dtm_split)
+dtm_test <- rsample::testing(dtm_split)
+
+dtm_spec <-
+  parsnip::rand_forest(
+    trees = tune::tune()
+  ) |>
+  parsnip::set_engine("ranger") |>
+  parsnip::set_mode("classification")
+
+
+dtm_rec <-
+  recipes::recipe(
+    author ~ .,
+    data = dtm_train
+  ) |>
+  themis::step_downsample(author, under_ratio = 3) |>
+  recipes::step_zv(recipes::all_numeric_predictors()) |>
+  recipes::step_YeoJohnson(recipes::all_numeric_predictors()) |>
+  recipes::step_normalize(recipes::all_numeric_predictors()) |>
+  embed::step_pca_sparse(recipes::all_numeric_predictors(), num_comp = 20, predictor_prop = 1/2)
+  
+
+dtm_wflow <-
+  workflows::workflow() |> 
+  workflows::add_model(dtm_spec) |>
+  workflows::add_recipe(dtm_rec)
+```
+
+
+```{r tune1}
+doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
+
+dtm1_tune_res <-
+  dtm_wflow |> 
+  tune::tune_grid(
+    resamples = rsample::vfold_cv(dtm_train, v = 5L),
+    grid = dials::grid_random(
+      dials::trees(),
+      size = 5L
+    ),
+    metrics = yardstick::metric_set(yardstick::f_meas),
+    control = tune::control_grid(save_pred = TRUE)
+  )
+
+doParallel::stopImplicitCluster()
+```
+
+```{r plot_tune1}
+ggplot2::autoplot(dtm1_tune_res)
+```
+
+
+```{r fit1}
+dtm_wflow <-
+  tune::finalize_workflow(dtm_wflow, tune::select_best(dtm1_tune_res, metric = "f_meas"))
+
+dtm1_fit <- parsnip::fit(dtm_wflow, dtm_train)
+```
+
+
+```{r acu1}
+dplyr::select(dtm_test, author) |>
+  dplyr::bind_cols(predict(dtm1_fit, dtm_test)) |>
+  yardstick::f_meas(truth = author, estimate = .pred_class)
+```
+
+
+
+## モデリング2
+
+```{r wflow2}
+dtm_split <- rsample::initial_split(dtm2, prop = .7)
+dtm_train <- rsample::training(dtm_split)
+dtm_test <- rsample::testing(dtm_split)
+
+dtm_spec <-
+  parsnip::rand_forest(
+    trees = tune::tune()
+  ) |> 
+  parsnip::set_engine("ranger") |> 
+  parsnip::set_mode("classification")
+
+dtm_rec <-
+  recipes::recipe(
+    author ~ .,
+    data = dtm_train
+  ) |>
+  themis::step_downsample(author, under_ratio = 2) |> 
+  recipes::step_nzv(recipes::all_numeric_predictors())
+
+dtm_wflow <-
+  workflows::workflow() |> 
+  workflows::add_model(dtm_spec) |> 
+  workflows::add_recipe(dtm_rec)
+```
+
+
+
+```{r tune2}
+doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
+
+dtm2_tune_res <-
+  dtm_wflow |> 
+  tune::tune_grid(
+    resamples = rsample::vfold_cv(dtm_train, v = 5L),
+    grid = dials::grid_random(
+      dials::trees(),
+      size = 5L
+    ),
+    metrics = yardstick::metric_set(yardstick::f_meas),
+    control = tune::control_grid(save_pred = TRUE)
+  )
+
+doParallel::stopImplicitCluster()
+```
+
+
+```{r plot_tune2}
+ggplot2::autoplot(dtm2_tune_res)
+```
+
+
+```{r fit2}
+dtm_wflow <-
+  tune::finalize_workflow(dtm_wflow, tune::select_best(dtm2_tune_res, metric = "f_meas"))
+
+dtm2_fit <- parsnip::fit(dtm_wflow, dtm_train)
+```
+
+
+```{r acu2}
+dplyr::select(dtm_test, author) |>
+  dplyr::bind_cols(predict(dtm2_fit, dtm_test)) |>
+  yardstick::f_meas(truth = author, estimate = .pred_class)
+```
+

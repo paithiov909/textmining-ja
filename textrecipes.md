@@ -15,7 +15,7 @@ RからMeCabを利用して形態素解析するための自作パッケージ�
 
 ## データの準備
 
-[livedoorニュースコーパス](https://www.rondhuit.com/download.html#ldcc)を使います。以下の9カテゴリです。
+[livedoorニュースコーパス](https://www.rondhuit.com/download.html#ldcc)を使います。テキストの特徴量をもとに以下の9カテゴリの分類をします。
 
 - トピックニュース
 - Sports Watch
@@ -159,16 +159,16 @@ corpus_fit <- parsnip::fit(corpus_wflow, corpus_train)
 ```r
 dplyr::select(corpus_test, category) |>
   dplyr::bind_cols(predict(corpus_fit, corpus_test)) |>
-  yardstick::accuracy(truth = category, estimate = .pred_class)
+  yardstick::f_meas(truth = category, estimate = .pred_class)
 #> # A tibble: 1 × 3
-#>   .metric  .estimator .estimate
-#>   <chr>    <chr>          <dbl>
-#> 1 accuracy multiclass     0.853
+#>   .metric .estimator .estimate
+#>   <chr>   <chr>          <dbl>
+#> 1 f_meas  macro          0.844
 ```
 
 ## 所感
 
-このコーパスのカテゴリ分類はかなり易しいタスクであることが知られている（というか、一部のカテゴリではそのカテゴリを同定できる単語が本文に含まれてしまっている）ので相性もあるのでしょうが、ハッシュトリックしてXGBoostに投入するだけで簡単によい精度の予測ができる点は気持ちよいです。
+このコーパスのカテゴリ分類はかなり易しいタスクであることが知られている（というか、一部のカテゴリではそのカテゴリを同定できる単語が本文に含まれてしまっている）ので相性もあるのでしょうが、簡単に機械学習できる点は気持ちよいです。
 
 ## セッション情報
 
@@ -188,7 +188,7 @@ sessioninfo::session_info()
 #>  date     2022-04-29
 #>  rstudio  1.4.1717 Juliet Rose (server)
 #>  pandoc   2.11.4 @ /usr/lib/rstudio-server/bin/pandoc/ (via rmarkdown)
-#> 
+#>
 #> ─ Packages ─────────────────────────────────────────────────────────────────────────────
 #>  package      * version    date (UTC) lib source
 #>  assertthat     0.2.1      2019-03-21 [1] CRAN (R 4.1.3)
@@ -339,11 +339,11 @@ sessioninfo::session_info()
 #>  yaml           2.3.5      2022-02-21 [1] RSPM (R 4.1.0)
 #>  yardstick    * 0.0.9      2021-11-22 [1] RSPM (R 4.1.3)
 #>  zeallot        0.1.0      2018-01-28 [1] RSPM (R 4.1.0)
-#> 
+#>
 #>  [1] /home/paithiov909/R/x86_64-pc-linux-gnu-library/4.1
 #>  [2] /usr/local/lib/R/site-library
 #>  [3] /usr/lib/R/site-library
 #>  [4] /usr/lib/R/library
-#> 
+#>
 #> ────────────────────────────────────────────────────────────────────────────────────────
 ```

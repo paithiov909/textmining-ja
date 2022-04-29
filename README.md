@@ -2,7 +2,7 @@
 
 ## Rによる自然言語処理・テキスト分析の練習
 
-- [Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）](https://paithiov909.github.io/nlp-using-r/#/textrecipes)
+- [RとMeCabによる自然言語処理（gibasa, textrecipes, XGBoost）](https://paithiov909.github.io/nlp-using-r/#/textrecipes)
 - [R（quanteda）によるテキスト解析](https://paithiov909.github.io/nlp-using-r/#/quanteda)
 
 ## Rで言語処理100本ノックを解くわけがない

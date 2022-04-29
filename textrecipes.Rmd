@@ -1,11 +1,9 @@
 ---
-title: "Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）"
+title: "RとMeCabによる自然言語処理（gibasa, textrecipes, XGBoost）"
 author: "paithiov909"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-
-# Rによる自然言語処理（RcppMeCab, textrecipes, XGBoost）
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -13,52 +11,15 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+require(tidymodels)
+tidymodels::tidymodels_prefer()
 ```
 
 ## この記事について
 
-[以前に書いた記事](https://github.com/paithiov909/wabbitspunch/blob/master/content/articles/about.md)を焼き直ししつつ、ばんくしさんの以下のブログ記事のまねをRでやってみます。
+RからMeCabを利用して形態素解析するための自作パッケージの使用例です。
 
-- [Rustによるlindera、neologd、fasttext、XGBoostを用いたテキスト分類 - Stimulator](https://vaaaaaanquish.hatenablog.com/entry/2020/12/14/192246)
-
-ばんくしさんの記事は「Pythonどこまで脱却できるのか見るのも兼ねて」ということで、Rustで自然言語処理を試しています。私はべつに自然言語処理を実務でやるエンジニアとかではないですが、PythonじゃなくてRustとかGoといった静的型付けで速い言語で安全に書けたらうれしい場面があるよね、みたいなモチベーションなのかなと想像しています。
-
-実際のところ、自分でコードを書きながら自然言語処理の真似事をするなら依然としてPythonが便利です。Rと比べても、Pythonには[SudachiPy](https://github.com/WorksApplications/SudachiPy)や[janome](https://mocobeta.github.io/janome/)といった選択肢がある一方で、RにはRコンソールからのみで導入が完了する形態素解析の手段が（少なくともCRANには）ありません。自然言語処理をやる言語としてPythonのほうがメジャーなことにはほかにもいくつかの理由というか経緯があるのでしょうが、Pythonを採用したほうがよいひとつのモチベーションとしては、テキストマイニングして得た特徴量を投入してディープラーニングをしたい場合は事実上Pythonを選択するしかないというのもある気がします。一応、[{keras}](https://keras.rstudio.com/)や[{torch}](https://github.com/mlverse/torch)というのもありますが、このあたりのパッケージを使うのはまだ趣味の領域な気がします。
-
-そうはいっても、[{RMeCab}](https://sites.google.com/site/rmecab/)は強力なツールです。なぜかRからテキストマイニングに入ってしまった人間にとって、比較的簡単に導入できてほとんど環境を問わずすぐ使えるRMeCabは欠かせないツールだったことでしょう。ただ、Rに慣れてきていろいろなことをやってみたくなると、RMeCabは「なんか使いにくいな」みたいになりがちです。Rでも自然言語処理をやるためのパッケージは以下に紹介されているようにたくさんあるのですが、そもそも日本語情報があまりないし、そこそこがんばらないと詰まります。
-
-https://twitter.com/dataandme/status/1092509662384189441
-
-でもまあRでもできなくはないんだよというのをしめす目的で、ここでは先の記事と同じようなことをRでやっていきます。
-
-## パッケージの選定にあたって
-
-この記事では、RcppMeCabをforkしたパッケージを使用して、テキストの分かち書きをしています。
-
-形態素解析などをやるパッケージとしては他にも次に挙げるようなものがあります。知るかぎりではぜんぶ個人開発で、環境や使用する辞書、解析する文字列などによって上手く動いたり動かなかったりします。Neologd辞書を使うならRcppMeCabにすべきですが、メンテナの人が最近忙しいとかで、あまりアクティブに開発されていません。
-
-- [IshidaMotohiro/RMeCab: Interface to MeCab](https://github.com/IshidaMotohiro/RMeCab)
-- [junhewk/RcppMeCab: RcppMeCab: Rcpp Interface of CJK Morpheme Analyzer MeCab](https://github.com/junhewk/RcppMeCab)
-- [uribo/sudachir: R Interface to 'Sudachi'](https://github.com/uribo/sudachir)
-
-Universal Dependenciesなら次が使えます。udpipeはC++実装のラッパー、spacyrはPythonバックエンドです。
-
-- [bnosac/udpipe: R package for Tokenization, Parts of Speech Tagging, Lemmatization and Dependency Parsing Based on the UDPipe Natural Language Processing Toolkit](https://github.com/bnosac/udpipe)
-- [quanteda/spacyr: R wrapper to spaCy NLP](https://github.com/quanteda/spacyr)
-
-最近になってbnosacからBPE（Byte Pair Encoding）とsentencepieceのRラッパーがリリースされました。
-
-- [bnosac/tokenizers.bpe: R package for Byte Pair Encoding based on YouTokenToMe](https://github.com/bnosac/tokenizers.bpe)
-- [bnosac/sentencepiece: R package for Byte Pair Encoding / Unigram modelling based on Sentencepiece](https://github.com/bnosac/sentencepiece)
-
-## セットアップ
-
-```{r load_libs}
-require(tidymodels)
-options(mecabSysDic = file.path(system("mecab-config --dicdir", intern = TRUE), "mecab-ipadic-neologd"))
-
-tidymodels::tidymodels_prefer()
-```
+- [paithiov909/gibasa: An Alternate 'Rcpp' Interface to 'MeCab'](https://github.com/paithiov909/gibasa)
 
 ## データの準備
 
@@ -77,50 +38,47 @@ tidymodels::tidymodels_prefer()
 [パーサを書いた](https://github.com/paithiov909/ldccr)ので、それでデータフレームにします。
 
 ```{r prep_corpus_1}
-corpus <- ldccr::read_ldnws()
+tbl <- ldccr::read_ldnws() |>
+  dplyr::mutate(doc_id = as.character(dplyr::row_number()))
 ```
+
+ここでは、未知語でない語で、かつ、名詞・形容詞・動詞である語についてのみ抽出し、IPA辞書に収録されている原形の分かち書きにします。
 
 ```{r prep_corpus_2}
-corpus <- corpus %>%
-  dplyr::select(-file_path) %>%
-  dplyr::mutate(category = as.factor(category)) %>%
-  dplyr::mutate(body = audubon::strj_normalize(body)) %>%
-  tibble::rowid_to_column()
+corpus <- tbl |>
+  dplyr::mutate(
+    text = audubon::strj_normalize(body),
+    chunk = dplyr::ntile(doc_id, 10)
+  ) |>
+  dplyr::group_by(chunk) |>
+  dplyr::group_map(function(df, idx) {
+    data.frame(
+      doc_id = df$doc_id,
+      text = df$text
+    ) |>
+      gibasa::tokenize(split = TRUE) |>
+      gibasa::prettify(col_select = c("POS1", "Original")) |>
+      dplyr::filter(
+        POS1 %in% c("名詞", "形容詞", "動詞"),
+        !is.na(Original)
+      ) |>
+      gibasa::pack(Original)
+  }) |>
+  purrr::map_dfr(~.) |>
+  dplyr::left_join(dplyr::select(tbl, doc_id, category), by = "doc_id")
 ```
 
-表層形の分かち書きにすることが目的なので、ここでは脳死でNEologd辞書を使います。
-
-この記事を書いた当初はRcppMeCab + NEologdでの形態素解析を試そうとして上手くいかず、[rjavacmecab](https://github.com/paithiov909/rjavacmecab)という自作パッケージで代用していました（動くけど非常に遅い）。その後、RcppMeCabを使う場合には次のような感じでできるのを確認しました。ただし、2021年1月現在CRANにあるバージョン（0.0.1.2）は未知語の処理にバグがあるようなので、ここでは[ソースを修正したもの](https://github.com/paithiov909/RcppMeCab)を使っています。
-
-```{r prep_corpus_3}
-corpus <- corpus %>%
-  dplyr::pull(body) %>%
-  RcppMeCab::posParallel(format = "data.frame") %>%
-  tidyr::drop_na() %>%
-  audubon::pack() %>%
-  dplyr::mutate(doc_id = as.integer(doc_id)) %>%
-  dplyr::left_join(corpus, by = c("doc_id" = "rowid"))
-```
-
-こういうデータになります。
-
-```{r glimpse_corpus}
-corpus <- corpus %>%
-  dplyr::select(doc_id, category, text) %>%
-  dplyr::glimpse()
-```
-
-## モデルの学習（FeatureHashing）
+## モデルの学習
 
 データを分割します。
 
 ```{r prep_data}
-corpus_split <- rsample::initial_split(corpus, prop = .8)
+corpus_split <- rsample::initial_split(corpus, prop = .8, strata = "category")
 corpus_train <- rsample::training(corpus_split)
 corpus_test <- rsample::testing(corpus_split)
 ```
 
-以下のレシピとモデルで学習します。ここでは、ハッシュトリックを使っています。デフォルトだとパラメータは[ここに書いている感じ](https://parsnip.tidymodels.org/reference/boost_tree.html)になります。
+以下のレシピとモデルで学習します。ここでは、ハッシュトリックを使っています。デフォルトだとパラメータは[ここに書かれている感じ](https://parsnip.tidymodels.org/reference/boost_tree.html)になります。
 
 なお、tidymodelsの枠組みの外であらかじめ分かち書きを済ませましたが、`textrecipes::step_tokenize`の`custom_token`引数に独自にトークナイザを指定することで、一つのstepとして分かち書きすることもできます。
 
@@ -130,8 +88,8 @@ corpus_spec <-
     sample_size = tune::tune(),
     loss_reduction = tune::tune(),
     tree_depth = tune::tune()
-  ) %>%
-  parsnip::set_engine("xgboost") %>%
+  ) |>
+  parsnip::set_engine("xgboost") |>
   parsnip::set_mode("classification")
 
 space_tokenizer <- function(x) {
@@ -142,9 +100,9 @@ corpus_rec <-
   recipes::recipe(
     category ~ text,
     data = corpus_train
-  ) %>%
-    textrecipes::step_tokenize(text, custom_token = space_tokenizer) %>%
-    textrecipes::step_tokenfilter(text, min_times = 10L, max_tokens = 200L) %>%
+  ) |>
+    textrecipes::step_tokenize(text, custom_token = space_tokenizer) |>
+    textrecipes::step_tokenfilter(text, min_times = 30L, max_tokens = 200L) |>
     textrecipes::step_texthash(text, num_terms = 200L)
 ```
 
@@ -155,26 +113,26 @@ corpus_wflow <-
   workflows::add_recipe(corpus_rec)
 ```
 
-精度（accuracy）をメトリクスにして学習します。5分割CVで、簡単にですが、ハイパーパラメータ探索をします。
+F値をメトリクスにして学習します。3分割CVで、簡単にですが、ハイパーパラメータ探索をします。
 
 ```{r tune_wl}
-doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
+#doParallel::registerDoParallel(cores = parallel::detectCores() - 1)
 
 corpus_tune_res <-
-  corpus_wflow %>%
+  corpus_wflow |>
   tune::tune_grid(
-    resamples = rsample::vfold_cv(corpus_train, v = 5L),
+    resamples = rsample::vfold_cv(corpus_train, v = 3L),
     grid = dials::grid_latin_hypercube(
       dials::sample_prop(),
       dials::loss_reduction(),
       dials::tree_depth(),
       size = 5L
     ),
-    metrics = yardstick::metric_set(yardstick::accuracy),
+    metrics = yardstick::metric_set(yardstick::f_meas),
     control = tune::control_grid(save_pred = TRUE)
   )
 
-doParallel::stopImplicitCluster()
+#doParallel::stopImplicitCluster()
 ```
 
 ハイパラ探索の要約を確認します。
@@ -187,7 +145,7 @@ ggplot2::autoplot(corpus_tune_res)
 
 ```{r fit_wl}
 corpus_wflow <-
-  tune::finalize_workflow(corpus_wflow, tune::select_best(corpus_tune_res, metric = "accuracy"))
+  tune::finalize_workflow(corpus_wflow, tune::select_best(corpus_tune_res, metric = "f_meas"))
 
 corpus_fit <- parsnip::fit(corpus_wflow, corpus_train)
 ```
@@ -195,16 +153,14 @@ corpus_fit <- parsnip::fit(corpus_wflow, corpus_train)
 学習したモデルの精度を見てみます。
 
 ```{r pred_wl}
-dplyr::select(corpus_test, category) %>%
-  dplyr::bind_cols(predict(corpus_fit, corpus_test)) %>%
+dplyr::select(corpus_test, category) |>
+  dplyr::bind_cols(predict(corpus_fit, corpus_test)) |>
   yardstick::accuracy(truth = category, estimate = .pred_class)
 ```
 
 ## 所感
 
 このコーパスのカテゴリ分類はかなり易しいタスクであることが知られている（というか、一部のカテゴリではそのカテゴリを同定できる単語が本文に含まれてしまっている）ので相性もあるのでしょうが、ハッシュトリックしてXGBoostに投入するだけで簡単によい精度の予測ができる点は気持ちよいです。
-
-一方で、RcppMeCabは使えるようにするまでが依然としてめんどくさいということもあり、分かち書きするだけならほかの手段のほうが簡単な気がします。
 
 ## セッション情報
 

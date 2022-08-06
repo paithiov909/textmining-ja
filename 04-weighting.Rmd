@@ -1,0 +1,52 @@
+# 単語頻度の重みづけ {#weighting}
+
+## RMeCabにおける重みづけ
+
+###
+
+RMeCabは単語頻度の重みづけを複数サポートしている。
+
+- 局所的重み（TF）
+  - tf（索引語頻度）
+  - tf2（対数化索引語頻度）
+  - tf3（２進重み）
+- 大域的重み（IDF）
+  - idf（文書頻度の逆数）
+  - idf2（大域的IDF）
+  - idf3（確率的IDF）
+  - idf4（エントロピー）
+- 正規化
+  - norm（コサイン正規化）
+
+tidytextのidf（文書頻度の逆数）は次式で与えられる
+
+:::
+$idf = \ln{\frac{N}{n}}$
+:::
+
+:::
+$idf = 1 + \log_{2}{\frac{N}{n}}$
+:::
+
+TFはRMeCabでは生の索引語頻度（idfの場合）だが、tidytextでは文書内での相対頻度になる。
+
+```{r}
+dat_count |>
+  tidytext::bind_tf_idf(token, doc_id, n) |>
+  dplyr::slice_head(n = 5)
+```
+
+```{r}
+dat_count |>
+  tidytext::bind_tf_idf(token, doc_id, n) |>
+  dplyr::mutate(
+    idf = idf + 1,
+    tf_idf = n / idf
+  ) |>
+  dplyr::slice_head(n = 5)
+```
+
+### コサイン正規化
+
+L2ノルムで割ればよい
+

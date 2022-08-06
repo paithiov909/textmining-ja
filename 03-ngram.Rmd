@@ -1,0 +1,57 @@
+# N-gram {#ngram}
+
+## Ngramの集計
+
+### dplyrを使う方法
+
+dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。
+
+```{r}
+bigram <- audubon::ngram_tokenizer(2)
+
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(
+    doc_id = forcats::fct_drop(doc_id),
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::group_by(doc_id) |>
+  dplyr::summarise(token = bigram(token, sep = "-"), .groups = "keep") |>
+  dplyr::count(token) |>
+  dplyr::ungroup()
+
+str(dat_ngram)
+```
+
+### quantedaにNgramを持ちこむ方法
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+  gibasa::pack(n = 2)
+
+str(dat_ngram)
+
+dat_ngram |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::dfm()
+```
+
+### quantedaでNgramを数える方法
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+  gibasa::pack()
+
+str(dat_ngram)
+
+dat_ngram |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::tokens_ngrams(n = 2) |>
+  quanteda::dfm()
+```

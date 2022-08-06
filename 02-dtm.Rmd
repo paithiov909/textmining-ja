@@ -1,0 +1,57 @@
+# トークンの集計と文書単語行列への整形 {#dtm}
+
+## トークンの集計
+
+### 品詞などにもとづくしぼりこみ
+
+トークンを簡単に集計するには、dplyrの関数群を利用するのが便利です。
+
+たとえば、集計に先立って特定のトークンを素性情報にもとづいて選択するには`dplyr::filter`を使います。
+
+```{r}
+dat <- dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞"))
+```
+
+### 原形の集計
+
+`dplyr::count`でトークンを文書ごとに集計します。ここでは、IPA辞書の見出し語がある語については「原形（Original）」を、見出し語がない語（未知語）については表層形を数えています。
+
+MeCabは、未知語であっても品詞の推定をおこないますが、未知語の場合には「読み（Yomi1, Yomi2）」のような一部の素性については情報を返しません。このような未知語の素性については、`prettify`した結果のなかでは、`NA_character_`ではなく空文字になっていることに注意してください。
+
+```{r}
+dat_count <- dat |>
+  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+  dplyr::group_by(doc_id) |>
+  dplyr::count(token) |>
+  dplyr::ungroup()
+
+str(dat_count)
+```
+
+
+## 文書単語行列への整形
+
+こうして集計した縦持ちの頻度表を横持ちにすると、いわゆる文書単語行列になります。
+
+```{r}
+dtm <- dat_count |>
+  tidyr::pivot_wider(
+    doc_id,
+    names_from = token,
+    values_from = n,
+    values_fill = 0
+  )
+
+dim(dtm)
+```
+
+ただし、このように`tidyr::pivot_wider`で単純に横持ちにすることは、非常に大量の列を持つ巨大なデータフレームを作成することになるため、おすすめしません。文書単語行列を作成するには、`tidytext::cast_sparse`や`tidytext::cast_dfm`などを使って、疎行列のオブジェクトにしましょう。
+
+```{r}
+dtm_sparse <- dat_count |>
+  tidytext::cast_sparse(doc_id, token, n)
+
+dim(dtm)
+```

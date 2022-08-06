@@ -1,0 +1,101 @@
+# gibasaの基本的な使い方 {#intro}
+
+## テキストデータ
+
+ここでは、audubonパッケージに含まれている`audubon::polano`というデータを例にgibasaの基本的な使い方を説明していきます。このデータは、青空文庫で公開されている、宮沢賢治の「ポラーノの広場」という小説を、改行ごとにひとつの要素としてベクトルにしたものです。
+
+このデータを、次のようなかたちのデータフレーム（tibble）にします。
+
+```{r}
+dat_txt <-
+  tibble::tibble(
+    doc_id = seq_along(audubon::polano) |> as.character(),
+    text = audubon::polano
+  ) |>
+  dplyr::mutate(text = audubon::strj_normalize(text))
+
+str(dat_txt)
+```
+
+このかたちのデータフレームは、[Text Interchange Formats（TIF）](https://github.com/ropensci/tif)という仕様を念頭においている形式です（ちなみに、このかたちのデータフレームは[readtext](https://cran.r-project.org/web/packages/readtext/vignettes/readtext_vignette.html)パッケージを使うと簡単に得ることができます）。
+
+Text Interchange Formats（TIF）は、2017年に[rOpenSci Text Workshop](https://textworkshop17.ropensci.org/)で整備された、テキスト分析用のRパッケージのデザインパターンのようなものです。
+
+TIFでは、コーパス（corpus）、文書単語行列（dtm）、トークン（token）という3種類のオブジェクトの形式が定義されており、異なるパッケージ間で同様の形式を扱うようにすることで、複数のパッケージを通じて便利にテキスト分析を進められるようになっています。
+
+上の`dat_txt`は、文書の集合であるコーパスをデータフレームのかたちで保持したものです。この形式のデータフレームは、次のように、tidytextやtokenizersの関数にそのまま渡すことができます。なお、これらの形式のオブジェクトは、TIFの枠組みのなかではトークンと呼ばれます。
+
+```{r}
+dat_txt |>
+  tidytext::unnest_tokens(token, text) |>
+  head(4)
+
+dat_txt |>
+  tokenizers::tokenize_words() |>
+  head(4)
+```
+
+## gibasaの使い方
+
+### tokenize
+
+前節で見たように、`tokenizers::tokenize_words`やこれを利用している`tidytext::unnest_tokens`は、日本語のテキストであっても機械的にトークンのかたちに整形する（分かち書きする）ことができます。
+
+tokenizersパッケージの分かち書きは、内部的には、ICUの[Boundary Analysis](https://unicode-org.github.io/icu/userguide/boundaryanalysis/)によるものです。この単語境界判定は、たとえば新聞記事のような、比較的整った文体の文章ではおおむね期待通り分かち書きがおこなわれ、また、日本語と英語などが混ざっている文章であってもとくに気にすることなく、高速に分かち書きできるという強みがあります。
+
+しかし、手元にある辞書に収録されている語の通りに分かち書きしたい場合や、品詞情報などがほしい場合には、やはりMeCabのような形態素解析器による分かち書きが便利なこともあります。
+
+gibasaは、そのようなケースにおいて、`tidytext::unnest_tokens`の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は`gibasa::tokenize`という関数として提供していて、次のように使うことができます（ここではtibbleを渡したため戻り値がtibbleになっていますが、data.frameを渡すと戻り値はdata.frameになります）。
+
+```{r}
+dat <- gibasa::tokenize(dat_txt, text, doc_id)
+str(dat)
+```
+
+### prettify
+
+`gibasa::tokenize`の戻り値のデータフレームは、それぞれのトークンについて、MeCabから返される素性情報のすべてを含んでいるfeatureという列を持っています。
+
+MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（unidic-lite）の素性は、次のような情報を持っています。
+
+```{r}
+gibasa::get_dict_features("ipa")
+gibasa::get_dict_features("unidic26")
+```
+
+こうした素性情報をデータフレームの列にパースするには、`gibasa::prettify`という関数を利用できます。
+
+デフォルトではすべての素性についてパースしますが、`col_select`引数に残したい列名を指定することにより、特定の素性情報だけをパースすることもできます。このかたちのデータフレームは、解析するテキストの文章量によっては、数十万から数百万くらいの行からなることもよくあります。そのような規模のデータフレームについて、いちいちすべての素性をパースしていると、それだけでメモリを余計に消費してしまいます。メモリの消費を抑えるためにも、なるべく後で必要な素性だけをこまめに指定することをおすすめします。
+
+```{r}
+str(gibasa::prettify(dat))
+str(gibasa::prettify(dat, col_select = c(1, 2)))
+str(gibasa::prettify(dat, col_select = c("POS1", "Original")))
+```
+
+### pack
+
+`gibasa::pack`という関数を使うと、トークンの形式のデータフレームから、各トークンを半角スペースで区切ったコーパスの形式のデータフレームにすることができます。
+
+```{r}
+dat_corpus <- dat |>
+  gibasa::pack()
+
+str(dat_corpus)
+```
+
+このかたちのデータフレームはTIFに準拠していたため、他のパッケージと組み合わせて使うのに便利なことがあります。たとえば、このかたちから、次のように`tidytext::unnest_tokens`と組み合わせて、もう一度トークンの形式のデータフレームに戻すことができます。
+
+```{r}
+dat_corpus |>
+  tidytext::unnest_tokens(token, text, token = \(x) { strsplit(x, " +") }) |>
+  head(4)
+```
+
+あるいは、次のようにquantedaと組み合わせて使うこともできます。
+
+```{r}
+dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword", remove_punct = FALSE)
+```

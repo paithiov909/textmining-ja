@@ -1,0 +1,59 @@
+# コロケーション
+
+### 文書内での共起
+
+```{r}
+dat_fcm <- dat_count |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::fcm()
+
+dat_fcm
+```
+
+### 任意のウィンドウ内での共起
+
+`RMeCab::collocate`のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。
+
+```{r}
+dat_corpus <- dat |>
+  gibasa::pack()
+
+dat_fcm <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::fcm(context = "window", window = 5)
+```
+
+```{r}
+dat_fcm <- dat_fcm |>
+  tidytext::tidy() |>
+  dplyr::rename(node = document, term = term) |>
+  dplyr::filter(node == "わたくし") |> 
+  dplyr::slice_max(count, n = 20)
+
+dat_fcm
+```
+
+
+```{r}
+ntok <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::ntoken() |>
+  sum()
+
+total <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::tokens_select(c("わたくし", dat_fcm$term)) |>
+  quanteda::dfm() |>
+  quanteda::colSums()
+
+dat_fcm |>
+  dplyr::select(-node) |>
+  dplyr::mutate(
+    expect = count / (total[term] / ntok * total["わたくし"] * 5 * 2),
+    t = (count - expect) / sqrt(count),
+    mi = log2(count / expect)
+  )
+```

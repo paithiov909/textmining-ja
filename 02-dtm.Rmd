@@ -9,23 +9,27 @@
 たとえば、集計に先立って特定のトークンを素性情報にもとづいて選択するには`dplyr::filter`を使います。
 
 ```{r}
-dat <- dat |>
+dat |>
   gibasa::prettify(col_select = c("POS1", "Original")) |>
-  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞"))
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::slice_head(n = 5)
 ```
 
 ### 原形の集計
 
 `dplyr::count`でトークンを文書ごとに集計します。ここでは、IPA辞書の見出し語がある語については「原形（Original）」を、見出し語がない語（未知語）については表層形を数えています。
 
-MeCabは、未知語であっても品詞の推定をおこないますが、未知語の場合には「読み（Yomi1, Yomi2）」のような一部の素性については情報を返しません。このような未知語の素性については、`prettify`した結果のなかでは、`NA_character_`ではなく空文字になっていることに注意してください。
+MeCabは、未知語であっても品詞の推定をおこないますが、未知語の場合には「読み（Yomi1, Yomi2）」のような一部の素性については情報を返しません。このような未知語の素性については、`prettify`した結果のなかでは、`NA_character_`になっていることに注意してください。
 
 ```{r}
 dat_count <- dat |>
-  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
-  dplyr::group_by(doc_id) |>
-  dplyr::count(token) |>
-  dplyr::ungroup()
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::mutate(
+    doc_id = forcats::fct_drop(doc_id),
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::count(doc_id, token)
 
 str(dat_count)
 ```
@@ -50,7 +54,7 @@ dim(dtm)
 ただし、このように`tidyr::pivot_wider`で単純に横持ちにすることは、非常に大量の列を持つ巨大なデータフレームを作成することになるため、おすすめしません。文書単語行列を作成するには、`tidytext::cast_sparse`や`tidytext::cast_dfm`などを使って、疎行列のオブジェクトにしましょう。
 
 ```{r}
-dtm_sparse <- dat_count |>
+dtm <- dat_count |>
   tidytext::cast_sparse(doc_id, token, n)
 
 dim(dtm)

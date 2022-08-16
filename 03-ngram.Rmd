@@ -12,7 +12,6 @@ bigram <- audubon::ngram_tokenizer(2)
 dat_ngram <- dat |>
   gibasa::prettify(col_select = "Original") |>
   dplyr::mutate(
-    doc_id = forcats::fct_drop(doc_id),
     token = dplyr::if_else(is.na(Original), token, Original)
   ) |>
   dplyr::group_by(doc_id) |>

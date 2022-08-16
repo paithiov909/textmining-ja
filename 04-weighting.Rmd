@@ -28,7 +28,7 @@ $idf = \ln{\frac{N}{n}}$
 $idf = 1 + \log_{2}{\frac{N}{n}}$
 :::
 
-TFはRMeCabでは生の索引語頻度（idfの場合）だが、tidytextでは文書内での相対頻度になる。
+TFはRMeCabでは生の索引語頻度（tfの場合）だが、tidytextでは文書内での相対頻度になる。
 
 ```{r}
 dat_count |>
@@ -38,9 +38,8 @@ dat_count |>
 
 ```{r}
 dat_count |>
-  tidytext::bind_tf_idf(token, doc_id, n) |>
+  gibasa::bind_tf_idf2(token, doc_id, n) |>
   dplyr::mutate(
-    idf = idf + 1,
     tf_idf = n / idf
   ) |>
   dplyr::slice_head(n = 5)

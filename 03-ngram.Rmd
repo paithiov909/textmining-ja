@@ -1,8 +1,6 @@
 # N-gram {#ngram}
 
-## Ngramの集計
-
-### dplyrを使う方法
+## dplyrを使ってNgramを数える方法
 
 dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。
 
@@ -22,7 +20,7 @@ dat_ngram <- dat |>
 str(dat_ngram)
 ```
 
-### quantedaにNgramを持ちこむ方法
+## quantedaにNgramを持ちこむ方法
 
 `gibasa::pack`を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。
 
@@ -40,7 +38,7 @@ dat_ngram |>
   quanteda::dfm()
 ```
 
-### quantedaでNgramを数える方法
+## quantedaでNgramを数える方法
 
 また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。
 

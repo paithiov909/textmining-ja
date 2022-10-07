@@ -17,8 +17,7 @@ dtm
 原形の集計
 文書単語行列への整形
 ngram
-ngramの集計
-dplyrを使う方法
+dplyrを使ってngramを数える方法
 quantedaにngramを持ちこむ方法
 quantedaでngramを数える方法
 weighting

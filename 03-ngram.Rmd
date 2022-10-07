@@ -24,6 +24,8 @@ str(dat_ngram)
 
 ### quantedaにNgramを持ちこむ方法
 
+`gibasa::pack`を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。
+
 ```{r}
 dat_ngram <- dat |>
   gibasa::prettify(col_select = "Original") |>
@@ -39,6 +41,8 @@ dat_ngram |>
 ```
 
 ### quantedaでNgramを数える方法
+
+また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。
 
 ```{r}
 dat_ngram <- dat |>

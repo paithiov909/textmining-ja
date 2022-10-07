@@ -1,6 +1,8 @@
-# コロケーション
+# コロケーション {#collocation}
 
-### 文書内での共起
+## 文書内での共起
+
+共起関係を数える機能はgibasaには実装されていません。文書内での共起を簡単に数えるには、たとえば次のようにします。
 
 ```{r}
 dat_fcm <- dat_count |>
@@ -10,9 +12,11 @@ dat_fcm <- dat_count |>
 dat_fcm
 ```
 
-### 任意のウィンドウ内での共起
+## 任意のウィンドウ内での共起
 
-`RMeCab::collocate`のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。
+### 共起の集計
+
+`RMeCab::collocate`のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。ここではwindowは前後5個のトークンを見るようにします。
 
 ```{r}
 dat_corpus <- dat |>
@@ -24,6 +28,8 @@ dat_fcm <- dat_corpus |>
   quanteda::fcm(context = "window", window = 5)
 ```
 
+こうすると、nodeについて共起しているtermとその頻度を確認できます。以下では、「わたくし」というnodeと共起しているtermで頻度が上位20までであるものを表示しています。
+
 ```{r}
 dat_fcm <- dat_fcm |>
   tidytext::tidy() |>
@@ -34,6 +40,9 @@ dat_fcm <- dat_fcm |>
 dat_fcm
 ```
 
+### T値やMI値の算出
+
+T値やMI値は、たとえば次のようにして計算できます。
 
 ```{r}
 ntok <- dat_corpus |>

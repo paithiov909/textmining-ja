@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-07" />
+<meta name="date" content="2022-10-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -155,6 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2.1" data-path="intro.html"><a href="intro.html#tokenize"><i class="fa fa-check"></i><b>1.2.1</b> tokenize</a></li>
 <li class="chapter" data-level="1.2.2" data-path="intro.html"><a href="intro.html#prettify"><i class="fa fa-check"></i><b>1.2.2</b> prettify</a></li>
 <li class="chapter" data-level="1.2.3" data-path="intro.html"><a href="intro.html#pack"><i class="fa fa-check"></i><b>1.2.3</b> pack</a></li>
+<li class="chapter" data-level="1.2.4" data-path="intro.html"><a href="intro.html#lazy_dtなどと組み合わせて使う場合"><i class="fa fa-check"></i><b>1.2.4</b> lazy_dtなどと組み合わせて使う場合</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="dtm.html"><a href="dtm.html"><i class="fa fa-check"></i><b>2</b> トークンの集計と文書単語行列への整形</a>
@@ -174,8 +175,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4" data-path="weighting.html"><a href="weighting.html"><i class="fa fa-check"></i><b>4</b> 単語頻度の重みづけ</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる単語頻度の重みづけ</a></li>
-<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる単語頻度の重みづけ</a></li>
+<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる重みづけ</a></li>
+<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる重みづけ</a></li>
+<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> tidyloによる重みづけ</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="collocation.html"><a href="collocation.html"><i class="fa fa-check"></i><b>5</b> コロケーション</a>
 <ul>
@@ -212,10 +214,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">2.1.1</span> 品詞などにもとづくしぼりこみ<a href="dtm.html#品詞などにもとづくしぼりこみ" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>トークンを簡単に集計するには、dplyrの関数群を利用するのが便利です。</p>
 <p>たとえば、集計に先立って特定のトークンを素性情報にもとづいて選択するには<code>dplyr::filter</code>を使います。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="dtm.html#cb25-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="dtm.html#cb25-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="dtm.html#cb25-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb25-4"><a href="dtm.html#cb25-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="dtm.html#cb27-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="dtm.html#cb27-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="dtm.html#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="dtm.html#cb27-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 5 × 6
 ##   doc_id sentence_id token_id token    POS1  Original
 ##   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   
@@ -229,16 +231,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">2.1.2</span> 原形の集計<a href="dtm.html#原形の集計" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>dplyr::count</code>でトークンを文書ごとに集計します。ここでは、IPA辞書の見出し語がある語については「原形（Original）」を、見出し語がない語（未知語）については表層形を数えています。</p>
 <p>MeCabは、未知語であっても品詞の推定をおこないますが、未知語の場合には「読み（Yomi1, Yomi2）」のような一部の素性については情報を返しません。このような未知語の素性については、<code>prettify</code>した結果のなかでは、<code>NA_character_</code>になっていることに注意してください。</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="dtm.html#cb27-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb27-2"><a href="dtm.html#cb27-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb27-3"><a href="dtm.html#cb27-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb27-4"><a href="dtm.html#cb27-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb27-5"><a href="dtm.html#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
-<span id="cb27-6"><a href="dtm.html#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb27-7"><a href="dtm.html#cb27-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb27-8"><a href="dtm.html#cb27-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(doc_id, token)</span>
-<span id="cb27-9"><a href="dtm.html#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-10"><a href="dtm.html#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_count)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="dtm.html#cb29-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb29-2"><a href="dtm.html#cb29-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="dtm.html#cb29-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="dtm.html#cb29-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb29-5"><a href="dtm.html#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
+<span id="cb29-6"><a href="dtm.html#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
+<span id="cb29-7"><a href="dtm.html#cb29-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb29-8"><a href="dtm.html#cb29-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(doc_id, token)</span>
+<span id="cb29-9"><a href="dtm.html#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="dtm.html#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_count)</span></code></pre></div>
 <pre><code>## tibble [9,723 × 3] (S3: tbl_df/tbl/data.frame)
 ##  $ doc_id: Factor w/ 876 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 2 2 3 3 3 3 3 3 ...
 ##  $ token : chr [1:9723] &quot;ポラーノ&quot; &quot;広場&quot; &quot;宮沢&quot; &quot;賢治&quot; ...
@@ -248,21 +250,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="文書単語行列への整形" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> 文書単語行列への整形<a href="dtm.html#文書単語行列への整形" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>こうして集計した縦持ちの頻度表を横持ちにすると、いわゆる文書単語行列になります。</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="dtm.html#cb29-1" aria-hidden="true" tabindex="-1"></a>dtm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
-<span id="cb29-2"><a href="dtm.html#cb29-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
-<span id="cb29-3"><a href="dtm.html#cb29-3" aria-hidden="true" tabindex="-1"></a>    doc_id,</span>
-<span id="cb29-4"><a href="dtm.html#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> token,</span>
-<span id="cb29-5"><a href="dtm.html#cb29-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> n,</span>
-<span id="cb29-6"><a href="dtm.html#cb29-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
-<span id="cb29-7"><a href="dtm.html#cb29-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb29-8"><a href="dtm.html#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-9"><a href="dtm.html#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dtm)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="dtm.html#cb31-1" aria-hidden="true" tabindex="-1"></a>dtm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="dtm.html#cb31-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(</span>
+<span id="cb31-3"><a href="dtm.html#cb31-3" aria-hidden="true" tabindex="-1"></a>    doc_id,</span>
+<span id="cb31-4"><a href="dtm.html#cb31-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> token,</span>
+<span id="cb31-5"><a href="dtm.html#cb31-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> n,</span>
+<span id="cb31-6"><a href="dtm.html#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_fill =</span> <span class="dv">0</span></span>
+<span id="cb31-7"><a href="dtm.html#cb31-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-8"><a href="dtm.html#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="dtm.html#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dtm)</span></code></pre></div>
 <pre><code>## [1]  876 2173</code></pre>
 <p>ただし、このように<code>tidyr::pivot_wider</code>で単純に横持ちにすることは、非常に大量の列を持つ巨大なデータフレームを作成することになるため、おすすめしません。文書単語行列を作成するには、<code>tidytext::cast_sparse</code>や<code>tidytext::cast_dfm</code>などを使って、疎行列のオブジェクトにしましょう。</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="dtm.html#cb31-1" aria-hidden="true" tabindex="-1"></a>dtm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
-<span id="cb31-2"><a href="dtm.html#cb31-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_sparse</span>(doc_id, token, n)</span>
-<span id="cb31-3"><a href="dtm.html#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="dtm.html#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dtm)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="dtm.html#cb33-1" aria-hidden="true" tabindex="-1"></a>dtm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="dtm.html#cb33-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_sparse</span>(doc_id, token, n)</span>
+<span id="cb33-3"><a href="dtm.html#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="dtm.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dtm)</span></code></pre></div>
 <pre><code>## [1]  876 2172</code></pre>
 
 </div>

@@ -1,24 +1,24 @@
 # 単語頻度の重みづけ {#weighting}
 
-## tidytextによる単語頻度の重みづけ
+## tidytextによる重みづけ
 
 `tidytext::bind_tf_idf`を使うと単語頻度からTF-IDFを算出することができます。
 
 ```{r}
 dat_count |>
   tidytext::bind_tf_idf(token, doc_id, n) |>
-  dplyr::slice_head(n = 5)
+  dplyr::slice_max(tf_idf, n = 5)
 ```
 
 tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が10であるなどの違いがあります。
 
-## gibasaによる単語頻度の重みづけ
+## gibasaによる重みづけ
 
 gibasaはRMeCabにおける単語頻度の重みづけを`tidytext::bind_tf_idf`と同様のスタイルでおこなうことができる関数`gibasa::bind_tf_idf2`を提供しています。
 
-`bind_tf_idf2`はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。まず、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、`norm=TRUE`にしてもRMeCabの計算結果とは一致しません。また、`IDF=idf3`時の計算結果はRMeCabとは一致しません（これはRMeCab側が間違った結果を返すためです）。
+`bind_tf_idf2`はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。まず、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、`norm=TRUE`にしてもRMeCabの計算結果とは一致しません。また、`idf="idf3"`時の計算結果はRMeCabとは一致しません（これはRMeCab側が間違った結果を返すためです）。
 
-RMeCabは以下の単語頻度の重みづけをサポートしています（ただし、idf3は指定してもidf2になるため、実際には利用できません）。
+RMeCabは以下の単語頻度の重みづけをサポートしています（idf3は指定してもidf2になるため、実際には利用できません）。
 
 - 局所的重み（TF）
   - tf（索引語頻度）
@@ -40,7 +40,30 @@ dat_count |>
   dplyr::mutate(
     tf_idf = n / idf
   ) |>
-  dplyr::slice_head(n = 5)
+  dplyr::slice_max(tf_idf, n = 5)
 ```
 
 なお、注意点として、RMeCabの単語を数える機能は、品詞情報（POS1とPOS2まで）を確認しながら単語を数えているようなので、ここでのように原形だけを見て数えた結果とは必ずしも一致しません。
+
+## tidyloによる重みづけ
+
+TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「レアな単語」を調べることにあります。
+
+こうしたことを実現するための値として、[tidylo](https://github.com/juliasilge/tidylo)パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。
+
+```{r}
+dat_count |>
+  tidylo::bind_log_odds(set = doc_id, feature = token, n = n) |>
+  dplyr::filter(!is.infinite(log_odds_weighted)) |>
+  dplyr::slice_max(log_odds_weighted, n = 50)
+```
+
+ここで用いているデータは小説を改行ごとに一つの文書と見なしていたため、中には次のような極端に短い文書が含まれています。こうした文書では、直観的にはそれほどレアには思われない単語についてもオッズが極端に高くなってしまっているように見えます。
+
+```{r}
+dat_txt |>
+  dplyr::filter(doc_id %in% c(430, 536, 577, 824)) |>
+  dplyr::pull(text)
+```
+
+weighted log oddsについては[この資料](https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html)などを参照してください。

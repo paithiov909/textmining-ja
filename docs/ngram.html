@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-07" />
+<meta name="date" content="2022-10-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -155,6 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2.1" data-path="intro.html"><a href="intro.html#tokenize"><i class="fa fa-check"></i><b>1.2.1</b> tokenize</a></li>
 <li class="chapter" data-level="1.2.2" data-path="intro.html"><a href="intro.html#prettify"><i class="fa fa-check"></i><b>1.2.2</b> prettify</a></li>
 <li class="chapter" data-level="1.2.3" data-path="intro.html"><a href="intro.html#pack"><i class="fa fa-check"></i><b>1.2.3</b> pack</a></li>
+<li class="chapter" data-level="1.2.4" data-path="intro.html"><a href="intro.html#lazy_dtなどと組み合わせて使う場合"><i class="fa fa-check"></i><b>1.2.4</b> lazy_dtなどと組み合わせて使う場合</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="dtm.html"><a href="dtm.html"><i class="fa fa-check"></i><b>2</b> トークンの集計と文書単語行列への整形</a>
@@ -174,8 +175,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4" data-path="weighting.html"><a href="weighting.html"><i class="fa fa-check"></i><b>4</b> 単語頻度の重みづけ</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる単語頻度の重みづけ</a></li>
-<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる単語頻度の重みづけ</a></li>
+<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる重みづけ</a></li>
+<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる重みづけ</a></li>
+<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> tidyloによる重みづけ</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="collocation.html"><a href="collocation.html"><i class="fa fa-check"></i><b>5</b> コロケーション</a>
 <ul>
@@ -209,19 +211,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="dplyrを使ってngramを数える方法" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> dplyrを使ってNgramを数える方法<a href="ngram.html#dplyrを使ってngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="ngram.html#cb33-1" aria-hidden="true" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> audubon<span class="sc">::</span><span class="fu">ngram_tokenizer</span>(<span class="dv">2</span>)</span>
-<span id="cb33-2"><a href="ngram.html#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="ngram.html#cb33-3" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb33-4"><a href="ngram.html#cb33-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb33-5"><a href="ngram.html#cb33-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb33-6"><a href="ngram.html#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb33-7"><a href="ngram.html#cb33-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb33-8"><a href="ngram.html#cb33-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(doc_id) <span class="sc">|&gt;</span></span>
-<span id="cb33-9"><a href="ngram.html#cb33-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">token =</span> <span class="fu">bigram</span>(token, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>), <span class="at">.groups =</span> <span class="st">&quot;keep&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb33-10"><a href="ngram.html#cb33-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(token) <span class="sc">|&gt;</span></span>
-<span id="cb33-11"><a href="ngram.html#cb33-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
-<span id="cb33-12"><a href="ngram.html#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-13"><a href="ngram.html#cb33-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="ngram.html#cb35-1" aria-hidden="true" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> audubon<span class="sc">::</span><span class="fu">ngram_tokenizer</span>(<span class="dv">2</span>)</span>
+<span id="cb35-2"><a href="ngram.html#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="ngram.html#cb35-3" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb35-4"><a href="ngram.html#cb35-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb35-5"><a href="ngram.html#cb35-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb35-6"><a href="ngram.html#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
+<span id="cb35-7"><a href="ngram.html#cb35-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb35-8"><a href="ngram.html#cb35-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(doc_id) <span class="sc">|&gt;</span></span>
+<span id="cb35-9"><a href="ngram.html#cb35-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">token =</span> <span class="fu">bigram</span>(token, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>), <span class="at">.groups =</span> <span class="st">&quot;keep&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb35-10"><a href="ngram.html#cb35-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(token) <span class="sc">|&gt;</span></span>
+<span id="cb35-11"><a href="ngram.html#cb35-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
+<span id="cb35-12"><a href="ngram.html#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-13"><a href="ngram.html#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
 <pre><code>## tibble [24,398 × 3] (S3: tbl_df/tbl/data.frame)
 ##  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 2 3 3 3 3 3 3 4 ...
 ##  $ token : chr [1:24398] &quot;の-広場&quot; &quot;ポラーノ-の&quot; &quot;宮沢-賢治&quot; &quot;レオーノ・キュースト-誌&quot; ...
@@ -230,19 +232,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="quantedaにngramを持ちこむ方法" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> quantedaにNgramを持ちこむ方法<a href="ngram.html#quantedaにngramを持ちこむ方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>gibasa::pack</code>を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="ngram.html#cb35-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb35-2"><a href="ngram.html#cb35-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb35-3"><a href="ngram.html#cb35-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb35-4"><a href="ngram.html#cb35-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>(<span class="at">n =</span> <span class="dv">2</span>)</span>
-<span id="cb35-5"><a href="ngram.html#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-6"><a href="ngram.html#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ngram.html#cb37-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb37-2"><a href="ngram.html#cb37-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="ngram.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
+<span id="cb37-4"><a href="ngram.html#cb37-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>(<span class="at">n =</span> <span class="dv">2</span>)</span>
+<span id="cb37-5"><a href="ngram.html#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="ngram.html#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    899 obs. of  2 variables:
 ##  $ doc_id: chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ text  : chr  &quot;ポラーノ-の の-広場&quot; &quot;宮沢-賢治&quot; &quot;前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌&quot; &quot;宮沢-賢治 賢治-訳述&quot; ...</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ngram.html#cb37-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
-<span id="cb37-2"><a href="ngram.html#cb37-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb37-3"><a href="ngram.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-4"><a href="ngram.html#cb37-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="ngram.html#cb39-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
+<span id="cb39-2"><a href="ngram.html#cb39-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb39-3"><a href="ngram.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb39-4"><a href="ngram.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
 <pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
 ##     features
 ## docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト
@@ -265,20 +267,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> quantedaでNgramを数える方法<a href="ngram.html#quantedaでngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="ngram.html#cb39-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb39-2"><a href="ngram.html#cb39-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-3"><a href="ngram.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb39-4"><a href="ngram.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
-<span id="cb39-5"><a href="ngram.html#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-6"><a href="ngram.html#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="ngram.html#cb41-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="ngram.html#cb41-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="ngram.html#cb41-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
+<span id="cb41-4"><a href="ngram.html#cb41-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb41-5"><a href="ngram.html#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="ngram.html#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    899 obs. of  2 variables:
 ##  $ doc_id: chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
 ##  $ text  : chr  &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="ngram.html#cb41-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
-<span id="cb41-2"><a href="ngram.html#cb41-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb41-3"><a href="ngram.html#cb41-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb41-4"><a href="ngram.html#cb41-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_ngrams</span>(<span class="at">n =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb41-5"><a href="ngram.html#cb41-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="ngram.html#cb43-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="ngram.html#cb43-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="ngram.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="ngram.html#cb43-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_ngrams</span>(<span class="at">n =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-5"><a href="ngram.html#cb43-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
 <pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
 ##     features
 ## docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト

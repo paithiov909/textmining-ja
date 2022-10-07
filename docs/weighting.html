@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-07" />
+<meta name="date" content="2022-10-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -155,6 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2.1" data-path="intro.html"><a href="intro.html#tokenize"><i class="fa fa-check"></i><b>1.2.1</b> tokenize</a></li>
 <li class="chapter" data-level="1.2.2" data-path="intro.html"><a href="intro.html#prettify"><i class="fa fa-check"></i><b>1.2.2</b> prettify</a></li>
 <li class="chapter" data-level="1.2.3" data-path="intro.html"><a href="intro.html#pack"><i class="fa fa-check"></i><b>1.2.3</b> pack</a></li>
+<li class="chapter" data-level="1.2.4" data-path="intro.html"><a href="intro.html#lazy_dtなどと組み合わせて使う場合"><i class="fa fa-check"></i><b>1.2.4</b> lazy_dtなどと組み合わせて使う場合</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="dtm.html"><a href="dtm.html"><i class="fa fa-check"></i><b>2</b> トークンの集計と文書単語行列への整形</a>
@@ -174,8 +175,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4" data-path="weighting.html"><a href="weighting.html"><i class="fa fa-check"></i><b>4</b> 単語頻度の重みづけ</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる単語頻度の重みづけ</a></li>
-<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる単語頻度の重みづけ</a></li>
+<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる重みづけ</a></li>
+<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる重みづけ</a></li>
+<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> tidyloによる重みづけ</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="collocation.html"><a href="collocation.html"><i class="fa fa-check"></i><b>5</b> コロケーション</a>
 <ul>
@@ -206,27 +208,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="weighting" class="section level1 hasAnchor" number="4">
 <h1><span class="header-section-number">Chapter 4</span> 単語頻度の重みづけ<a href="weighting.html#weighting" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="tidytextによる単語頻度の重みづけ" class="section level2 hasAnchor" number="4.1">
-<h2><span class="header-section-number">4.1</span> tidytextによる単語頻度の重みづけ<a href="weighting.html#tidytextによる単語頻度の重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="tidytextによる重みづけ" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> tidytextによる重みづけ<a href="weighting.html#tidytextによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>tidytext::bind_tf_idf</code>を使うと単語頻度からTF-IDFを算出することができます。</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="weighting.html#cb43-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb43-2"><a href="weighting.html#cb43-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">bind_tf_idf</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb43-3"><a href="weighting.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="weighting.html#cb45-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb45-2"><a href="weighting.html#cb45-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">bind_tf_idf</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="weighting.html#cb45-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 <pre><code>## # A tibble: 5 × 6
-##   doc_id token                    n    tf   idf tf_idf
-##   &lt;fct&gt;  &lt;chr&gt;                &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-## 1 1      ポラーノ                 1 0.5    3.16  1.58 
-## 2 1      広場                     1 0.5    2.73  1.37 
-## 3 2      宮沢                     1 0.5    6.08  3.04 
-## 4 2      賢治                     1 0.5    6.08  3.04 
-## 5 3      レオーノ・キュースト     1 0.167  5.17  0.861</code></pre>
+##   doc_id token        n    tf   idf tf_idf
+##   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 139    去年         1     1  6.78   6.78
+## 2 880    ざあい       1     1  6.78   6.78
+## 3 255    あわてる     1     1  6.08   6.08
+## 4 713    こちら       1     1  6.08   6.08
+## 5 288    こいつ       1     1  5.39   5.39</code></pre>
 <p>tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が10であるなどの違いがあります。</p>
 </div>
-<div id="gibasaによる単語頻度の重みづけ" class="section level2 hasAnchor" number="4.2">
-<h2><span class="header-section-number">4.2</span> gibasaによる単語頻度の重みづけ<a href="weighting.html#gibasaによる単語頻度の重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="gibasaによる重みづけ" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> gibasaによる重みづけ<a href="weighting.html#gibasaによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>gibasaはRMeCabにおける単語頻度の重みづけを<code>tidytext::bind_tf_idf</code>と同様のスタイルでおこなうことができる関数<code>gibasa::bind_tf_idf2</code>を提供しています。</p>
-<p><code>bind_tf_idf2</code>はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。まず、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、<code>norm=TRUE</code>にしてもRMeCabの計算結果とは一致しません。また、<code>IDF=idf3</code>時の計算結果はRMeCabとは一致しません（これはRMeCab側が間違った結果を返すためです）。</p>
-<p>RMeCabは以下の単語頻度の重みづけをサポートしています（ただし、idf3は指定してもidf2になるため、実際には利用できません）。</p>
+<p><code>bind_tf_idf2</code>はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。まず、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、<code>norm=TRUE</code>にしてもRMeCabの計算結果とは一致しません。また、<code>idf="idf3"</code>時の計算結果はRMeCabとは一致しません（これはRMeCab側が間違った結果を返すためです）。</p>
+<p>RMeCabは以下の単語頻度の重みづけをサポートしています（idf3は指定してもidf2になるため、実際には利用できません）。</p>
 <ul>
 <li>局所的重み（TF）
 <ul>
@@ -247,21 +249,56 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul>
 <p>gibasaはこれらの重みづけを再実装しています。ただし、<code>tf="tf"</code>はgibasaでは相対頻度になるため、RMeCabの<code>weight="tf*idf"</code>に相当する出力を得るには、たとえば次のように計算します。</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="weighting.html#cb45-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb45-2"><a href="weighting.html#cb45-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb45-3"><a href="weighting.html#cb45-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb45-4"><a href="weighting.html#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">/</span> idf</span>
-<span id="cb45-5"><a href="weighting.html#cb45-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb45-6"><a href="weighting.html#cb45-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 5 × 6
-##   doc_id token                    n    tf   idf tf_idf
-##   &lt;fct&gt;  &lt;chr&gt;                &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-## 1 1      ポラーノ                 1 0.5    5.57  0.180
-## 2 1      広場                     1 0.5    4.94  0.202
-## 3 2      宮沢                     1 0.5    9.77  0.102
-## 4 2      賢治                     1 0.5    9.77  0.102
-## 5 3      レオーノ・キュースト     1 0.167  8.45  0.118</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="weighting.html#cb47-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb47-2"><a href="weighting.html#cb47-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
+<span id="cb47-3"><a href="weighting.html#cb47-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb47-4"><a href="weighting.html#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">/</span> idf</span>
+<span id="cb47-5"><a href="weighting.html#cb47-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb47-6"><a href="weighting.html#cb47-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 8 × 6
+##   doc_id token        n     tf   idf tf_idf
+##   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 715    の          11 0.103   3.74   2.94
+## 2 732    いる         8 0.0842  3.10   2.58
+## 3 715    わたくし     8 0.0748  3.32   2.41
+## 4 825    いる         6 0.0638  3.10   1.94
+## 5 615    する         6 0.0408  3.21   1.87
+## 6 715    する         6 0.0561  3.21   1.87
+## 7 822    する         6 0.0659  3.21   1.87
+## 8 825    する         6 0.0638  3.21   1.87</code></pre>
 <p>なお、注意点として、RMeCabの単語を数える機能は、品詞情報（POS1とPOS2まで）を確認しながら単語を数えているようなので、ここでのように原形だけを見て数えた結果とは必ずしも一致しません。</p>
+</div>
+<div id="tidyloによる重みづけ" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> tidyloによる重みづけ<a href="weighting.html#tidyloによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「レアな単語」を調べることにあります。</p>
+<p>こうしたことを実現するための値として、<a href="https://github.com/juliasilge/tidylo">tidylo</a>パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="weighting.html#cb49-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb49-2"><a href="weighting.html#cb49-2" aria-hidden="true" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
+<span id="cb49-3"><a href="weighting.html#cb49-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.infinite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="weighting.html#cb49-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> <span class="dv">50</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 50 × 4
+##    doc_id token        n log_odds_weighted
+##    &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;             &lt;dbl&gt;
+##  1 536    する         1             117. 
+##  2 430    する         1             105. 
+##  3 824    わたくし     1             102. 
+##  4 577    いる         1              94.5
+##  5 465    する         1              94.0
+##  6 90     いる         1              89.5
+##  7 648    なる         1              84.7
+##  8 398    する         1              83.5
+##  9 295    わたくし     1              81.9
+## 10 566    する         1              79.6
+## # … with 40 more rows</code></pre>
+<p>ここで用いているデータは小説を改行ごとに一つの文書と見なしていたため、中には次のような極端に短い文書が含まれています。こうした文書では、直観的にはそれほどレアには思われない単語についてもオッズが極端に高くなってしまっているように見えます。</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="weighting.html#cb51-1" aria-hidden="true" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
+<span id="cb51-2"><a href="weighting.html#cb51-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb51-3"><a href="weighting.html#cb51-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span></code></pre></div>
+<pre><code>## [1] &quot;「承知しました。」&quot;                              
+## [2] &quot;「起訴するぞ。」&quot;                                
+## [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot;
+## [4] &quot;わたくしは思わずはねあがりました。&quot;</code></pre>
+<p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
 
 </div>
 </div>

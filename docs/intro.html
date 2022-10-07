@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-07" />
+<meta name="date" content="2022-10-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -155,6 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.2.1" data-path="intro.html"><a href="intro.html#tokenize"><i class="fa fa-check"></i><b>1.2.1</b> tokenize</a></li>
 <li class="chapter" data-level="1.2.2" data-path="intro.html"><a href="intro.html#prettify"><i class="fa fa-check"></i><b>1.2.2</b> prettify</a></li>
 <li class="chapter" data-level="1.2.3" data-path="intro.html"><a href="intro.html#pack"><i class="fa fa-check"></i><b>1.2.3</b> pack</a></li>
+<li class="chapter" data-level="1.2.4" data-path="intro.html"><a href="intro.html#lazy_dtなどと組み合わせて使う場合"><i class="fa fa-check"></i><b>1.2.4</b> lazy_dtなどと組み合わせて使う場合</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="dtm.html"><a href="dtm.html"><i class="fa fa-check"></i><b>2</b> トークンの集計と文書単語行列への整形</a>
@@ -174,8 +175,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="4" data-path="weighting.html"><a href="weighting.html"><i class="fa fa-check"></i><b>4</b> 単語頻度の重みづけ</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる単語頻度の重みづけ</a></li>
-<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる単語頻度の重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる単語頻度の重みづけ</a></li>
+<li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる重みづけ</a></li>
+<li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる重みづけ</a></li>
+<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> tidyloによる重みづけ</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="collocation.html"><a href="collocation.html"><i class="fa fa-check"></i><b>5</b> コロケーション</a>
 <ul>
@@ -208,7 +210,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 1</span> gibasaの基本的な使い方<a href="intro.html#intro" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="テキストデータ" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> テキストデータ<a href="intro.html#テキストデータ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>ここでは、audubonパッケージに含まれている<code>audubon::polano</code>というデータを例にgibasaの基本的な使い方を説明していきます。このデータは、青空文庫で公開されている、宮沢賢治の「ポラーノの広場」という小説を、改行ごとにひとつの要素としてベクトルにしたものです。</p>
+<p>ここでは、<a href="https://github.com/paithiov909/audubon">audubon</a>パッケージに含まれている<code>audubon::polano</code>というデータを例にgibasaの基本的な使い方を説明していきます。このデータは、青空文庫で公開されている、宮沢賢治の「ポラーノの広場」という小説を、改行ごとにひとつの要素としてベクトルにしたものです。</p>
 <p>このデータを、次のようなかたちのデータフレーム（tibble）にします。</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="intro.html#cb1-1" aria-hidden="true" tabindex="-1"></a>dat_txt <span class="ot">&lt;-</span></span>
 <span id="cb1-2"><a href="intro.html#cb1-2" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
@@ -364,6 +366,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [ ... and 219 more ]
 ## 
 ## [ reached max_ndoc ... 893 more documents ]</code></pre>
+</div>
+<div id="lazy_dtなどと組み合わせて使う場合" class="section level3 hasAnchor" number="1.2.4">
+<h3><span class="header-section-number">1.2.4</span> lazy_dtなどと組み合わせて使う場合<a href="intro.html#lazy_dtなどと組み合わせて使う場合" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><code>gibasa::prettify</code>はデータフレームにしか使えないため、data.tableなどと組み合わせて使う場合には<code>tidyr::separate</code>を代わりに使ってください。</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="intro.html#cb25-1" aria-hidden="true" tabindex="-1"></a>dat_toks <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="intro.html#cb25-2" aria-hidden="true" tabindex="-1"></a>  dtplyr<span class="sc">::</span><span class="fu">lazy_dt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="intro.html#cb25-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(feature, <span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(),</span>
+<span id="cb25-4"><a href="intro.html#cb25-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;right&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-5"><a href="intro.html#cb25-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb25-6"><a href="intro.html#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(Original <span class="sc">==</span> <span class="st">&quot;*&quot;</span>, token, Original),</span>
+<span id="cb25-7"><a href="intro.html#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(token, POS1, POS2, <span class="at">sep =</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb25-8"><a href="intro.html#cb25-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="intro.html#cb25-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(doc_id, sentence_id, token_id, token) <span class="sc">|&gt;</span></span>
+<span id="cb25-10"><a href="intro.html#cb25-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-11"><a href="intro.html#cb25-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">na_if</span>(., <span class="st">&quot;*&quot;</span>)))</span>
+<span id="cb25-12"><a href="intro.html#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="intro.html#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_toks)</span></code></pre></div>
+<pre><code>## tibble [26,849 × 4] (S3: tbl_df/tbl/data.frame)
+##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
+##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
+##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
+##  $ token      : chr [1:26849] &quot;ポラーノ/名詞/一般&quot; &quot;の/助詞/連体化&quot; &quot;広場/名詞/一般&quot; &quot;宮沢/名詞/固有名詞&quot; ...</code></pre>
 
 </div>
 </div>

@@ -11,6 +11,7 @@ gibasaの使い方
 tokenize
 prettify
 pack
+lazy_dtなどと組み合わせて使う場合
 dtm
 トークンの集計
 品詞などにもとづくしぼりこみ
@@ -21,8 +22,9 @@ dplyrを使ってngramを数える方法
 quantedaにngramを持ちこむ方法
 quantedaでngramを数える方法
 weighting
-tidytextによる単語頻度の重みづけ
-gibasaによる単語頻度の重みづけ
+tidytextによる重みづけ
+gibasaによる重みづけ
+tidyloによる重みづけ
 collocation
 文書内での共起
 任意のウィンドウ内での共起

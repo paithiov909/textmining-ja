@@ -108,7 +108,7 @@ dat_corpus |>
 dat_toks <- dat |>
   dtplyr::lazy_dt() |>
   tidyr::separate(feature, into = gibasa::get_dict_features(),
-                  sep = ",", fill = "right") |>
+                  sep = ",", extra = "merge", fill = "right") |>
   dplyr::mutate(
     token = dplyr::if_else(Original == "*", token, Original),
     token = stringr::str_c(token, POS1, POS2, sep = "/")

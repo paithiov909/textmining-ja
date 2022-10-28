@@ -30,3 +30,4 @@ collocation
 任意のウィンドウ内での共起
 共起の集計
 t値やmi値の算出
+sessioninfo

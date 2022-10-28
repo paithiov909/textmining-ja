@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理</title>
+  <title>Chapter 6 セッション情報 | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
   <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理" />
+  <meta property="og:title" content="Chapter 6 セッション情報 | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Rによる自然言語処理・テキスト分析の練習" />
   <meta name="github-repo" content="paithiov909/textmining-ja" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理" />
+  <meta name="twitter:title" content="Chapter 6 セッション情報 | RとMeCabによる日本語テキストマイニングの前処理" />
   
   <meta name="twitter:description" content="Rによる自然言語処理・テキスト分析の練習" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="dtm.html"/>
-<link rel="next" href="weighting.html"/>
+<link rel="prev" href="collocation.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -207,109 +207,110 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="ngram" class="section level1 hasAnchor" number="3">
-<h1><span class="header-section-number">Chapter 3</span> N-gram<a href="ngram.html#ngram" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="dplyrを使ってngramを数える方法" class="section level2 hasAnchor" number="3.1">
-<h2><span class="header-section-number">3.1</span> dplyrを使ってNgramを数える方法<a href="ngram.html#dplyrを使ってngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="ngram.html#cb35-1" aria-hidden="true" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> audubon<span class="sc">::</span><span class="fu">ngram_tokenizer</span>(<span class="dv">2</span>)</span>
-<span id="cb35-2"><a href="ngram.html#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="ngram.html#cb35-3" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb35-4"><a href="ngram.html#cb35-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb35-5"><a href="ngram.html#cb35-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb35-6"><a href="ngram.html#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb35-7"><a href="ngram.html#cb35-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb35-8"><a href="ngram.html#cb35-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(doc_id) <span class="sc">|&gt;</span></span>
-<span id="cb35-9"><a href="ngram.html#cb35-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">token =</span> <span class="fu">bigram</span>(token, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>), <span class="at">.groups =</span> <span class="st">&quot;keep&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb35-10"><a href="ngram.html#cb35-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(token) <span class="sc">|&gt;</span></span>
-<span id="cb35-11"><a href="ngram.html#cb35-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">ungroup</span>()</span>
-<span id="cb35-12"><a href="ngram.html#cb35-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-13"><a href="ngram.html#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
-<pre><code>## tibble [24,398 × 3] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 2 3 3 3 3 3 3 4 ...
-##  $ token : chr [1:24398] &quot;の-広場&quot; &quot;ポラーノ-の&quot; &quot;宮沢-賢治&quot; &quot;レオーノ・キュースト-誌&quot; ...
-##  $ n     : int [1:24398] 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-</div>
-<div id="quantedaにngramを持ちこむ方法" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> quantedaにNgramを持ちこむ方法<a href="ngram.html#quantedaにngramを持ちこむ方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><code>gibasa::pack</code>を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ngram.html#cb37-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb37-2"><a href="ngram.html#cb37-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-3"><a href="ngram.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb37-4"><a href="ngram.html#cb37-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>(<span class="at">n =</span> <span class="dv">2</span>)</span>
-<span id="cb37-5"><a href="ngram.html#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="ngram.html#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
-<pre><code>## &#39;data.frame&#39;:    899 obs. of  2 variables:
-##  $ doc_id: chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ text  : chr  &quot;ポラーノ-の の-広場&quot; &quot;宮沢-賢治&quot; &quot;前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌&quot; &quot;宮沢-賢治 賢治-訳述&quot; ...</code></pre>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="ngram.html#cb39-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
-<span id="cb39-2"><a href="ngram.html#cb39-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb39-3"><a href="ngram.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb39-4"><a href="ngram.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
-<pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
-##     features
-## docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト
-##    1           1       1         0     0     0     0     0                       0
-##    2           0       0         1     0     0     0     0                       0
-##    3           0       0         0     1     1     1     1                       1
-##    4           0       0         1     0     0     0     0                       0
-##    5           0       0         0     0     0     0     0                       0
-##    6           0       0         0     0     0     0     1                       0
-##     features
-## docs レオーノ・キュースト-誌 賢治-訳述
-##    1                       0         0
-##    2                       0         0
-##    3                       1         0
-##    4                       0         1
-##    5                       0         0
-##    6                       0         0
-## [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</code></pre>
-</div>
-<div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> quantedaでNgramを数える方法<a href="ngram.html#quantedaでngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="ngram.html#cb41-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb41-2"><a href="ngram.html#cb41-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb41-3"><a href="ngram.html#cb41-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb41-4"><a href="ngram.html#cb41-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
-<span id="cb41-5"><a href="ngram.html#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-6"><a href="ngram.html#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span></code></pre></div>
-<pre><code>## &#39;data.frame&#39;:    899 obs. of  2 variables:
-##  $ doc_id: chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ text  : chr  &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="ngram.html#cb43-1" aria-hidden="true" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
-<span id="cb43-2"><a href="ngram.html#cb43-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb43-3"><a href="ngram.html#cb43-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb43-4"><a href="ngram.html#cb43-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_ngrams</span>(<span class="at">n =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb43-5"><a href="ngram.html#cb43-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
-<pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
-##     features
-## docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト
-##    1           1       1         0     0     0     0     0                       0
-##    2           0       0         1     0     0     0     0                       0
-##    3           0       0         0     1     1     1     1                       1
-##    4           0       0         1     0     0     0     0                       0
-##    5           0       0         0     0     0     0     0                       0
-##    6           0       0         0     0     0     0     1                       0
-##     features
-## docs レオーノ・キュースト_誌 賢治_訳述
-##    1                       0         0
-##    2                       0         0
-##    3                       1         0
-##    4                       0         1
-##    5                       0         0
-##    6                       0         0
-## [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</code></pre>
+<div id="sessioninfo" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> セッション情報<a href="sessioninfo.html#sessioninfo" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="sessioninfo.html#cb60-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
+<pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────
+##  setting  value
+##  version  R version 4.2.1 (2022-06-23)
+##  os       Ubuntu 20.04.5 LTS
+##  system   x86_64, linux-gnu
+##  ui       RStudio
+##  language (EN)
+##  collate  ja_JP.UTF-8
+##  ctype    ja_JP.UTF-8
+##  tz       Asia/Tokyo
+##  date     2022-10-28
+##  rstudio  2022.02.2+485 Prairie Trillium (server)
+##  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
+## 
+## ─ Packages ───────────────────────────────────────────────────────────────────────────
+##  package      * version    date (UTC) lib source
+##  assertthat     0.2.1      2019-03-21 [1] RSPM (R 4.2.0)
+##  audubon        0.3.0.9003 2022-10-15 [1] https://paithiov909.r-universe.dev (R 4.2.1)
+##  bit            4.0.4      2020-08-04 [1] RSPM (R 4.2.0)
+##  bit64          4.0.5      2020-08-30 [1] RSPM (R 4.2.0)
+##  bookdown       0.29       2022-09-12 [1] RSPM (R 4.2.0)
+##  bslib          0.4.0      2022-07-16 [1] RSPM (R 4.2.0)
+##  cachem         1.0.6      2021-08-19 [1] RSPM (R 4.2.0)
+##  cli            3.4.1      2022-09-23 [3] RSPM (R 4.2.0)
+##  crayon         1.5.2      2022-09-29 [3] RSPM (R 4.2.0)
+##  curl           4.3.3      2022-10-06 [3] RSPM (R 4.2.0)
+##  data.table     1.14.4     2022-10-17 [1] RSPM (R 4.2.0)
+##  DBI            1.1.3      2022-06-18 [1] RSPM (R 4.2.0)
+##  digest         0.6.30     2022-10-18 [3] RSPM (R 4.2.0)
+##  dplyr          1.0.10     2022-09-01 [1] RSPM (R 4.2.0)
+##  dtplyr         1.2.2      2022-08-20 [1] CRAN (R 4.2.1)
+##  ellipsis       0.3.2      2021-04-29 [1] RSPM (R 4.2.0)
+##  evaluate       0.17       2022-10-07 [3] RSPM (R 4.2.0)
+##  fansi          1.0.3      2022-03-24 [3] RSPM (R 4.2.0)
+##  fastmap        1.1.0      2021-01-25 [1] RSPM (R 4.2.0)
+##  fastmatch      1.1-3      2021-07-23 [1] RSPM (R 4.2.0)
+##  forcats        0.5.2      2022-08-19 [1] CRAN (R 4.2.1)
+##  generics       0.1.3      2022-07-05 [1] RSPM (R 4.2.0)
+##  gibasa         0.5.0.9003 2022-10-15 [1] https://paithiov909.r-universe.dev (R 4.2.1)
+##  glue           1.6.2      2022-02-24 [3] RSPM (R 4.2.0)
+##  hms            1.1.2      2022-08-19 [1] CRAN (R 4.2.1)
+##  htmltools      0.5.3      2022-07-18 [1] RSPM (R 4.2.0)
+##  httpgd         1.3.0      2022-02-02 [3] RSPM (R 4.2.0)
+##  janeaustenr    1.0.0      2022-08-26 [1] RSPM (R 4.2.0)
+##  jquerylib      0.1.4      2021-04-26 [1] RSPM (R 4.2.0)
+##  jsonlite       1.8.3      2022-10-21 [3] RSPM (R 4.2.0)
+##  knitr          1.40       2022-08-24 [3] RSPM (R 4.2.0)
+##  later          1.3.0      2021-08-18 [3] RSPM (R 4.2.0)
+##  lattice        0.20-45    2021-09-22 [4] CRAN (R 4.2.0)
+##  lifecycle      1.0.3      2022-10-07 [1] RSPM (R 4.2.0)
+##  magrittr       2.0.3      2022-03-30 [3] RSPM (R 4.2.0)
+##  Matrix       * 1.5-1      2022-09-13 [3] RSPM (R 4.2.0)
+##  memoise        2.0.1      2021-11-26 [1] RSPM (R 4.2.0)
+##  pillar         1.8.1      2022-08-19 [3] RSPM (R 4.2.0)
+##  pkgconfig      2.0.3      2019-09-22 [3] RSPM (R 4.2.0)
+##  purrr          0.3.5      2022-10-06 [3] RSPM (R 4.2.0)
+##  quanteda       3.2.3      2022-08-29 [1] RSPM (R 4.2.0)
+##  R6             2.5.1      2021-08-19 [3] RSPM (R 4.2.0)
+##  Rcpp           1.0.9      2022-07-08 [3] RSPM (R 4.2.0)
+##  RcppParallel   5.1.5      2022-01-05 [1] RSPM (R 4.2.0)
+##  readr          2.1.3      2022-10-01 [1] CRAN (R 4.2.1)
+##  rlang          1.0.6      2022-09-24 [3] RSPM (R 4.2.0)
+##  rmarkdown      2.17       2022-10-07 [1] CRAN (R 4.2.1)
+##  rstudioapi     0.14       2022-08-22 [1] RSPM (R 4.2.0)
+##  sass           0.4.2      2022-07-16 [1] RSPM (R 4.2.0)
+##  sessioninfo    1.2.2      2021-12-06 [1] RSPM (R 4.2.0)
+##  SnowballC      0.7.0      2020-04-01 [1] RSPM (R 4.2.0)
+##  stopwords      2.3        2021-10-28 [1] RSPM (R 4.2.0)
+##  stringi        1.7.8      2022-07-11 [3] RSPM (R 4.2.0)
+##  stringr        1.4.1      2022-08-20 [3] RSPM (R 4.2.0)
+##  systemfonts    1.0.4      2022-02-11 [3] RSPM (R 4.2.0)
+##  tibble         3.1.8      2022-07-22 [3] RSPM (R 4.2.0)
+##  tidylo         0.2.0      2022-03-22 [1] RSPM (R 4.2.0)
+##  tidyr          1.2.1      2022-09-08 [1] RSPM (R 4.2.0)
+##  tidyselect     1.2.0      2022-10-10 [1] RSPM (R 4.2.0)
+##  tidytext       0.3.4      2022-08-20 [1] CRAN (R 4.2.1)
+##  tokenizers     0.2.3      2022-09-23 [1] CRAN (R 4.2.1)
+##  tzdb           0.3.0      2022-03-28 [1] RSPM (R 4.2.0)
+##  utf8           1.2.2      2021-07-24 [3] RSPM (R 4.2.0)
+##  V8             4.2.1      2022-08-07 [3] RSPM (R 4.2.0)
+##  vctrs          0.5.0      2022-10-22 [3] RSPM (R 4.2.0)
+##  vroom          1.6.0      2022-09-30 [1] CRAN (R 4.2.1)
+##  withr          2.5.0      2022-03-03 [3] RSPM (R 4.2.0)
+##  xfun           0.34       2022-10-18 [3] RSPM (R 4.2.0)
+##  yaml           2.3.6      2022-10-18 [3] RSPM (R 4.2.0)
+## 
+##  [1] /home/paithiov909/R/x86_64-pc-linux-gnu-library/4.2
+##  [2] /usr/local/lib/R/site-library
+##  [3] /usr/lib/R/site-library
+##  [4] /usr/lib/R/library
+## 
+## ──────────────────────────────────────────────────────────────────────────────────────</code></pre>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="dtm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="weighting.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="collocation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

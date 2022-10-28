@@ -61,7 +61,7 @@ total <- dat_corpus |>
 dat_fcm |>
   dplyr::select(-node) |>
   dplyr::mutate(
-    expect = count / (total[term] / ntok * total["わたくし"] * 5 * 2),
+    expect = total[term] / ntok * total["わたくし"] * 5 * 2, ## 5はwindowのサイズ
     t = (count - expect) / sqrt(count),
     mi = log2(count / expect)
   )

@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-08" />
+<meta name="date" content="2022-10-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -188,6 +188,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2.2" data-path="collocation.html"><a href="collocation.html#t値やmi値の算出"><i class="fa fa-check"></i><b>5.2.2</b> T値やMI値の算出</a></li>
 </ul></li>
 </ul></li>
+<li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 </ul>
 
@@ -227,8 +228,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="gibasaによる重みづけ" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> gibasaによる重みづけ<a href="weighting.html#gibasaによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>gibasaはRMeCabにおける単語頻度の重みづけを<code>tidytext::bind_tf_idf</code>と同様のスタイルでおこなうことができる関数<code>gibasa::bind_tf_idf2</code>を提供しています。</p>
-<p><code>bind_tf_idf2</code>はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。まず、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、<code>norm=TRUE</code>にしてもRMeCabの計算結果とは一致しません。また、<code>idf="idf3"</code>時の計算結果はRMeCabとは一致しません（これはRMeCab側が間違った結果を返すためです）。</p>
-<p>RMeCabは以下の単語頻度の重みづけをサポートしています（idf3は指定してもidf2になるため、実際には利用できません）。</p>
+<p><code>bind_tf_idf2</code>はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。たとえば、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、<code>norm=TRUE</code>にしてもRMeCabの計算結果とは一致しません。</p>
+<p>RMeCabは以下の単語頻度の重みづけをサポートしています。</p>
 <ul>
 <li>局所的重み（TF）
 <ul>

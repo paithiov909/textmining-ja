@@ -24,6 +24,7 @@ quantedaでngramを数える方法
 weighting
 tidytextによる重みづけ
 gibasaによる重みづけ
+udpipeによる重みづけ
 tidyloによる重みづけ
 collocation
 文書内での共起

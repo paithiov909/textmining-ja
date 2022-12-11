@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 5 コロケーション | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 5 コロケーション | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-10-28" />
+<meta name="date" content="2022-12-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -177,7 +177,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="4.1" data-path="weighting.html"><a href="weighting.html#tidytextによる重みづけ"><i class="fa fa-check"></i><b>4.1</b> tidytextによる重みづけ</a></li>
 <li class="chapter" data-level="4.2" data-path="weighting.html"><a href="weighting.html#gibasaによる重みづけ"><i class="fa fa-check"></i><b>4.2</b> gibasaによる重みづけ</a></li>
-<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> tidyloによる重みづけ</a></li>
+<li class="chapter" data-level="4.3" data-path="weighting.html"><a href="weighting.html#udpipeによる重みづけ"><i class="fa fa-check"></i><b>4.3</b> udpipeによる重みづけ</a></li>
+<li class="chapter" data-level="4.4" data-path="weighting.html"><a href="weighting.html#tidyloによる重みづけ"><i class="fa fa-check"></i><b>4.4</b> tidyloによる重みづけ</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="collocation.html"><a href="collocation.html"><i class="fa fa-check"></i><b>5</b> コロケーション</a>
 <ul>
@@ -212,11 +213,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="文書内での共起" class="section level2 hasAnchor" number="5.1">
 <h2><span class="header-section-number">5.1</span> 文書内での共起<a href="collocation.html#文書内での共起" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>共起関係を数える機能はgibasaには実装されていません。文書内での共起を簡単に数えるには、たとえば次のようにします。</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="collocation.html#cb53-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
-<span id="cb53-2"><a href="collocation.html#cb53-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(doc_id, token, n) <span class="sc">|&gt;</span></span>
-<span id="cb53-3"><a href="collocation.html#cb53-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>()</span>
-<span id="cb53-4"><a href="collocation.html#cb53-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb53-5"><a href="collocation.html#cb53-5" aria-hidden="true" tabindex="-1"></a>dat_fcm</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="collocation.html#cb55-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
+<span id="cb55-2"><a href="collocation.html#cb55-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(doc_id, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb55-3"><a href="collocation.html#cb55-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>()</span>
+<span id="cb55-4"><a href="collocation.html#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="collocation.html#cb55-5" aria-hidden="true" tabindex="-1"></a>dat_fcm</span></code></pre></div>
 <pre><code>## Feature co-occurrence matrix of: 2,172 by 2,172 features.
 ##                       features
 ## features               ポラーノ 広場 宮沢 賢治 レオーノ・キュースト 官 誌 七 十 等
@@ -237,21 +238,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="共起の集計" class="section level3 hasAnchor" number="5.2.1">
 <h3><span class="header-section-number">5.2.1</span> 共起の集計<a href="collocation.html#共起の集計" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>RMeCab::collocate</code>のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。ここではwindowは前後5個のトークンを見るようにします。</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="collocation.html#cb55-1" aria-hidden="true" tabindex="-1"></a>dat_corpus <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb55-2"><a href="collocation.html#cb55-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
-<span id="cb55-3"><a href="collocation.html#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-4"><a href="collocation.html#cb55-4" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
-<span id="cb55-5"><a href="collocation.html#cb55-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb55-6"><a href="collocation.html#cb55-6" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb55-7"><a href="collocation.html#cb55-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>(<span class="at">context =</span> <span class="st">&quot;window&quot;</span>, <span class="at">window =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="collocation.html#cb57-1" aria-hidden="true" tabindex="-1"></a>dat_corpus <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb57-2"><a href="collocation.html#cb57-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb57-3"><a href="collocation.html#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="collocation.html#cb57-4" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb57-5"><a href="collocation.html#cb57-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb57-6"><a href="collocation.html#cb57-6" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb57-7"><a href="collocation.html#cb57-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>(<span class="at">context =</span> <span class="st">&quot;window&quot;</span>, <span class="at">window =</span> <span class="dv">5</span>)</span></code></pre></div>
 <p>こうすると、nodeについて共起しているtermとその頻度を確認できます。以下では、「わたくし」というnodeと共起しているtermで頻度が上位20までであるものを表示しています。</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="collocation.html#cb56-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_fcm <span class="sc">|&gt;</span></span>
-<span id="cb56-2"><a href="collocation.html#cb56-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span></span>
-<span id="cb56-3"><a href="collocation.html#cb56-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">node =</span> document, <span class="at">term =</span> term) <span class="sc">|&gt;</span></span>
-<span id="cb56-4"><a href="collocation.html#cb56-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(node <span class="sc">==</span> <span class="st">&quot;わたくし&quot;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb56-5"><a href="collocation.html#cb56-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(count, <span class="at">n =</span> <span class="dv">20</span>)</span>
-<span id="cb56-6"><a href="collocation.html#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-7"><a href="collocation.html#cb56-7" aria-hidden="true" tabindex="-1"></a>dat_fcm</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="collocation.html#cb58-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_fcm <span class="sc">|&gt;</span></span>
+<span id="cb58-2"><a href="collocation.html#cb58-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span></span>
+<span id="cb58-3"><a href="collocation.html#cb58-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">node =</span> document, <span class="at">term =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb58-4"><a href="collocation.html#cb58-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(node <span class="sc">==</span> <span class="st">&quot;わたくし&quot;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb58-5"><a href="collocation.html#cb58-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(count, <span class="at">n =</span> <span class="dv">20</span>)</span>
+<span id="cb58-6"><a href="collocation.html#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-7"><a href="collocation.html#cb58-7" aria-hidden="true" tabindex="-1"></a>dat_fcm</span></code></pre></div>
 <pre><code>## # A tibble: 20 × 3
 ##    node     term  count
 ##    &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;
@@ -279,26 +280,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="t値やmi値の算出" class="section level3 hasAnchor" number="5.2.2">
 <h3><span class="header-section-number">5.2.2</span> T値やMI値の算出<a href="collocation.html#t値やmi値の算出" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>T値やMI値は、たとえば次のようにして計算できます。</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="collocation.html#cb58-1" aria-hidden="true" tabindex="-1"></a>ntok <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
-<span id="cb58-2"><a href="collocation.html#cb58-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb58-3"><a href="collocation.html#cb58-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb58-4"><a href="collocation.html#cb58-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">ntoken</span>() <span class="sc">|&gt;</span></span>
-<span id="cb58-5"><a href="collocation.html#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>()</span>
-<span id="cb58-6"><a href="collocation.html#cb58-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-7"><a href="collocation.html#cb58-7" aria-hidden="true" tabindex="-1"></a>total <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
-<span id="cb58-8"><a href="collocation.html#cb58-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb58-9"><a href="collocation.html#cb58-9" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb58-10"><a href="collocation.html#cb58-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_select</span>(<span class="fu">c</span>(<span class="st">&quot;わたくし&quot;</span>, dat_fcm<span class="sc">$</span>term)) <span class="sc">|&gt;</span></span>
-<span id="cb58-11"><a href="collocation.html#cb58-11" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>() <span class="sc">|&gt;</span></span>
-<span id="cb58-12"><a href="collocation.html#cb58-12" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">colSums</span>()</span>
-<span id="cb58-13"><a href="collocation.html#cb58-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-14"><a href="collocation.html#cb58-14" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="sc">|&gt;</span></span>
-<span id="cb58-15"><a href="collocation.html#cb58-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>node) <span class="sc">|&gt;</span></span>
-<span id="cb58-16"><a href="collocation.html#cb58-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb58-17"><a href="collocation.html#cb58-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">expect =</span> total[term] <span class="sc">/</span> ntok <span class="sc">*</span> total[<span class="st">&quot;わたくし&quot;</span>] <span class="sc">*</span> <span class="dv">5</span> <span class="sc">*</span> <span class="dv">2</span>, <span class="do">## 5はwindowのサイズ</span></span>
-<span id="cb58-18"><a href="collocation.html#cb58-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">t =</span> (count <span class="sc">-</span> expect) <span class="sc">/</span> <span class="fu">sqrt</span>(count),</span>
-<span id="cb58-19"><a href="collocation.html#cb58-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">mi =</span> <span class="fu">log2</span>(count <span class="sc">/</span> expect)</span>
-<span id="cb58-20"><a href="collocation.html#cb58-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="collocation.html#cb60-1" aria-hidden="true" tabindex="-1"></a>ntok <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb60-2"><a href="collocation.html#cb60-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb60-3"><a href="collocation.html#cb60-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-4"><a href="collocation.html#cb60-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">ntoken</span>() <span class="sc">|&gt;</span></span>
+<span id="cb60-5"><a href="collocation.html#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>()</span>
+<span id="cb60-6"><a href="collocation.html#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-7"><a href="collocation.html#cb60-7" aria-hidden="true" tabindex="-1"></a>total <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb60-8"><a href="collocation.html#cb60-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb60-9"><a href="collocation.html#cb60-9" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb60-10"><a href="collocation.html#cb60-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_select</span>(<span class="fu">c</span>(<span class="st">&quot;わたくし&quot;</span>, dat_fcm<span class="sc">$</span>term)) <span class="sc">|&gt;</span></span>
+<span id="cb60-11"><a href="collocation.html#cb60-11" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>() <span class="sc">|&gt;</span></span>
+<span id="cb60-12"><a href="collocation.html#cb60-12" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">colSums</span>()</span>
+<span id="cb60-13"><a href="collocation.html#cb60-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-14"><a href="collocation.html#cb60-14" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="sc">|&gt;</span></span>
+<span id="cb60-15"><a href="collocation.html#cb60-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>node) <span class="sc">|&gt;</span></span>
+<span id="cb60-16"><a href="collocation.html#cb60-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb60-17"><a href="collocation.html#cb60-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">expect =</span> total[term] <span class="sc">/</span> ntok <span class="sc">*</span> total[<span class="st">&quot;わたくし&quot;</span>] <span class="sc">*</span> <span class="dv">5</span> <span class="sc">*</span> <span class="dv">2</span>, <span class="do">## 5はwindowのサイズ</span></span>
+<span id="cb60-18"><a href="collocation.html#cb60-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">t =</span> (count <span class="sc">-</span> expect) <span class="sc">/</span> <span class="fu">sqrt</span>(count),</span>
+<span id="cb60-19"><a href="collocation.html#cb60-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">mi =</span> <span class="fu">log2</span>(count <span class="sc">/</span> expect)</span>
+<span id="cb60-20"><a href="collocation.html#cb60-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
 <pre><code>## # A tibble: 20 × 5
 ##    term  count expect       t      mi
 ##    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;

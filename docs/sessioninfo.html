@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 6 セッション情報 | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 6 セッション情報 | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-12-11" />
+<meta name="date" content="2022-12-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="collocation.html"/>
-<link rel="next" href="references.html"/>
+<link rel="next" href="misc.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -52,6 +52,13 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/core-js-2.5.3/shim.min.js"></script>
+<script src="libs/react-17.0.0/react.min.js"></script>
+<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="libs/htmlwidgets-1.6.0/htmlwidgets.js"></script>
+<link href="libs/reactable-0.4.1/reactable.css" rel="stylesheet" />
+<script src="libs/reactable-binding-0.4.1/reactable.js"></script>
 
 
 <style type="text/css">
@@ -92,7 +99,7 @@ code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code span.at { color: #7d9029; } /* Attribute */
 code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
+code span.bu { color: #008000; } /* BuiltIn */
 code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #4070a0; } /* Char */
 code span.cn { color: #880000; } /* Constant */
@@ -105,7 +112,7 @@ code span.er { color: #ff0000; font-weight: bold; } /* Error */
 code span.ex { } /* Extension */
 code span.fl { color: #40a070; } /* Float */
 code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
+code span.im { color: #008000; font-weight: bold; } /* Import */
 code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 code span.kw { color: #007020; font-weight: bold; } /* Keyword */
 code span.op { color: #666666; } /* Operator */
@@ -163,7 +170,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="dtm.html"><a href="dtm.html#トークンの集計"><i class="fa fa-check"></i><b>2.1</b> トークンの集計</a>
 <ul>
 <li class="chapter" data-level="2.1.1" data-path="dtm.html"><a href="dtm.html#品詞などにもとづくしぼりこみ"><i class="fa fa-check"></i><b>2.1.1</b> 品詞などにもとづくしぼりこみ</a></li>
-<li class="chapter" data-level="2.1.2" data-path="dtm.html"><a href="dtm.html#原形の集計"><i class="fa fa-check"></i><b>2.1.2</b> 原形の集計</a></li>
+<li class="chapter" data-level="2.1.2" data-path="dtm.html"><a href="dtm.html#品詞などにもとづくトークンの再結合"><i class="fa fa-check"></i><b>2.1.2</b> 品詞などにもとづくトークンの再結合</a></li>
+<li class="chapter" data-level="2.1.3" data-path="dtm.html"><a href="dtm.html#原形の集計"><i class="fa fa-check"></i><b>2.1.3</b> 原形の集計</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="dtm.html"><a href="dtm.html#文書単語行列への整形"><i class="fa fa-check"></i><b>2.2</b> 文書単語行列への整形</a></li>
 </ul></li>
@@ -190,7 +198,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a></li>
-<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Miscellaneous</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="misc.html"><a href="misc.html#posit-cloud旧rstudio-cloudでのgibasaの使い方"><i class="fa fa-check"></i><b>7.1</b> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="misc.html"><a href="misc.html#辞書ipadic-unidic-liteの配置"><i class="fa fa-check"></i><b>7.1.1</b> 辞書（ipadic, unidic-lite）の配置</a></li>
+<li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#mecabrcの配置"><i class="fa fa-check"></i><b>7.1.2</b> mecabrcの配置</a></li>
+<li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.3</b> gibasaのインストール</a></li>
+<li class="chapter" data-level="7.1.4" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.4</b> 試すには</a></li>
+</ul></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -210,8 +227,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="sessioninfo" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">Chapter 6</span> セッション情報<a href="sessioninfo.html#sessioninfo" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="sessioninfo.html#cb62-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
-<pre><code>## ─ Session info ───────────────────────────────────────────────────────────────────────
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="sessioninfo.html#cb64-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
+<pre><code>## ─ Session info ──────────────────────────────────────────────────────────────────────────
 ##  setting  value
 ##  version  R version 4.2.2 Patched (2022-11-10 r83330)
 ##  os       Ubuntu 20.04.5 LTS
@@ -221,89 +238,93 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##  collate  ja_JP.UTF-8
 ##  ctype    ja_JP.UTF-8
 ##  tz       Asia/Tokyo
-##  date     2022-12-11
-##  rstudio  2022.02.2+485 Prairie Trillium (server)
-##  pandoc   2.17.1.1 @ /usr/lib/rstudio-server/bin/quarto/bin/ (via rmarkdown)
+##  date     2022-12-24
+##  rstudio  2022.12.0+353 Elsbeth Geranium (server)
+##  pandoc   2.19.2 @ /usr/lib/rstudio-server/bin/quarto/bin/tools/ (via rmarkdown)
 ## 
-## ─ Packages ───────────────────────────────────────────────────────────────────────────
-##  package      * version    date (UTC) lib source
-##  assertthat     0.2.1      2019-03-21 [1] RSPM (R 4.2.0)
-##  audubon        0.3.0.9003 2022-10-15 [1] https://paithiov909.r-universe.dev (R 4.2.1)
-##  bit            4.0.5      2022-11-15 [1] RSPM (R 4.2.0)
-##  bit64          4.0.5      2020-08-30 [1] RSPM (R 4.2.0)
-##  bookdown       0.30       2022-11-09 [1] RSPM (R 4.2.0)
-##  bslib          0.4.1      2022-11-02 [1] RSPM (R 4.2.0)
-##  cachem         1.0.6      2021-08-19 [1] RSPM (R 4.2.0)
-##  cli            3.4.1      2022-09-23 [3] RSPM (R 4.2.0)
-##  crayon         1.5.2      2022-09-29 [3] RSPM (R 4.2.0)
-##  curl           4.3.3      2022-10-06 [3] RSPM (R 4.2.0)
-##  data.table     1.14.6     2022-11-16 [1] RSPM (R 4.2.0)
-##  DBI            1.1.3      2022-06-18 [1] RSPM (R 4.2.0)
-##  digest         0.6.30     2022-10-18 [3] RSPM (R 4.2.0)
-##  dplyr        * 1.0.10     2022-09-01 [1] RSPM (R 4.2.0)
-##  dtplyr         1.2.2      2022-08-20 [1] CRAN (R 4.2.1)
-##  ellipsis       0.3.2      2021-04-29 [1] RSPM (R 4.2.0)
-##  evaluate       0.18       2022-11-07 [3] RSPM (R 4.2.0)
-##  fansi          1.0.3      2022-03-24 [3] RSPM (R 4.2.0)
-##  fastmap        1.1.0      2021-01-25 [1] RSPM (R 4.2.0)
-##  fastmatch      1.1-3      2021-07-23 [1] RSPM (R 4.2.0)
-##  forcats        0.5.2      2022-08-19 [1] CRAN (R 4.2.1)
-##  generics       0.1.3      2022-07-05 [1] RSPM (R 4.2.0)
-##  gibasa         0.5.0.9006 2022-12-08 [1] https://paithiov909.r-universe.dev (R 4.2.2)
-##  glue           1.6.2      2022-02-24 [3] RSPM (R 4.2.0)
-##  hms            1.1.2      2022-08-19 [1] CRAN (R 4.2.1)
-##  htmltools      0.5.4      2022-12-07 [1] CRAN (R 4.2.2)
-##  httpgd         1.3.0      2022-02-02 [3] RSPM (R 4.2.0)
-##  janeaustenr    1.0.0      2022-08-26 [1] RSPM (R 4.2.0)
-##  jquerylib      0.1.4      2021-04-26 [1] RSPM (R 4.2.0)
-##  jsonlite       1.8.4      2022-12-06 [3] RSPM (R 4.2.0)
-##  knitr          1.41       2022-11-18 [3] RSPM (R 4.2.0)
-##  later          1.3.0      2021-08-18 [3] RSPM (R 4.2.0)
-##  lattice        0.20-45    2021-09-22 [4] CRAN (R 4.2.0)
-##  lifecycle      1.0.3      2022-10-07 [1] RSPM (R 4.2.0)
-##  magrittr       2.0.3      2022-03-30 [3] RSPM (R 4.2.0)
-##  Matrix         1.5-3      2022-11-11 [3] RSPM (R 4.2.0)
-##  memoise        2.0.1      2021-11-26 [1] RSPM (R 4.2.0)
-##  pillar         1.8.1      2022-08-19 [3] RSPM (R 4.2.0)
-##  pkgconfig      2.0.3      2019-09-22 [3] RSPM (R 4.2.0)
-##  purrr          0.3.5      2022-10-06 [3] RSPM (R 4.2.0)
-##  quanteda       3.2.4      2022-12-08 [1] RSPM (R 4.2.0)
-##  R6             2.5.1      2021-08-19 [3] RSPM (R 4.2.0)
-##  Rcpp           1.0.9      2022-07-08 [3] RSPM (R 4.2.0)
-##  RcppParallel   5.1.5      2022-01-05 [1] RSPM (R 4.2.0)
-##  readr          2.1.3      2022-10-01 [1] CRAN (R 4.2.1)
-##  rlang          1.0.6      2022-09-24 [3] RSPM (R 4.2.0)
-##  rmarkdown      2.18       2022-11-09 [1] RSPM (R 4.2.0)
-##  rstudioapi     0.14       2022-08-22 [1] RSPM (R 4.2.0)
-##  sass           0.4.4      2022-11-24 [1] RSPM (R 4.2.0)
-##  sessioninfo    1.2.2      2021-12-06 [1] RSPM (R 4.2.0)
-##  SnowballC      0.7.0      2020-04-01 [1] RSPM (R 4.2.0)
-##  stopwords      2.3        2021-10-28 [1] RSPM (R 4.2.0)
-##  stringi        1.7.8      2022-07-11 [3] RSPM (R 4.2.0)
-##  stringr        1.5.0      2022-12-02 [3] RSPM (R 4.2.0)
-##  systemfonts    1.0.4      2022-02-11 [3] RSPM (R 4.2.0)
-##  tibble         3.1.8      2022-07-22 [3] RSPM (R 4.2.0)
-##  tidylo         0.2.0      2022-03-22 [1] RSPM (R 4.2.0)
-##  tidyr          1.2.1      2022-09-08 [1] RSPM (R 4.2.0)
-##  tidyselect     1.2.0      2022-10-10 [1] RSPM (R 4.2.0)
-##  tidytext       0.3.4      2022-08-20 [1] CRAN (R 4.2.1)
-##  tokenizers     0.2.3      2022-09-23 [1] CRAN (R 4.2.1)
-##  tzdb           0.3.0      2022-03-28 [1] RSPM (R 4.2.0)
-##  udpipe         0.8.10     2022-11-10 [1] RSPM (R 4.2.0)
-##  utf8           1.2.2      2021-07-24 [3] RSPM (R 4.2.0)
-##  V8             4.2.2      2022-11-03 [3] RSPM (R 4.2.0)
-##  vctrs          0.5.1      2022-11-16 [3] RSPM (R 4.2.0)
-##  vroom          1.6.0      2022-09-30 [1] CRAN (R 4.2.1)
-##  withr          2.5.0      2022-03-03 [3] RSPM (R 4.2.0)
-##  xfun           0.35       2022-11-16 [3] RSPM (R 4.2.0)
-##  yaml           2.3.6      2022-10-18 [3] RSPM (R 4.2.0)
+## ─ Packages ──────────────────────────────────────────────────────────────────────────────
+##  package      * version date (UTC) lib source
+##  assertthat     0.2.1   2019-03-21 [1] RSPM (R 4.2.0)
+##  audubon        0.4.0   2022-12-19 [1] https://paithiov909.r-universe.dev (R 4.2.2)
+##  bit            4.0.5   2022-11-15 [1] RSPM (R 4.2.0)
+##  bit64          4.0.5   2020-08-30 [1] RSPM (R 4.2.0)
+##  bookdown       0.31    2022-12-13 [1] RSPM (R 4.2.0)
+##  bslib          0.4.2   2022-12-16 [1] CRAN (R 4.2.2)
+##  cachem         1.0.6   2021-08-19 [1] RSPM (R 4.2.0)
+##  cli            3.5.0   2022-12-20 [3] RSPM (R 4.2.0)
+##  crayon         1.5.2   2022-09-29 [3] RSPM (R 4.2.0)
+##  crosstalk      1.2.0   2021-11-04 [1] RSPM (R 4.2.0)
+##  curl           4.3.3   2022-10-06 [3] RSPM (R 4.2.0)
+##  data.table     1.14.6  2022-11-16 [1] RSPM (R 4.2.0)
+##  DBI            1.1.3   2022-06-18 [1] RSPM (R 4.2.0)
+##  digest         0.6.31  2022-12-11 [3] RSPM (R 4.2.0)
+##  dplyr        * 1.0.10  2022-09-01 [1] RSPM (R 4.2.0)
+##  dtplyr         1.2.2   2022-08-20 [1] CRAN (R 4.2.1)
+##  ellipsis       0.3.2   2021-04-29 [1] RSPM (R 4.2.0)
+##  evaluate       0.19    2022-12-13 [3] RSPM (R 4.2.0)
+##  fansi          1.0.3   2022-03-24 [3] RSPM (R 4.2.0)
+##  fastmap        1.1.0   2021-01-25 [1] RSPM (R 4.2.0)
+##  fastmatch      1.1-3   2021-07-23 [1] RSPM (R 4.2.0)
+##  forcats        0.5.2   2022-08-19 [1] CRAN (R 4.2.1)
+##  generics       0.1.3   2022-07-05 [1] RSPM (R 4.2.0)
+##  gibasa         0.6.0   2022-12-19 [1] https://paithiov909.r-universe.dev (R 4.2.2)
+##  glue           1.6.2   2022-02-24 [3] RSPM (R 4.2.0)
+##  hms            1.1.2   2022-08-19 [1] CRAN (R 4.2.1)
+##  htmltools      0.5.4   2022-12-07 [1] CRAN (R 4.2.2)
+##  htmlwidgets    1.6.0   2022-12-15 [1] RSPM (R 4.2.0)
+##  httpgd         1.3.0   2022-02-02 [3] RSPM (R 4.2.0)
+##  janeaustenr    1.0.0   2022-08-26 [1] RSPM (R 4.2.0)
+##  jquerylib      0.1.4   2021-04-26 [1] RSPM (R 4.2.0)
+##  jsonlite       1.8.4   2022-12-06 [3] RSPM (R 4.2.0)
+##  knitr          1.41    2022-11-18 [3] RSPM (R 4.2.0)
+##  later          1.3.0   2021-08-18 [3] RSPM (R 4.2.0)
+##  lattice        0.20-45 2021-09-22 [4] CRAN (R 4.2.0)
+##  lifecycle      1.0.3   2022-10-07 [1] RSPM (R 4.2.0)
+##  magrittr       2.0.3   2022-03-30 [3] RSPM (R 4.2.0)
+##  Matrix         1.5-3   2022-11-11 [3] RSPM (R 4.2.0)
+##  memoise        2.0.1   2021-11-26 [1] RSPM (R 4.2.0)
+##  pillar         1.8.1   2022-08-19 [3] RSPM (R 4.2.0)
+##  pkgconfig      2.0.3   2019-09-22 [3] RSPM (R 4.2.0)
+##  purrr          1.0.0   2022-12-20 [3] RSPM (R 4.2.0)
+##  quanteda       3.2.4   2022-12-08 [1] RSPM (R 4.2.0)
+##  R6             2.5.1   2021-08-19 [3] RSPM (R 4.2.0)
+##  Rcpp           1.0.9   2022-07-08 [3] RSPM (R 4.2.0)
+##  RcppParallel   5.1.5   2022-01-05 [1] RSPM (R 4.2.0)
+##  reactable      0.4.1   2022-12-08 [1] CRAN (R 4.2.2)
+##  reactR         0.4.4   2021-02-22 [1] RSPM (R 4.2.0)
+##  readr          2.1.3   2022-10-01 [1] CRAN (R 4.2.1)
+##  rlang          1.0.6   2022-09-24 [3] RSPM (R 4.2.0)
+##  rmarkdown      2.19    2022-12-15 [1] RSPM (R 4.2.0)
+##  rstudioapi     0.14    2022-08-22 [1] RSPM (R 4.2.0)
+##  sass           0.4.4   2022-11-24 [1] RSPM (R 4.2.0)
+##  sessioninfo    1.2.2   2021-12-06 [1] RSPM (R 4.2.0)
+##  SnowballC      0.7.0   2020-04-01 [1] RSPM (R 4.2.0)
+##  stopwords      2.3     2021-10-28 [1] RSPM (R 4.2.0)
+##  stringi        1.7.8   2022-07-11 [3] RSPM (R 4.2.0)
+##  stringr        1.5.0   2022-12-02 [3] RSPM (R 4.2.0)
+##  systemfonts    1.0.4   2022-02-11 [3] RSPM (R 4.2.0)
+##  tibble         3.1.8   2022-07-22 [3] RSPM (R 4.2.0)
+##  tidylo         0.2.0   2022-03-22 [1] RSPM (R 4.2.0)
+##  tidyr          1.2.1   2022-09-08 [1] RSPM (R 4.2.0)
+##  tidyselect     1.2.0   2022-10-10 [1] RSPM (R 4.2.0)
+##  tidytext       0.4.0   2022-12-20 [1] RSPM (R 4.2.0)
+##  tokenizers     0.2.3   2022-09-23 [1] CRAN (R 4.2.1)
+##  tzdb           0.3.0   2022-03-28 [1] RSPM (R 4.2.0)
+##  udpipe         0.8.10  2022-11-10 [1] RSPM (R 4.2.0)
+##  utf8           1.2.2   2021-07-24 [3] RSPM (R 4.2.0)
+##  V8             4.2.2   2022-11-03 [3] RSPM (R 4.2.0)
+##  vctrs          0.5.1   2022-11-16 [3] RSPM (R 4.2.0)
+##  vroom          1.6.0   2022-09-30 [1] CRAN (R 4.2.1)
+##  withr          2.5.0   2022-03-03 [3] RSPM (R 4.2.0)
+##  xfun           0.35    2022-11-16 [3] RSPM (R 4.2.0)
+##  yaml           2.3.6   2022-10-18 [3] RSPM (R 4.2.0)
 ## 
 ##  [1] /home/paithiov909/R/x86_64-pc-linux-gnu-library/4.2
 ##  [2] /usr/local/lib/R/site-library
 ##  [3] /usr/lib/R/site-library
 ##  [4] /usr/lib/R/library
 ## 
-## ──────────────────────────────────────────────────────────────────────────────────────</code></pre>
+## ─────────────────────────────────────────────────────────────────────────────────────────</code></pre>
 
 </div>
             </section>
@@ -312,7 +333,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         </div>
       </div>
 <a href="collocation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="misc.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

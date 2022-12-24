@@ -15,6 +15,7 @@ lazy_dtなどと組み合わせて使う場合
 dtm
 トークンの集計
 品詞などにもとづくしぼりこみ
+品詞などにもとづくトークンの再結合
 原形の集計
 文書単語行列への整形
 ngram
@@ -32,3 +33,9 @@ collocation
 共起の集計
 t値やmi値の算出
 sessioninfo
+misc
+posit-cloud旧rstudio-cloudでのgibasaの使い方
+辞書ipadic-unidic-liteの配置
+mecabrcの配置
+gibasaのインストール
+試すには

@@ -17,13 +17,13 @@ dat_txt <-
 str(dat_txt)
 ```
 
-このかたちのデータフレームは、[Text Interchange Formats（TIF）](https://github.com/ropensci/tif)という仕様を念頭においている形式です（ちなみに、このかたちのデータフレームは[readtext](https://cran.r-project.org/web/packages/readtext/vignettes/readtext_vignette.html)パッケージを使うと簡単に得ることができます）。
+このかたちのデータフレームは、[Text Interchange Formats（TIF）](https://github.com/ropensci/tif)という仕様を念頭においている形式です（ちなみに、このかたちのデータフレームは[readtext](https://cran.r-project.org/web/packages/readtext/vignettes/readtext_vignette.html)パッケージを使うと簡単に得ることができますが、readtextクラスのオブジェクトはdplyrと相性が悪いようなので、使う場合は`dplyr::tibble`などでtibbleにしてしまうことをおすすめします）。
 
 Text Interchange Formats（TIF）は、2017年に[rOpenSci Text Workshop](https://textworkshop17.ropensci.org/)で整備された、テキスト分析用のRパッケージのデザインパターンのようなものです。
 
 TIFでは、コーパス（corpus）、文書単語行列（dtm）、トークン（token）という3種類のオブジェクトの形式が定義されており、異なるパッケージ間で同様の形式を扱うようにすることで、複数のパッケージを通じて便利にテキスト分析を進められるようになっています。
 
-上の`dat_txt`は、文書の集合であるコーパスをデータフレームのかたちで保持したものです。この形式のデータフレームは、次のように、tidytextやtokenizersの関数にそのまま渡すことができます。なお、これらの形式のオブジェクトは、TIFの枠組みのなかではトークンと呼ばれます。
+上の`dat_txt`は、文書の集合であるコーパスをデータフレームのかたちで保持したものです。この形式のデータフレームは、次のように、[tidytext](https://juliasilge.github.io/tidytext/)や[tokenizers](https://docs.ropensci.org/tokenizers/)の関数にそのまま渡すことができます。なお、これらの形式のオブジェクトは、TIFの枠組みのなかではトークンと呼ばれます。
 
 ```{r}
 dat_txt |>
@@ -56,7 +56,7 @@ str(dat)
 
 `gibasa::tokenize`の戻り値のデータフレームは、それぞれのトークンについて、MeCabから返される素性情報のすべてを含んでいるfeatureという列を持っています。
 
-MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（unidic-lite）の素性は、次のような情報を持っています。
+MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（2.1.2, aka [unidic-lite](https://pypi.org/project/unidic-lite/)）の素性は、次のような情報を持っています。
 
 ```{r}
 gibasa::get_dict_features("ipa")
@@ -92,7 +92,7 @@ dat_corpus |>
   head(4)
 ```
 
-あるいは、次のようにquantedaと組み合わせて使うこともできます。
+あるいは、次のように[quanteda](https://quanteda.io/)と組み合わせて使うこともできます。
 
 ```{r}
 dat_corpus |>
@@ -102,7 +102,7 @@ dat_corpus |>
 
 ### lazy_dtなどと組み合わせて使う場合
 
-`gibasa::prettify`はデータフレームにしか使えないため、data.tableなどと組み合わせて使う場合には`tidyr::separate`を代わりに使ってください。
+`gibasa::prettify`はデータフレームにしか使えないため、[data.table](https://rdatatable.gitlab.io/data.table/)などと組み合わせて使う場合には`tidyr::separate`を代わりに使ってください。
 
 ```{r}
 dat_toks <- dat |>

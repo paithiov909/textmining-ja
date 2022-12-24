@@ -47,7 +47,7 @@ dat_count |>
 
 ## udpipeによる重みづけ
 
-udpipeを使っても単語頻度とTF-IDFを算出できます。また、`udpipe::document_term_frequencies_statistics`では、TF、IDFとTF-IDFにくわえて、[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25)を計算することができます。
+[udpipe](https://bnosac.github.io/udpipe/en/)を使っても単語頻度とTF-IDFを算出できます。また、`udpipe::document_term_frequencies_statistics`では、TF、IDFとTF-IDFにくわえて、[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25)を計算することができます。
 
 dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。
 

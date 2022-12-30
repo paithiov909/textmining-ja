@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2022-12-24" />
+<meta name="date" content="2022-12-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -291,20 +291,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.3</span> udpipeによる重みづけ<a href="weighting.html#udpipeによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://bnosac.github.io/udpipe/en/">udpipe</a>を使っても単語頻度とTF-IDFを算出できます。また、<code>udpipe::document_term_frequencies_statistics</code>では、TF、IDFとTF-IDFにくわえて、<a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a>を計算することができます。</p>
 <p>dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="weighting.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(dplyr)</span>
-<span id="cb51-2"><a href="weighting.html#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-3"><a href="weighting.html#cb51-3" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb51-4"><a href="weighting.html#cb51-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb51-5"><a href="weighting.html#cb51-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb51-6"><a href="weighting.html#cb51-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb51-7"><a href="weighting.html#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
-<span id="cb51-8"><a href="weighting.html#cb51-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb51-9"><a href="weighting.html#cb51-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb51-10"><a href="weighting.html#cb51-10" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">&quot;doc_id&quot;</span>, <span class="at">term =</span> <span class="st">&quot;token&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb51-11"><a href="weighting.html#cb51-11" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">k =</span> <span class="fl">2.0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb51-12"><a href="weighting.html#cb51-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(bm25, <span class="at">n =</span> 5L)</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="weighting.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">require</span>(dplyr)</span></code></pre></div>
+<pre><code>##  要求されたパッケージ dplyr をロード中です</code></pre>
+<pre><code>## 
+##  次のパッケージを付け加えます: &#39;dplyr&#39;</code></pre>
+<pre><code>##  以下のオブジェクトは &#39;package:stats&#39; からマスクされています:
+## 
+##     filter, lag</code></pre>
+<pre><code>##  以下のオブジェクトは &#39;package:base&#39; からマスクされています:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="weighting.html#cb56-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb56-2"><a href="weighting.html#cb56-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb56-3"><a href="weighting.html#cb56-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb56-4"><a href="weighting.html#cb56-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb56-5"><a href="weighting.html#cb56-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
+<span id="cb56-6"><a href="weighting.html#cb56-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
+<span id="cb56-7"><a href="weighting.html#cb56-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb56-8"><a href="weighting.html#cb56-8" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">&quot;doc_id&quot;</span>, <span class="at">term =</span> <span class="st">&quot;token&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb56-9"><a href="weighting.html#cb56-9" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">k =</span> <span class="fl">2.0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb56-10"><a href="weighting.html#cb56-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(bm25, <span class="at">n =</span> 5L)</span></code></pre></div>
 <pre><code>## Source: local data table [7 x 8]
-## Call:   `_DT8`[rank(desc(bm25), ties.method = &quot;min&quot;, na.last = &quot;keep&quot;) &lt;= 
+## Call:   `_DT2`[rank(desc(bm25), ties.method = &quot;min&quot;, na.last = &quot;keep&quot;) &lt;= 
 ##     min(5L, .N)][order(-bm25)]
 ## 
 ##   doc_id term      freq    tf   idf tf_idf tf_bm25  bm25
@@ -323,10 +331,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">4.4</span> tidyloによる重みづけ<a href="weighting.html#tidyloによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「レアな単語」を調べることにあります。</p>
 <p>こうしたことを実現するための値として、<a href="https://github.com/juliasilge/tidylo">tidylo</a>パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="weighting.html#cb53-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb53-2"><a href="weighting.html#cb53-2" aria-hidden="true" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
-<span id="cb53-3"><a href="weighting.html#cb53-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.infinite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
-<span id="cb53-4"><a href="weighting.html#cb53-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> 5L)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="weighting.html#cb58-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb58-2"><a href="weighting.html#cb58-2" aria-hidden="true" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
+<span id="cb58-3"><a href="weighting.html#cb58-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.infinite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
+<span id="cb58-4"><a href="weighting.html#cb58-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> 5L)</span></code></pre></div>
 <pre><code>## # A tibble: 5 × 4
 ##   doc_id token        n log_odds_weighted
 ##   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;             &lt;dbl&gt;
@@ -336,9 +344,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 4 577    いる         1              94.5
 ## 5 465    する         1              94.0</code></pre>
 <p>ここで用いているデータは小説を改行ごとに一つの文書と見なしていたため、中には次のような極端に短い文書が含まれています。こうした文書では、直観的にはそれほどレアには思われない単語についてもオッズが極端に高くなってしまっているように見えます。</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="weighting.html#cb55-1" aria-hidden="true" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
-<span id="cb55-2"><a href="weighting.html#cb55-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb55-3"><a href="weighting.html#cb55-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="weighting.html#cb60-1" aria-hidden="true" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
+<span id="cb60-2"><a href="weighting.html#cb60-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb60-3"><a href="weighting.html#cb60-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span></code></pre></div>
 <pre><code>## [1] &quot;「承知しました。」&quot;                              
 ## [2] &quot;「起訴するぞ。」&quot;                                
 ## [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot;

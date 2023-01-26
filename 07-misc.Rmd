@@ -2,7 +2,7 @@
 
 ## Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方
 
-手軽に試したい場合には、Posit Cloud（旧・RStudio Cloud）のようなクラウド環境が便利かもしれません。
+Rによるデータ分析を手軽に試したい場合には、Posit Cloud（旧・RStudio Cloud）のようなクラウド環境が便利かもしれません。
 
 一方で、Posit Cloudはユーザー権限しかない環境のため、gibasaを使えるようにするまでにはややコツが要ります。とはいえ、gibasaはRMeCabとは異なり、MeCabのバイナリはなくても使える（辞書とmecabrcがあればよい）ので、RMeCabを使う場合ほど複雑なことをする必要はないはずです。
 

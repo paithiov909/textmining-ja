@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 7 Miscellaneous | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.31 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 7 Miscellaneous | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-01-05" />
+<meta name="date" content="2023-01-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,9 +56,9 @@
 <script src="libs/react-17.0.0/react.min.js"></script>
 <script src="libs/react-17.0.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/htmlwidgets-1.6.0/htmlwidgets.js"></script>
-<link href="libs/reactable-0.4.1/reactable.css" rel="stylesheet" />
-<script src="libs/reactable-binding-0.4.1/reactable.js"></script>
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+<link href="libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
+<script src="libs/reactable-binding-0.4.3/reactable.js"></script>
 
 
 <style type="text/css">
@@ -229,50 +229,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 7</span> Miscellaneous<a href="misc.html#misc" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="posit-cloud旧rstudio-cloudでのgibasaの使い方" class="section level2 hasAnchor" number="7.1">
 <h2><span class="header-section-number">7.1</span> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方<a href="misc.html#posit-cloud旧rstudio-cloudでのgibasaの使い方" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>手軽に試したい場合には、Posit Cloud（旧・RStudio Cloud）のようなクラウド環境が便利かもしれません。</p>
+<p>Rによるデータ分析を手軽に試したい場合には、Posit Cloud（旧・RStudio Cloud）のようなクラウド環境が便利かもしれません。</p>
 <p>一方で、Posit Cloudはユーザー権限しかない環境のため、gibasaを使えるようにするまでにはややコツが要ります。とはいえ、gibasaはRMeCabとは異なり、MeCabのバイナリはなくても使える（辞書とmecabrcがあればよい）ので、RMeCabを使う場合ほど複雑なことをする必要はないはずです。</p>
 <p>ここでは、Posit Cloudでgibasaを利用できるようにするための手順を簡単に説明します（RMeCabもあわせて試したいという場合には、MeCabのバイナリを自分でビルドする必要があります。その場合は<a href="https://blog.mana.bi/2022/12/21/posit-cloud-mecab/">この記事</a>などを参考にしてください）。</p>
 <div id="辞書ipadic-unidic-liteの配置" class="section level3 hasAnchor" number="7.1.1">
 <h3><span class="header-section-number">7.1.1</span> 辞書（ipadic, unidic-lite）の配置<a href="misc.html#辞書ipadic-unidic-liteの配置" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>MeCabの辞書は、Terminalタブからpipでインストールできます。ここでは、IPA辞書（<a href="https://pypi.org/project/ipadic/">ipadic</a>）と<a href="https://pypi.org/project/unidic-lite/">unidic-lite</a>をインストールします。</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb66-1"><a href="misc.html#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install ipadic unidic-lite</span></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb68-1"><a href="misc.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install ipadic unidic-lite</span></code></pre></div>
 </div>
 <div id="mecabrcの配置" class="section level3 hasAnchor" number="7.1.2">
 <h3><span class="header-section-number">7.1.2</span> mecabrcの配置<a href="misc.html#mecabrcの配置" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Rのコンソールから以下のおまじないを実行します。</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="misc.html#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc&quot;</span>))) {</span>
-<span id="cb67-2"><a href="misc.html#cb67-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dir.create</span>(<span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc&quot;</span>))</span>
-<span id="cb67-3"><a href="misc.html#cb67-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb67-4"><a href="misc.html#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(<span class="st">&quot;;</span></span>
-<span id="cb67-5"><a href="misc.html#cb67-5" aria-hidden="true" tabindex="-1"></a><span class="st">; Configuration file of MeCab</span></span>
-<span id="cb67-6"><a href="misc.html#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="st">;</span></span>
-<span id="cb67-7"><a href="misc.html#cb67-7" aria-hidden="true" tabindex="-1"></a><span class="st">; $Id: mecabrc.in,v 1.3 2006/05/29 15:36:08 taku-ku Exp $;</span></span>
-<span id="cb67-8"><a href="misc.html#cb67-8" aria-hidden="true" tabindex="-1"></a><span class="st">;</span></span>
-<span id="cb67-9"><a href="misc.html#cb67-9" aria-hidden="true" tabindex="-1"></a><span class="st">dicdir = /$(rcpath)/../lib/python3.8/site-packages/ipadic/dicdir</span></span>
-<span id="cb67-10"><a href="misc.html#cb67-10" aria-hidden="true" tabindex="-1"></a><span class="st">; userdic = /home/foo/bar/user.dic</span></span>
-<span id="cb67-11"><a href="misc.html#cb67-11" aria-hidden="true" tabindex="-1"></a><span class="st">; output-format-type = wakati</span></span>
-<span id="cb67-12"><a href="misc.html#cb67-12" aria-hidden="true" tabindex="-1"></a><span class="st">; input-buffer-size = 8192</span></span>
-<span id="cb67-13"><a href="misc.html#cb67-13" aria-hidden="true" tabindex="-1"></a><span class="st">; node-format = %m</span><span class="sc">\n</span></span>
-<span id="cb67-14"><a href="misc.html#cb67-14" aria-hidden="true" tabindex="-1"></a><span class="st">; bos-format = %S</span><span class="sc">\n</span></span>
-<span id="cb67-15"><a href="misc.html#cb67-15" aria-hidden="true" tabindex="-1"></a><span class="st">; eos-format = EOS</span><span class="sc">\n</span></span>
-<span id="cb67-16"><a href="misc.html#cb67-16" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>, <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc/mecabrc&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="misc.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">dir.exists</span>(<span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc&quot;</span>))) {</span>
+<span id="cb69-2"><a href="misc.html#cb69-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">dir.create</span>(<span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc&quot;</span>))</span>
+<span id="cb69-3"><a href="misc.html#cb69-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-4"><a href="misc.html#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write</span>(<span class="st">&quot;;</span></span>
+<span id="cb69-5"><a href="misc.html#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="st">; Configuration file of MeCab</span></span>
+<span id="cb69-6"><a href="misc.html#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="st">;</span></span>
+<span id="cb69-7"><a href="misc.html#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="st">; $Id: mecabrc.in,v 1.3 2006/05/29 15:36:08 taku-ku Exp $;</span></span>
+<span id="cb69-8"><a href="misc.html#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="st">;</span></span>
+<span id="cb69-9"><a href="misc.html#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="st">dicdir = /$(rcpath)/../lib/python3.8/site-packages/ipadic/dicdir</span></span>
+<span id="cb69-10"><a href="misc.html#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="st">; userdic = /home/foo/bar/user.dic</span></span>
+<span id="cb69-11"><a href="misc.html#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="st">; output-format-type = wakati</span></span>
+<span id="cb69-12"><a href="misc.html#cb69-12" aria-hidden="true" tabindex="-1"></a><span class="st">; input-buffer-size = 8192</span></span>
+<span id="cb69-13"><a href="misc.html#cb69-13" aria-hidden="true" tabindex="-1"></a><span class="st">; node-format = %m</span><span class="sc">\n</span></span>
+<span id="cb69-14"><a href="misc.html#cb69-14" aria-hidden="true" tabindex="-1"></a><span class="st">; bos-format = %S</span><span class="sc">\n</span></span>
+<span id="cb69-15"><a href="misc.html#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="st">; eos-format = EOS</span><span class="sc">\n</span></span>
+<span id="cb69-16"><a href="misc.html#cb69-16" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>, <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc/mecabrc&quot;</span>))</span></code></pre></div>
 </div>
 <div id="gibasaのインストール" class="section level3 hasAnchor" number="7.1.3">
 <h3><span class="header-section-number">7.1.3</span> gibasaのインストール<a href="misc.html#gibasaのインストール" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><a href="https://github.com/paithiov909/gibasa">gibasa</a>をインストールします。</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="misc.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(</span>
-<span id="cb68-2"><a href="misc.html#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">paithiov909 =</span> <span class="st">&quot;https://paithiov909.r-universe.dev&quot;</span>,</span>
-<span id="cb68-3"><a href="misc.html#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
-<span id="cb68-4"><a href="misc.html#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">MECAB_DEFAULT_RC =</span> <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc/mecabrc&quot;</span>))</span>
-<span id="cb68-5"><a href="misc.html#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gibasa&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="misc.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(</span>
+<span id="cb70-2"><a href="misc.html#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">paithiov909 =</span> <span class="st">&quot;https://paithiov909.r-universe.dev&quot;</span>,</span>
+<span id="cb70-3"><a href="misc.html#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
+<span id="cb70-4"><a href="misc.html#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">MECAB_DEFAULT_RC =</span> <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/etc/mecabrc&quot;</span>))</span>
+<span id="cb70-5"><a href="misc.html#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;gibasa&quot;</span>)</span></code></pre></div>
 </div>
 <div id="試すには" class="section level3 hasAnchor" number="7.1.4">
 <h3><span class="header-section-number">7.1.4</span> 試すには<a href="misc.html#試すには" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>うまくいっていると、辞書を指定しない場合はIPA辞書が使われます。unidic-liteは<code>sys_dic</code>引数にフルパスを指定することで使用できます。</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="misc.html#cb69-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">gbs_tokenize</span>(<span class="st">&quot;こんにちは&quot;</span>)</span>
-<span id="cb69-2"><a href="misc.html#cb69-2" aria-hidden="true" tabindex="-1"></a>unidic_lite <span class="ot">&lt;-</span> <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/lib/python3.8/site-packages/unidic_lite/dicdir&quot;</span>)</span>
-<span id="cb69-3"><a href="misc.html#cb69-3" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">gbs_tokenize</span>(<span class="st">&quot;こんにちは&quot;</span>, <span class="at">sys_dic =</span> unidic_lite) <span class="sc">|&gt;</span></span>
-<span id="cb69-4"><a href="misc.html#cb69-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="misc.html#cb71-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">gbs_tokenize</span>(<span class="st">&quot;こんにちは&quot;</span>)</span>
+<span id="cb71-2"><a href="misc.html#cb71-2" aria-hidden="true" tabindex="-1"></a>unidic_lite <span class="ot">&lt;-</span> <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/lib/python3.8/site-packages/unidic_lite/dicdir&quot;</span>)</span>
+<span id="cb71-3"><a href="misc.html#cb71-3" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">gbs_tokenize</span>(<span class="st">&quot;こんにちは&quot;</span>, <span class="at">sys_dic =</span> unidic_lite) <span class="sc">|&gt;</span></span>
+<span id="cb71-4"><a href="misc.html#cb71-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>))</span></code></pre></div>
 
 </div>
 </div>

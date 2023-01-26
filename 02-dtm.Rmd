@@ -93,7 +93,7 @@ str(dat_count)
 ```{r}
 dtm <- dat_count |>
   tidyr::pivot_wider(
-    doc_id,
+    id_cols = doc_id,
     names_from = token,
     values_from = n,
     values_fill = 0

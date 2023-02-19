@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-01-27" />
+<meta name="date" content="2023-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -198,7 +198,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a></li>
-<li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Miscellaneous</a>
+<li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Appendix</a>
 <ul>
 <li class="chapter" data-level="7.1" data-path="misc.html"><a href="misc.html#posit-cloud旧rstudio-cloudでのgibasaの使い方"><i class="fa fa-check"></i><b>7.1</b> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
 <ul>
@@ -227,104 +227,105 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="sessioninfo" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">Chapter 6</span> セッション情報<a href="sessioninfo.html#sessioninfo" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="sessioninfo.html#cb69-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
-<pre><code>## ─ Session info ──────────────────────────────────────────────────────────────────────────────
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="sessioninfo.html#cb64-1" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span></code></pre></div>
+<pre><code>## ─ Session info ────────────────────────────────────────────────────────────────────────────────
 ##  setting  value
 ##  version  R version 4.2.2 Patched (2022-11-10 r83330)
-##  os       Ubuntu 22.04.1 LTS
+##  os       Ubuntu 22.04.2 LTS
 ##  system   x86_64, linux-gnu
 ##  ui       RStudio
 ##  language (EN)
 ##  collate  ja_JP.UTF-8
 ##  ctype    ja_JP.UTF-8
 ##  tz       Asia/Tokyo
-##  date     2023-01-27
+##  date     2023-02-19
 ##  rstudio  2022.12.0+353 Elsbeth Geranium (server)
 ##  pandoc   2.19.2 @ /usr/lib/rstudio-server/bin/quarto/bin/tools/ (via rmarkdown)
 ## 
-## ─ Packages ──────────────────────────────────────────────────────────────────────────────────
-##  package      * version date (UTC) lib source
-##  assertthat     0.2.1   2019-03-21 [3] CRAN (R 4.0.1)
-##  audubon        0.4.0   2022-12-31 [1] https://paithiov909.r-universe.dev (R 4.2.2)
-##  bit            4.0.5   2022-11-15 [3] RSPM (R 4.2.0)
-##  bit64          4.0.5   2020-08-30 [3] RSPM (R 4.2.0)
-##  bookdown       0.32    2023-01-17 [1] RSPM (R 4.2.0)
-##  bslib          0.4.2   2022-12-16 [3] RSPM (R 4.2.0)
-##  cachem         1.0.6   2021-08-19 [3] RSPM (R 4.2.0)
-##  cli            3.6.0   2023-01-09 [3] RSPM (R 4.2.0)
-##  crayon         1.5.2   2022-09-29 [3] RSPM (R 4.2.0)
-##  crosstalk      1.2.0   2021-11-04 [3] CRAN (R 4.1.2)
-##  curl           5.0.0   2023-01-12 [3] RSPM (R 4.2.0)
-##  data.table     1.14.6  2022-11-16 [3] RSPM (R 4.2.0)
-##  DBI            1.1.3   2022-06-18 [3] RSPM (R 4.2.0)
-##  digest         0.6.31  2022-12-11 [3] RSPM (R 4.2.0)
-##  dplyr        * 1.0.10  2022-09-01 [3] RSPM (R 4.2.0)
-##  dtplyr         1.2.2   2022-08-20 [1] RSPM (R 4.2.0)
-##  ellipsis       0.3.2   2021-04-29 [3] CRAN (R 4.1.1)
-##  evaluate       0.20    2023-01-17 [3] RSPM (R 4.2.0)
-##  fansi          1.0.4   2023-01-22 [3] RSPM (R 4.2.0)
-##  fastmap        1.1.0   2021-01-25 [3] RSPM (R 4.2.0)
-##  fastmatch      1.1-3   2021-07-23 [3] RSPM (R 4.2.0)
-##  forcats        0.5.2   2022-08-19 [1] RSPM (R 4.2.0)
-##  generics       0.1.3   2022-07-05 [3] RSPM (R 4.2.0)
-##  gibasa         0.7.1   2023-01-20 [1] https://paithiov909.r-universe.dev (R 4.2.2)
-##  glue           1.6.2   2022-02-24 [3] RSPM (R 4.2.0)
-##  hms            1.1.2   2022-08-19 [3] RSPM (R 4.2.0)
-##  htmltools      0.5.4   2022-12-07 [3] RSPM (R 4.2.0)
-##  htmlwidgets    1.6.1   2023-01-07 [3] RSPM (R 4.2.0)
-##  httpgd         1.3.0   2022-02-02 [3] RSPM (R 4.2.0)
-##  janeaustenr    1.0.0   2022-08-26 [1] RSPM (R 4.2.0)
-##  jquerylib      0.1.4   2021-04-26 [3] CRAN (R 4.1.2)
-##  jsonlite       1.8.4   2022-12-06 [3] RSPM (R 4.2.0)
-##  knitr          1.41    2022-11-18 [3] RSPM (R 4.2.0)
-##  later          1.3.0   2021-08-18 [3] CRAN (R 4.1.1)
-##  lattice        0.20-45 2021-09-22 [4] CRAN (R 4.2.0)
-##  lifecycle      1.0.3   2022-10-07 [3] RSPM (R 4.2.0)
-##  magrittr       2.0.3   2022-03-30 [3] RSPM (R 4.2.0)
-##  Matrix         1.5-3   2022-11-11 [3] RSPM (R 4.2.0)
-##  memoise        2.0.1   2021-11-26 [3] RSPM (R 4.2.0)
-##  pillar         1.8.1   2022-08-19 [3] RSPM (R 4.2.0)
-##  pkgconfig      2.0.3   2019-09-22 [3] CRAN (R 4.0.1)
-##  purrr          1.0.1   2023-01-10 [3] RSPM (R 4.2.0)
-##  quanteda       3.2.4   2022-12-08 [1] RSPM (R 4.2.0)
-##  R6             2.5.1   2021-08-19 [3] RSPM (R 4.2.0)
-##  Rcpp           1.0.10  2023-01-22 [3] RSPM (R 4.2.0)
-##  RcppParallel   5.1.6   2023-01-09 [1] RSPM (R 4.2.0)
-##  reactable      0.4.3   2023-01-07 [1] RSPM (R 4.2.0)
-##  reactR         0.4.4   2021-02-22 [1] RSPM (R 4.2.0)
-##  readr          2.1.3   2022-10-01 [1] RSPM (R 4.2.0)
-##  rlang          1.0.6   2022-09-24 [3] RSPM (R 4.2.0)
-##  rmarkdown      2.20    2023-01-19 [3] RSPM (R 4.2.0)
-##  rstudioapi     0.14    2022-08-22 [3] RSPM (R 4.2.0)
-##  sass           0.4.5   2023-01-24 [3] RSPM (R 4.2.0)
-##  sessioninfo    1.2.2   2021-12-06 [1] RSPM (R 4.2.0)
-##  SnowballC      0.7.0   2020-04-01 [1] RSPM (R 4.2.0)
-##  stopwords      2.3     2021-10-28 [1] RSPM (R 4.2.0)
-##  stringi        1.7.12  2023-01-11 [3] RSPM (R 4.2.0)
-##  stringr        1.5.0   2022-12-02 [3] RSPM (R 4.2.0)
-##  systemfonts    1.0.4   2022-02-11 [3] RSPM (R 4.2.0)
-##  tibble         3.1.8   2022-07-22 [3] RSPM (R 4.2.0)
-##  tidylo         0.2.0   2022-03-22 [1] RSPM (R 4.2.0)
-##  tidyr          1.3.0   2023-01-24 [3] RSPM (R 4.2.0)
-##  tidyselect     1.2.0   2022-10-10 [3] RSPM (R 4.2.0)
-##  tidytext       0.4.1   2023-01-07 [1] RSPM (R 4.2.0)
-##  tokenizers     0.3.0   2022-12-22 [1] RSPM (R 4.2.0)
-##  tzdb           0.3.0   2022-03-28 [3] RSPM (R 4.2.0)
-##  udpipe         0.8.11  2023-01-06 [1] CRAN (R 4.2.2)
-##  utf8           1.2.2   2021-07-24 [3] RSPM (R 4.2.0)
-##  V8             4.2.2   2022-11-03 [3] RSPM (R 4.2.0)
-##  vctrs          0.5.2   2023-01-23 [3] RSPM (R 4.2.0)
-##  vroom          1.6.1   2023-01-22 [1] RSPM (R 4.2.0)
-##  withr          2.5.0   2022-03-03 [3] RSPM (R 4.2.0)
-##  xfun           0.36    2022-12-21 [3] RSPM (R 4.2.0)
-##  yaml           2.3.7   2023-01-23 [3] RSPM (R 4.2.0)
+## ─ Packages ────────────────────────────────────────────────────────────────────────────────────
+##  package           * version date (UTC) lib source
+##  audubon             0.4.1   2023-02-18 [1] https://paithiov909.r-universe.dev (R 4.2.2)
+##  bit                 4.0.5   2022-11-15 [3] RSPM (R 4.2.0)
+##  bit64               4.0.5   2020-08-30 [3] RSPM (R 4.2.0)
+##  bookdown            0.32    2023-01-17 [1] RSPM (R 4.2.0)
+##  bslib               0.4.2   2022-12-16 [3] RSPM (R 4.2.0)
+##  cachem              1.0.6   2021-08-19 [3] RSPM (R 4.2.0)
+##  cli                 3.6.0   2023-01-09 [3] RSPM (R 4.2.0)
+##  crayon              1.5.2   2022-09-29 [3] RSPM (R 4.2.0)
+##  crosstalk           1.2.0   2021-11-04 [3] CRAN (R 4.1.2)
+##  curl                5.0.0   2023-01-12 [3] RSPM (R 4.2.0)
+##  data.table          1.14.6  2022-11-16 [3] RSPM (R 4.2.0)
+##  digest              0.6.31  2022-12-11 [3] RSPM (R 4.2.0)
+##  dplyr             * 1.1.0   2023-01-29 [3] RSPM (R 4.2.0)
+##  dtplyr              1.2.2   2022-08-20 [1] RSPM (R 4.2.0)
+##  ellipsis            0.3.2   2021-04-29 [3] CRAN (R 4.1.1)
+##  evaluate            0.20    2023-01-17 [3] RSPM (R 4.2.0)
+##  fansi               1.0.4   2023-01-22 [3] RSPM (R 4.2.0)
+##  fastmap             1.1.0   2021-01-25 [3] RSPM (R 4.2.0)
+##  fastmatch           1.1-3   2021-07-23 [3] RSPM (R 4.2.0)
+##  forcats             1.0.0   2023-01-29 [1] RSPM (R 4.2.0)
+##  generics            0.1.3   2022-07-05 [3] RSPM (R 4.2.0)
+##  gibasa              0.7.2   2023-02-18 [1] https://paithiov909.r-universe.dev (R 4.2.2)
+##  glue                1.6.2   2022-02-24 [3] RSPM (R 4.2.0)
+##  hms                 1.1.2   2022-08-19 [3] RSPM (R 4.2.0)
+##  htmltools           0.5.4   2022-12-07 [3] RSPM (R 4.2.0)
+##  htmlwidgets         1.6.1   2023-01-07 [3] RSPM (R 4.2.0)
+##  httpgd              1.3.1   2023-01-30 [3] RSPM (R 4.2.0)
+##  janeaustenr         1.0.0   2022-08-26 [1] RSPM (R 4.2.0)
+##  jquerylib           0.1.4   2021-04-26 [3] CRAN (R 4.1.2)
+##  jsonlite            1.8.4   2022-12-06 [3] RSPM (R 4.2.0)
+##  knitr               1.42    2023-01-25 [3] RSPM (R 4.2.0)
+##  later               1.3.0   2021-08-18 [3] CRAN (R 4.1.1)
+##  lattice             0.20-45 2021-09-22 [4] CRAN (R 4.2.0)
+##  lifecycle           1.0.3   2022-10-07 [3] RSPM (R 4.2.0)
+##  magrittr            2.0.3   2022-03-30 [3] RSPM (R 4.2.0)
+##  Matrix              1.5-3   2022-11-11 [3] RSPM (R 4.2.0)
+##  MatrixGenerics      1.11.0  2023-01-26 [1] https://paithiov909.r-universe.dev (R 4.2.2)
+##  matrixStats         0.63.0  2022-11-18 [1] RSPM (R 4.2.0)
+##  memoise             2.0.1   2021-11-26 [3] RSPM (R 4.2.0)
+##  pillar              1.8.1   2022-08-19 [3] RSPM (R 4.2.0)
+##  pkgconfig           2.0.3   2019-09-22 [3] CRAN (R 4.0.1)
+##  purrr               1.0.1   2023-01-10 [3] RSPM (R 4.2.0)
+##  quanteda            3.2.4   2022-12-08 [1] RSPM (R 4.2.0)
+##  R6                  2.5.1   2021-08-19 [3] RSPM (R 4.2.0)
+##  Rcpp                1.0.10  2023-01-22 [3] RSPM (R 4.2.0)
+##  RcppParallel        5.1.6   2023-01-09 [1] RSPM (R 4.2.0)
+##  reactable           0.4.3   2023-01-07 [1] RSPM (R 4.2.0)
+##  reactR              0.4.4   2021-02-22 [1] RSPM (R 4.2.0)
+##  readr               2.1.4   2023-02-10 [1] CRAN (R 4.2.2)
+##  rlang               1.0.6   2022-09-24 [3] RSPM (R 4.2.0)
+##  rmarkdown           2.20    2023-01-19 [3] RSPM (R 4.2.0)
+##  rstudioapi          0.14    2022-08-22 [3] RSPM (R 4.2.0)
+##  sass                0.4.5   2023-01-24 [3] RSPM (R 4.2.0)
+##  sessioninfo         1.2.2   2021-12-06 [1] RSPM (R 4.2.0)
+##  SnowballC           0.7.0   2020-04-01 [1] RSPM (R 4.2.0)
+##  sparseMatrixStats   1.11.1  2023-01-21 [1] https://const-ae.r-universe.dev (R 4.2.2)
+##  stopwords           2.3     2021-10-28 [1] RSPM (R 4.2.0)
+##  stringi             1.7.12  2023-01-11 [3] RSPM (R 4.2.0)
+##  stringr             1.5.0   2022-12-02 [3] RSPM (R 4.2.0)
+##  systemfonts         1.0.4   2022-02-11 [3] RSPM (R 4.2.0)
+##  tibble              3.1.8   2022-07-22 [3] RSPM (R 4.2.0)
+##  tidylo              0.2.0   2022-03-22 [1] RSPM (R 4.2.0)
+##  tidyr               1.3.0   2023-01-24 [3] RSPM (R 4.2.0)
+##  tidyselect          1.2.0   2022-10-10 [3] RSPM (R 4.2.0)
+##  tidytext            0.4.1   2023-01-07 [1] RSPM (R 4.2.0)
+##  tokenizers          0.3.0   2022-12-22 [1] RSPM (R 4.2.0)
+##  tzdb                0.3.0   2022-03-28 [3] RSPM (R 4.2.0)
+##  udpipe              0.8.11  2023-01-06 [1] CRAN (R 4.2.2)
+##  utf8                1.2.3   2023-01-31 [3] RSPM (R 4.2.0)
+##  V8                  4.2.2   2022-11-03 [3] RSPM (R 4.2.0)
+##  vctrs               0.5.2   2023-01-23 [3] RSPM (R 4.2.0)
+##  vroom               1.6.1   2023-01-22 [1] RSPM (R 4.2.0)
+##  withr               2.5.0   2022-03-03 [3] RSPM (R 4.2.0)
+##  xfun                0.37    2023-01-31 [3] RSPM (R 4.2.0)
+##  yaml                2.3.7   2023-01-23 [3] RSPM (R 4.2.0)
 ## 
 ##  [1] /home/paithiov909/R/x86_64-pc-linux-gnu-library/4.2
 ##  [2] /usr/local/lib/R/site-library
 ##  [3] /usr/lib/R/site-library
 ##  [4] /usr/lib/R/library
 ## 
-## ─────────────────────────────────────────────────────────────────────────────────────────────</code></pre>
+## ───────────────────────────────────────────────────────────────────────────────────────────────</code></pre>
 
 </div>
             </section>

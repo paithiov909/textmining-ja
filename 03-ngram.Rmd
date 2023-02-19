@@ -12,10 +12,8 @@ dat_ngram <- dat |>
   dplyr::mutate(
     token = dplyr::if_else(is.na(Original), token, Original)
   ) |>
-  dplyr::group_by(doc_id) |>
-  dplyr::summarise(token = bigram(token, sep = "-"), .groups = "keep") |>
-  dplyr::count(token) |>
-  dplyr::ungroup()
+  dplyr::reframe(token = bigram(token, sep = "-"), .by = doc_id) |>
+  dplyr::count(doc_id, token)
 
 str(dat_ngram)
 ```

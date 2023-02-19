@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-01-27" />
+<meta name="date" content="2023-02-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -198,7 +198,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a></li>
-<li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Miscellaneous</a>
+<li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Appendix</a>
 <ul>
 <li class="chapter" data-level="7.1" data-path="misc.html"><a href="misc.html#posit-cloud旧rstudio-cloudでのgibasaの使い方"><i class="fa fa-check"></i><b>7.1</b> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
 <ul>
@@ -278,7 +278,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>前節で見たように、<code>tokenizers::tokenize_words</code>やこれを利用している<code>tidytext::unnest_tokens</code>は、日本語のテキストであっても機械的にトークンのかたちに整形する（分かち書きする）ことができます。</p>
 <p>tokenizersパッケージの分かち書きは、内部的には、ICUの<a href="https://unicode-org.github.io/icu/userguide/boundaryanalysis/">Boundary Analysis</a>によるものです。この単語境界判定は、たとえば新聞記事のような、比較的整った文体の文章ではおおむね期待通り分かち書きがおこなわれ、また、日本語と英語などが混ざっている文章であってもとくに気にすることなく、高速に分かち書きできるという強みがあります。</p>
 <p>しかし、手元にある辞書に収録されている語の通りに分かち書きしたい場合や、品詞情報などがほしい場合には、やはりMeCabのような形態素解析器による分かち書きが便利なこともあります。</p>
-<p>gibasaは、そのようなケースにおいて、<code>tidytext::unnest_tokens</code>の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は<code>gibasa::tokenize</code>という関数として提供していて、次のように使うことができます（ここではtibbleを渡したため戻り値がtibbleになっていますが、data.frameを渡すと戻り値はdata.frameになります）。</p>
+<p>gibasaは、そのようなケースにおいて、<code>tidytext::unnest_tokens</code>の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は<code>gibasa::tokenize</code>という関数として提供していて、次のように使うことができます。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="intro.html#cb7-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> gibasa<span class="sc">::</span><span class="fu">tokenize</span>(dat_txt, text, doc_id)</span>
 <span id="cb7-2"><a href="intro.html#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat)</span></code></pre></div>
 <pre><code>## tibble [26,849 × 5] (S3: tbl_df/tbl/data.frame)
@@ -341,18 +341,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-2"><a href="intro.html#cb19-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
 <span id="cb19-3"><a href="intro.html#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-4"><a href="intro.html#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat_corpus)</span></code></pre></div>
-<pre><code>## &#39;data.frame&#39;:    899 obs. of  2 variables:
-##  $ doc_id: chr  &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ text  : chr  &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</code></pre>
+<pre><code>## tibble [899 × 2] (S3: tbl_df/tbl/data.frame)
+##  $ doc_id: chr [1:899] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ text  : chr [1:899] &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</code></pre>
 <p>このかたちのデータフレームはTIFに準拠していたため、他のパッケージと組み合わせて使うのに便利なことがあります。たとえば、このかたちから、次のように<code>tidytext::unnest_tokens</code>と組み合わせて、もう一度トークンの形式のデータフレームに戻すことができます。</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="intro.html#cb21-1" aria-hidden="true" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
 <span id="cb21-2"><a href="intro.html#cb21-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(token, text, <span class="at">token =</span> \(x) { <span class="fu">strsplit</span>(x, <span class="st">&quot; +&quot;</span>) }) <span class="sc">|&gt;</span></span>
 <span id="cb21-3"><a href="intro.html#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span></code></pre></div>
-<pre><code>##   doc_id    token
-## 1      1 ポラーノ
-## 2      1       の
-## 3      1     広場
-## 4      2     宮沢</code></pre>
+<pre><code>## # A tibble: 4 × 2
+##   doc_id token   
+##   &lt;chr&gt;  &lt;chr&gt;   
+## 1 1      ポラーノ
+## 2 1      の      
+## 3 1      広場    
+## 4 2      宮沢</code></pre>
 <p>あるいは、次のように<a href="https://quanteda.io/">quanteda</a>と組み合わせて使うこともできます。</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="intro.html#cb23-1" aria-hidden="true" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
 <span id="cb23-2"><a href="intro.html#cb23-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>

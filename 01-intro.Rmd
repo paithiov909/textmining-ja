@@ -45,7 +45,7 @@ tokenizersパッケージの分かち書きは、内部的には、ICUの[Bounda
 
 しかし、手元にある辞書に収録されている語の通りに分かち書きしたい場合や、品詞情報などがほしい場合には、やはりMeCabのような形態素解析器による分かち書きが便利なこともあります。
 
-gibasaは、そのようなケースにおいて、`tidytext::unnest_tokens`の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は`gibasa::tokenize`という関数として提供していて、次のように使うことができます（ここではtibbleを渡したため戻り値がtibbleになっていますが、data.frameを渡すと戻り値はdata.frameになります）。
+gibasaは、そのようなケースにおいて、`tidytext::unnest_tokens`の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は`gibasa::tokenize`という関数として提供していて、次のように使うことができます。
 
 ```{r}
 dat <- gibasa::tokenize(dat_txt, text, doc_id)

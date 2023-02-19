@@ -52,7 +52,7 @@ dat_count |>
 dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。
 
 ```{r}
-require(dplyr)
+suppressPackageStartupMessages(require(dplyr))
 
 dat |>
   gibasa::prettify(col_select = c("POS1", "Original")) |>

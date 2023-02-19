@@ -1,4 +1,4 @@
-# Miscellaneous {#misc}
+# Appendix {#misc}
 
 ## Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方
 
@@ -56,8 +56,8 @@ install.packages("gibasa")
 うまくいっていると、辞書を指定しない場合はIPA辞書が使われます。unidic-liteは`sys_dic`引数にフルパスを指定することで使用できます。
 
 ```r
-gibasa::gbs_tokenize("こんにちは")
+gibasa::tokenize("こんにちは")
 unidic_lite <- path.expand("~/.local/lib/python3.8/site-packages/unidic_lite/dicdir")
-gibasa::gbs_tokenize("こんにちは", sys_dic = unidic_lite) |>
+gibasa::tokenize("こんにちは", sys_dic = unidic_lite) |>
   gibasa::prettify(into = gibasa::get_dict_features("unidic26"))
 ```

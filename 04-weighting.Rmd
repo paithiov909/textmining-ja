@@ -10,7 +10,7 @@ dat_count |>
   dplyr::slice_max(tf_idf, n = 5L)
 ```
 
-tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が10であるなどの違いがあります。
+tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が`exp(1)`であるなどの違いがあります。
 
 ## gibasaによる重みづけ
 

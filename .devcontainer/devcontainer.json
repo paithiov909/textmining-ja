@@ -1,0 +1,22 @@
+{
+    "name": "${localWorkspaceFolderBasename}",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": { "VARIANT": "4" }
+    },
+    "features": {
+        "ghcr.io/rocker-org/devcontainer-features/r-rig:1": {
+            "version": "none",
+            "installRadian": true,
+            "installVscDebugger": true
+        },
+        "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
+            "packages": "bookdown,reactable,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
+            "installSystemRequirements": true
+        }
+    },
+    "remoteEnv": {
+        "MECABRC": "/usr/local/etc/mecabrc"
+    },
+    "postCreateCommand": "curl https://get.volta.sh | bash"
+}

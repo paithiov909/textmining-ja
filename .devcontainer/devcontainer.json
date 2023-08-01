@@ -11,7 +11,7 @@
             "installVscDebugger": true
         },
         "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-            "packages": "bookdown,reactable,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
+            "packages": "bookdown,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
             "installSystemRequirements": true
         }
     },

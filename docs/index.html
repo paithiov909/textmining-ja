@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.32 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
 
   <meta property="og:title" content="RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-02-19" />
+<meta name="date" content="2023-08-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,9 +56,9 @@
 <script src="libs/react-17.0.0/react.min.js"></script>
 <script src="libs/react-17.0.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
-<link href="libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
-<script src="libs/reactable-binding-0.4.3/reactable.js"></script>
+<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
+<script src="libs/reactable-binding-0.4.4/reactable.js"></script>
 
 
 <style type="text/css">
@@ -126,6 +126,10 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -197,15 +201,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2.2" data-path="collocation.html"><a href="collocation.html#t値やmi値の算出"><i class="fa fa-check"></i><b>5.2.2</b> T値やMI値の算出</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a></li>
+<li class="chapter" data-level="6" data-path="sessioninfo.html"><a href="sessioninfo.html"><i class="fa fa-check"></i><b>6</b> セッション情報</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="sessioninfo.html"><a href="sessioninfo.html#更新情報"><i class="fa fa-check"></i><b>6.1</b> 更新情報</a></li>
+<li class="chapter" data-level="6.2" data-path="sessioninfo.html"><a href="sessioninfo.html#セッション情報"><i class="fa fa-check"></i><b>6.2</b> セッション情報</a></li>
+</ul></li>
 <li class="chapter" data-level="7" data-path="misc.html"><a href="misc.html"><i class="fa fa-check"></i><b>7</b> Appendix</a>
 <ul>
 <li class="chapter" data-level="7.1" data-path="misc.html"><a href="misc.html#posit-cloud旧rstudio-cloudでのgibasaの使い方"><i class="fa fa-check"></i><b>7.1</b> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
 <ul>
 <li class="chapter" data-level="7.1.1" data-path="misc.html"><a href="misc.html#辞書ipadic-unidic-liteの配置"><i class="fa fa-check"></i><b>7.1.1</b> 辞書（ipadic, unidic-lite）の配置</a></li>
-<li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#mecabrcの配置"><i class="fa fa-check"></i><b>7.1.2</b> mecabrcの配置</a></li>
-<li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.3</b> gibasaのインストール</a></li>
-<li class="chapter" data-level="7.1.4" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.4</b> 試すには</a></li>
+<li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.2</b> gibasaのインストール</a></li>
+<li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.3</b> 試すには</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -228,7 +235,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">RとMeCabによる日本語テキストマイニングの前処理</h1>
 <p class="author"><em>Akiru Kato</em></p>
-<p class="date"><em>2023-02-19</em></p>
+<p class="date"><em>2023-08-01</em></p>
 </div>
 <div id="about" class="section level1 unnumbered hasAnchor">
 <h1>はじめに<a href="index.html#about" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -369,6 +376,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

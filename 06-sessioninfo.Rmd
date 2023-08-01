@@ -1,5 +1,13 @@
 # セッション情報 {#sessioninfo}
 
+## 更新情報
+
+- \[2023-08-02\]
+  - 「tidytextによる重みづけ」についての記述に誤りがあったため、修正しました
+  - 「Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方」の内容を更新しました
+
+## セッション情報
+
 ```{r sessioninfo}
 sessioninfo::session_info()
 ```

@@ -1,4 +1,4 @@
---- 
+---
 title: "RとMeCabによる日本語テキストマイニングの前処理"
 author: "Akiru Kato"
 date: "`r Sys.Date()`"
@@ -18,8 +18,8 @@ github-repo: paithiov909/textmining-ja
 ```{r include=FALSE}
 # automatically create a bib database for R packages
 knitr::write_bib(c(
-  .packages(), 'bookdown', 'knitr', 'rmarkdown'
-), 'packages.bib')
+  .packages(), "bookdown", "knitr", "rmarkdown"
+), "packages.bib")
 ```
 
 ## この資料について

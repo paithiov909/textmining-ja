@@ -33,9 +33,10 @@ collocation
 共起の集計
 t値やmi値の算出
 sessioninfo
+更新情報
+セッション情報
 misc
 posit-cloud旧rstudio-cloudでのgibasaの使い方
 辞書ipadic-unidic-liteの配置
-mecabrcの配置
 gibasaのインストール
 試すには

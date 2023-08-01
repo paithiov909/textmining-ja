@@ -13,30 +13,8 @@ Rによるデータ分析を手軽に試したい場合には、Posit Cloud（�
 MeCabの辞書は、Terminalタブからpipでインストールできます。ここでは、IPA辞書（[ipadic](https://pypi.org/project/ipadic/)）と[unidic-lite](https://pypi.org/project/unidic-lite/)をインストールします。
 
 ```bash
-pip install ipadic unidic-lite
-```
-
-### mecabrcの配置
-
-Rのコンソールから以下のおまじないを実行します。
-
-```r
-if (!dir.exists(path.expand("~/.local/etc"))) {
-    dir.create(path.expand("~/.local/etc"))
-}
-write(";
-; Configuration file of MeCab
-;
-; $Id: mecabrc.in,v 1.3 2006/05/29 15:36:08 taku-ku Exp $;
-;
-dicdir = /$(rcpath)/../lib/python3.8/site-packages/ipadic/dicdir
-; userdic = /home/foo/bar/user.dic
-; output-format-type = wakati
-; input-buffer-size = 8192
-; node-format = %m\n
-; bos-format = %S\n
-; eos-format = EOS\n
-", path.expand("~/.local/etc/mecabrc"))
+python3 -m pip install ipadic unidic-lite
+python3 -c "import ipadic; print('dicdir=' + ipadic.DICDIR);" > ~/.mecabrc
 ```
 
 ### gibasaのインストール
@@ -44,10 +22,6 @@ dicdir = /$(rcpath)/../lib/python3.8/site-packages/ipadic/dicdir
 [gibasa](https://github.com/paithiov909/gibasa)をインストールします。
 
 ```r
-options(repos = c(
-  paithiov909 = "https://paithiov909.r-universe.dev",
-  CRAN = "https://cloud.r-project.org"))
-Sys.setenv(MECAB_DEFAULT_RC = path.expand("~/.local/etc/mecabrc"))
 install.packages("gibasa")
 ```
 

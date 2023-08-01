@@ -237,7 +237,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="dplyrを使ってngramを数える方法" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> dplyrを使ってNgramを数える方法<a href="ngram.html#dplyrを使ってngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ngram.html#cb37-1" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> audubon<span class="sc">::</span><span class="fu">ngram_tokenizer</span>(<span class="dv">2</span>)</span>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="ngram.html#cb37-1" tabindex="-1"></a>bigram <span class="ot">&lt;-</span> gibasa<span class="sc">::</span><span class="fu">ngram_tokenizer</span>(<span class="dv">2</span>)</span>
 <span id="cb37-2"><a href="ngram.html#cb37-2" tabindex="-1"></a></span>
 <span id="cb37-3"><a href="ngram.html#cb37-3" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
 <span id="cb37-4"><a href="ngram.html#cb37-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
@@ -418,20 +418,6 @@ gitbook.start({
 });
 </script>
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    var src = "true";
-    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:")
-      if (/^https?:/.test(src))
-        src = src.replace(/^https?:/, '');
-    script.src = src;
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
 </body>
 
 </html>

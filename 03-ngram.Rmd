@@ -5,7 +5,7 @@
 dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。
 
 ```{r}
-bigram <- audubon::ngram_tokenizer(2)
+bigram <- gibasa::ngram_tokenizer(2)
 
 dat_ngram <- dat |>
   gibasa::prettify(col_select = "Original") |>

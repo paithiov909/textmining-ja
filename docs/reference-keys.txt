@@ -40,3 +40,8 @@ posit-cloud旧rstudio-cloudでのgibasaの使い方
 辞書ipadic-unidic-liteの配置
 gibasaのインストール
 試すには
+mecabの辞書をビルドするには
+必要な品詞情報を確認する
+ユーザー辞書のビルド
+生起コストを調整する
+システム辞書のビルド

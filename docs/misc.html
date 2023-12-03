@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 7 Appendix | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 7 Appendix | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-08-01" />
+<meta name="date" content="2023-12-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/core-js-2.5.3/shim.min.js"></script>
-<script src="libs/react-17.0.0/react.min.js"></script>
-<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/react-18.2.0/react.min.js"></script>
+<script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
 <script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
@@ -214,6 +214,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.2</b> gibasaのインストール</a></li>
 <li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.3</b> 試すには</a></li>
 </ul></li>
+<li class="chapter" data-level="7.2" data-path="misc.html"><a href="misc.html#mecabの辞書をビルドするには"><i class="fa fa-check"></i><b>7.2</b> MeCabの辞書をビルドするには</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="misc.html"><a href="misc.html#必要な品詞情報を確認する"><i class="fa fa-check"></i><b>7.2.1</b> 必要な品詞情報を確認する</a></li>
+<li class="chapter" data-level="7.2.2" data-path="misc.html"><a href="misc.html#ユーザー辞書のビルド"><i class="fa fa-check"></i><b>7.2.2</b> ユーザー辞書のビルド</a></li>
+<li class="chapter" data-level="7.2.3" data-path="misc.html"><a href="misc.html#生起コストを調整する"><i class="fa fa-check"></i><b>7.2.3</b> 生起コストを調整する</a></li>
+<li class="chapter" data-level="7.2.4" data-path="misc.html"><a href="misc.html#システム辞書のビルド"><i class="fa fa-check"></i><b>7.2.4</b> システム辞書のビルド</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -257,6 +264,331 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb68-2"><a href="misc.html#cb68-2" tabindex="-1"></a>unidic_lite <span class="ot">&lt;-</span> <span class="fu">path.expand</span>(<span class="st">&quot;~/.local/lib/python3.8/site-packages/unidic_lite/dicdir&quot;</span>)</span>
 <span id="cb68-3"><a href="misc.html#cb68-3" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;こんにちは&quot;</span>, <span class="at">sys_dic =</span> unidic_lite) <span class="sc">|&gt;</span></span>
 <span id="cb68-4"><a href="misc.html#cb68-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>))</span></code></pre></div>
+</div>
+</div>
+<div id="mecabの辞書をビルドするには" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> MeCabの辞書をビルドするには<a href="misc.html#mecabの辞書をビルドするには" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>v1.0.1から、gibasaを使ってMeCabのシステム辞書やユーザー辞書をビルドできるようになりました。以下では、gibasaを使ってMeCabの辞書をビルドする方法を紹介します。</p>
+<p>MeCabの辞書は、各行が次のようなデータからなる「ヘッダーなしCSVファイル」を用意して、それらをもとに生成します。
+<code>...</code>の部分は見出し語の品詞情報で、ビルドしたい辞書によって異なります。IPA辞書の場合、<code>品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音</code>をこの通りの順番で記述します。</p>
+<pre><code>表層形,左文脈ID,右文脈ID,コスト,...</code></pre>
+<p>左文脈IDと右文脈IDは、品詞情報が正確に書かれている場合、空にしておくと自動で補完されます。
+しかし、品詞情報を正確に書くには、おそらく当の左文脈IDと右文脈IDを含む出力を確認する必要があるため、ふつうに確認した値で埋めてしまったほうが確実です。</p>
+<p>ここでは例として、「<a href="https://www.nijisanji.jp/talents/l/mito-tsukino">月ノ美兎</a>」（ANYCOLOR社が運営する「にじさんじ」所属のVTuberの名前）という語彙を含む文をIPA辞書を使いつつ狙いどおりに解析してみましょう。</p>
+<div id="必要な品詞情報を確認する" class="section level3 hasAnchor" number="7.2.1">
+<h3><span class="header-section-number">7.2.1</span> 必要な品詞情報を確認する<a href="misc.html#必要な品詞情報を確認する" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><code>gibasa::posDebugRcpp</code>は、与えられた文字列について、MeCabの<code>-a</code>オプションに相当する解析結果（解析結果になりえるすべての形態素の組み合わせ）を出力する関数です。
+ここでの最適解（<code>is_best == "01"</code>）である結果について確認すると、「月ノ美兎」という語彙は次のように複数の形態素に分割されてしまっていることがわかります。</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="misc.html#cb70-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb70-2"><a href="misc.html#cb70-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">&quot;01&quot;</span>)</span></code></pre></div>
+<pre><code>##    doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha      beta is_best prob wcost
+## 1       1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -22144.50      01    0     0
+## 2       1     38      月          名詞,一般,*,*,*,*,月,ツキ,ツキ   00   1285   1285  -6190.50 -15954.00      01    1  8537
+## 3       1      4      ノ              記号,一般,*,*,*,*,ノ,ノ,ノ   00      5      5  -8874.75 -13269.75      01    1  4929
+## 4       1     44      美  名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ   00   1291   1291 -13974.00  -8170.50      01    1  7885
+## 5       1     38      兎      名詞,一般,*,*,*,*,兎,ウサギ,ウサギ   00   1285   1285 -18080.25  -4064.25      01    1  5290
+## 6       1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -18095.25  -4049.25      01    1  3865
+## 7       1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -22729.50    585.00      01    1  6142
+## 8       1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -23010.00    865.50      01    1  4816
+## 9       1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -24007.50   1863.00      01    1  6528
+## 10      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -22144.50      0.00      01    1     0
+##     cost
+## 1      0
+## 2   8254
+## 3  11833
+## 4  18632
+## 5  24107
+## 6  24127
+## 7  30306
+## 8  30680
+## 9  32010
+## 10 29526</code></pre>
+<p>このような語については、<a href="https://paithiov909.github.io/gibasa/articles/partial.html">こちらのビネット</a>で説明しているように、制約付き解析を使って次のように強制的に抽出することもできます。</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="misc.html#cb72-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;月ノ</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">美兎</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">は箱の中&quot;</span>, <span class="at">partial =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>##   doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha      beta is_best prob wcost
+## 1      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -19563.75      01    0     0
+## 2      1     38    月ノ                     名詞,一般,*,*,*,*,*   01   1285   1285  -6883.50 -12680.25      01    1  9461
+## 3      1     38    美兎                     名詞,一般,*,*,*,*,*   01   1285   1285 -15499.50  -4064.25      01    1 11426
+## 4      1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -15514.50  -4049.25      01    1  3865
+## 5      1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -20148.75    585.00      01    1  6142
+## 6      1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -20429.25    865.50      01    1  4816
+## 7      1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -21426.75   1863.00      01    1  6528
+## 8      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -19563.75      0.00      01    1     0
+##    cost
+## 1     0
+## 2  9178
+## 3 20666
+## 4 20686
+## 5 26865
+## 6 27239
+## 7 28569
+## 8 26085</code></pre>
+<p>一方で、IPA辞書には、たとえば「早見」のような<code>名詞,固有名詞,人名,姓,...</code>という品詞と、「沙織」のような<code>名詞,固有名詞,人名,名,...</code>という品詞があります。
+このような解析結果としてより望ましい品詞を確認するには、正しく解析させたい語（ここでは「月ノ美兎」）と同じような使われ方をする語（たとえば「早見沙織」）を実際に解析してみて、その結果を確認するとよいでしょう。</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="misc.html#cb74-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;早見沙織のラジオ番組&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb74-2"><a href="misc.html#cb74-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">&quot;01&quot;</span>)</span></code></pre></div>
+<pre><code>##   doc_id pos_id surface                                      feature stat lcAttr rcAttr     alpha      beta is_best prob
+## 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -10104.75      01    0
+## 2      1     43    早見 名詞,固有名詞,人名,姓,*,*,早見,ハヤミ,ハヤミ   00   1290   1290  -4362.75  -5742.00      01    1
+## 3      1     44    沙織 名詞,固有名詞,人名,名,*,*,沙織,サオリ,サオリ   00   1291   1291  -5452.50  -4652.25      01    1
+## 4      1     24      の                 助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368  -6658.50  -3446.25      01    1
+## 5      1     38  ラジオ       名詞,一般,*,*,*,*,ラジオ,ラジオ,ラジオ   00   1285   1285  -7886.25  -2218.50      01    1
+## 6      1     38    番組     名詞,一般,*,*,*,*,番組,バングミ,バングミ   00   1285   1285 -10534.50    429.75      01    1
+## 7      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -10104.75      0.00      01    1
+##   wcost  cost
+## 1     0     0
+## 2  7472  5817
+## 3  8462  7270
+## 4  4816  8878
+## 5  3942 10515
+## 6  3469 14046
+## 7     0 13473</code></pre>
+<p>この結果は狙いどおりのものであるため、「月ノ美兎」を正しく解析するために用意するCSVファイルは、仮に次のように作成しておくことができそうです。</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="misc.html#cb76-1" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
+<span id="cb76-2"><a href="misc.html#cb76-2" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb76-3"><a href="misc.html#cb76-3" tabindex="-1"></a>    <span class="st">&quot;月ノ,1290,1290,7472,名詞,固有名詞,人名,姓,*,*,月ノ,ツキノ,ツキノ&quot;</span>,</span>
+<span id="cb76-4"><a href="misc.html#cb76-4" tabindex="-1"></a>    <span class="st">&quot;美兎,1291,1291,8462,名詞,固有名詞,人名,名,*,*,美兎,ミト,ミト&quot;</span></span>
+<span id="cb76-5"><a href="misc.html#cb76-5" tabindex="-1"></a>  ),</span>
+<span id="cb76-6"><a href="misc.html#cb76-6" tabindex="-1"></a>  <span class="at">con =</span> (csv_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>))</span>
+<span id="cb76-7"><a href="misc.html#cb76-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="ユーザー辞書のビルド" class="section level3 hasAnchor" number="7.2.2">
+<h3><span class="header-section-number">7.2.2</span> ユーザー辞書のビルド<a href="misc.html#ユーザー辞書のビルド" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>試しに、ユーザー辞書をビルドしてみましょう。gibasaでユーザー辞書をビルドするには、<code>gibasa::build_user_dic</code>を使います。
+ユーザー辞書をビルドするにはシステム辞書が必要なため、あらかじめシステム辞書（ここではIPA辞書）が適切に配置されていることを確認しておいてください。</p>
+<p>次のようにしてユーザー辞書をビルドできます。</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="misc.html#cb77-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_user_dic</span>(</span>
+<span id="cb77-2"><a href="misc.html#cb77-2" tabindex="-1"></a>  <span class="at">dic_dir =</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()<span class="sc">$</span>file_path, <span class="at">end =</span> <span class="sc">-</span><span class="dv">8</span>),</span>
+<span id="cb77-3"><a href="misc.html#cb77-3" tabindex="-1"></a>  <span class="at">file =</span> (user_dic <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.dic&quot;</span>)),</span>
+<span id="cb77-4"><a href="misc.html#cb77-4" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
+<span id="cb77-5"><a href="misc.html#cb77-5" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
+<span id="cb77-6"><a href="misc.html#cb77-6" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## reading /tmp/RtmpaZDvpk/fileaf5930013aa4.csv ... 2
+## 
+## done!</code></pre>
+<p>なお、gibasaによる辞書のビルド時の注意点として、「<a href="https://taku910.github.io/mecab/dic.html">MeCab: 単語の追加方法</a>」で案内されている「コストの自動推定機能」はgibasaからは利用できません。
+追加したい見出し語の生起コストは空にせず、必ず適当な値で埋めるようにしてください。</p>
+<p>さて、ビルドしたユーザー辞書を使ってみましょう。</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="misc.html#cb79-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span></code></pre></div>
+<pre><code>##                                                       file_path charset lsize rsize   size type version
+## 1 /usr/local/lib/python3.10/dist-packages/ipadic/dicdir/sys.dic    utf8  1316  1316 392126    0     102
+## 2                          /tmp/RtmpaZDvpk/fileaf593d47e64f.dic    utf8  1316  1316      2    1     102</code></pre>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="misc.html#cb81-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">user_dic =</span> user_dic)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 5
+##   doc_id sentence_id token_id token feature                                     
+##   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                       
+## 1 1                1        1 月ノ  名詞,固有名詞,人名,姓,*,*,月ノ,ツキノ,ツキノ
+## 2 1                1        2 美兎  名詞,固有名詞,人名,名,*,*,美兎,ミト,ミト    
+## 3 1                1        3 は    助詞,係助詞,*,*,*,*,は,ハ,ワ                
+## 4 1                1        4 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ              
+## 5 1                1        5 の    助詞,連体化,*,*,*,*,の,ノ,ノ                
+## 6 1                1        6 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</code></pre>
+<p>狙いどおりに解析できているようです。</p>
+</div>
+<div id="生起コストを調整する" class="section level3 hasAnchor" number="7.2.3">
+<h3><span class="header-section-number">7.2.3</span> 生起コストを調整する<a href="misc.html#生起コストを調整する" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>ここまでに紹介したようなやり方で辞書を整備することで、おおむね狙いどおりの解析結果を得られるようになると思われますが、
+追加した語のかたちによっては、生起コストをより小さな値に調整しないと、一部の文において正しく切り出されない場合があるかもしれません。</p>
+<p>たとえば、<a href="https://analytics-note.xyz/programming/mecab-cost-fix/">こちらの記事</a>で紹介されているように、
+仮に<code>高等学校,1285,1285,5078,名詞,一般,*,*,*,*,高等学校,コウトウガッコウ,コートーガッコー</code>という見出し語を追加したとしても、
+与える文によっては<code>高等学校</code>が狙いどおりに切り出されません。</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="misc.html#cb83-1" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
+<span id="cb83-2"><a href="misc.html#cb83-2" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb83-3"><a href="misc.html#cb83-3" tabindex="-1"></a>    <span class="st">&quot;高等学校,1285,1285,5078,名詞,一般,*,*,*,*,高等学校,コウトウガッコウ,コートーガッコー&quot;</span></span>
+<span id="cb83-4"><a href="misc.html#cb83-4" tabindex="-1"></a>  ),</span>
+<span id="cb83-5"><a href="misc.html#cb83-5" tabindex="-1"></a>  <span class="at">con =</span> (csv_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>))</span>
+<span id="cb83-6"><a href="misc.html#cb83-6" tabindex="-1"></a>)</span>
+<span id="cb83-7"><a href="misc.html#cb83-7" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_user_dic</span>(</span>
+<span id="cb83-8"><a href="misc.html#cb83-8" tabindex="-1"></a>  <span class="at">dic_dir =</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()<span class="sc">$</span>file_path, <span class="at">end =</span> <span class="sc">-</span><span class="dv">8</span>),</span>
+<span id="cb83-9"><a href="misc.html#cb83-9" tabindex="-1"></a>  <span class="at">file =</span> (user_dic <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.dic&quot;</span>)),</span>
+<span id="cb83-10"><a href="misc.html#cb83-10" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
+<span id="cb83-11"><a href="misc.html#cb83-11" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
+<span id="cb83-12"><a href="misc.html#cb83-12" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## reading /tmp/RtmpaZDvpk/fileaf59402d6af6.csv ... 1
+## 
+## done!</code></pre>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="misc.html#cb85-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
+<span id="cb85-2"><a href="misc.html#cb85-2" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;九州高等学校ゴルフ選手権&quot;</span>,</span>
+<span id="cb85-3"><a href="misc.html#cb85-3" tabindex="-1"></a>    <span class="st">&quot;地元の高等学校に進学した&quot;</span>,</span>
+<span id="cb85-4"><a href="misc.html#cb85-4" tabindex="-1"></a>    <span class="st">&quot;帝京高等学校のエースとして活躍&quot;</span>,</span>
+<span id="cb85-5"><a href="misc.html#cb85-5" tabindex="-1"></a>    <span class="st">&quot;開成高等学校117人が現役合格&quot;</span>,</span>
+<span id="cb85-6"><a href="misc.html#cb85-6" tabindex="-1"></a>    <span class="st">&quot;マンガを高等学校の授業で使う&quot;</span>),</span>
+<span id="cb85-7"><a href="misc.html#cb85-7" tabindex="-1"></a>  <span class="at">user_dic =</span> user_dic</span>
+<span id="cb85-8"><a href="misc.html#cb85-8" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb85-9"><a href="misc.html#cb85-9" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 5 × 2
+##   doc_id text                                
+##   &lt;fct&gt;  &lt;chr&gt;                               
+## 1 1      九州 高等 学校 ゴルフ 選手権        
+## 2 2      地元 の 高等 学校 に 進学 し た     
+## 3 3      帝京 高等 学校 の エース として 活躍
+## 4 4      開成 高等 学校 117 人 が 現役 合格  
+## 5 5      マンガ を 高等 学校 の 授業 で 使う</code></pre>
+<p>この例のように、複数の既存の見出し語のほうが優先されてしまう場合には、追加する見出し語の生起コストを小さくすることによって、
+狙いどおりの解析結果を得ることができます。</p>
+<p>先ほどの記事のなかで紹介されているのと同じやり方で、適切な生起コストをgibasaを使って求めるには、たとえば次のような関数を用意します（やや複雑なのでバグがあるかもしれません）。</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="misc.html#cb87-1" tabindex="-1"></a>calc_adjusted_cost <span class="ot">&lt;-</span> \(sentences, target_word, <span class="at">sys_dic =</span> <span class="st">&quot;&quot;</span>, <span class="at">user_dic =</span> <span class="st">&quot;&quot;</span>) {</span>
+<span id="cb87-2"><a href="misc.html#cb87-2" tabindex="-1"></a>  sentences_mod <span class="ot">&lt;-</span></span>
+<span id="cb87-3"><a href="misc.html#cb87-3" tabindex="-1"></a>    stringi<span class="sc">::</span><span class="fu">stri_replace_all_regex</span>(</span>
+<span id="cb87-4"><a href="misc.html#cb87-4" tabindex="-1"></a>      sentences,</span>
+<span id="cb87-5"><a href="misc.html#cb87-5" tabindex="-1"></a>      <span class="at">pattern =</span> <span class="fu">paste0</span>(<span class="st">&quot;(?&lt;target&gt;(&quot;</span>, target_word, <span class="st">&quot;))&quot;</span>),</span>
+<span id="cb87-6"><a href="misc.html#cb87-6" tabindex="-1"></a>      <span class="at">replacement =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">${target}</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">&quot;</span>,</span>
+<span id="cb87-7"><a href="misc.html#cb87-7" tabindex="-1"></a>      <span class="at">vectorize_all =</span> <span class="cn">FALSE</span></span>
+<span id="cb87-8"><a href="misc.html#cb87-8" tabindex="-1"></a>    )</span>
+<span id="cb87-9"><a href="misc.html#cb87-9" tabindex="-1"></a>  calc_cumcost <span class="ot">&lt;-</span> \(x) {</span>
+<span id="cb87-10"><a href="misc.html#cb87-10" tabindex="-1"></a>    ret <span class="ot">&lt;-</span></span>
+<span id="cb87-11"><a href="misc.html#cb87-11" tabindex="-1"></a>      gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(x, <span class="at">sys_dic =</span> sys_dic, <span class="at">user_dic =</span> user_dic, <span class="at">partial =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-12"><a href="misc.html#cb87-12" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb87-13"><a href="misc.html#cb87-13" tabindex="-1"></a>        <span class="at">lcAttr =</span> dplyr<span class="sc">::</span><span class="fu">lead</span>(lcAttr, <span class="at">default =</span> <span class="dv">0</span>),</span>
+<span id="cb87-14"><a href="misc.html#cb87-14" tabindex="-1"></a>        <span class="at">cost =</span> purrr<span class="sc">::</span><span class="fu">map2_dbl</span>(rcAttr, lcAttr,</span>
+<span id="cb87-15"><a href="misc.html#cb87-15" tabindex="-1"></a>        <span class="sc">~</span> gibasa<span class="sc">::</span><span class="fu">get_transition_cost</span>(.x, .y, <span class="at">sys_dic =</span> sys_dic, <span class="at">user_dic =</span> user_dic)),</span>
+<span id="cb87-16"><a href="misc.html#cb87-16" tabindex="-1"></a>        <span class="at">wcost =</span> <span class="fu">cumsum</span>(wcost),</span>
+<span id="cb87-17"><a href="misc.html#cb87-17" tabindex="-1"></a>        <span class="at">cost =</span> <span class="fu">cumsum</span>(cost),</span>
+<span id="cb87-18"><a href="misc.html#cb87-18" tabindex="-1"></a>        <span class="do">## 1行目のBOS/EOS-&gt;BOS/EOS間の連接コストを足しすぎてしまうので、引く</span></span>
+<span id="cb87-19"><a href="misc.html#cb87-19" tabindex="-1"></a>        <span class="at">total_cost =</span> wcost <span class="sc">+</span> cost <span class="sc">-</span> gibasa<span class="sc">::</span><span class="fu">get_transition_cost</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">sys_dic =</span> sys_dic, <span class="at">user_dic =</span> user_dic),</span>
+<span id="cb87-20"><a href="misc.html#cb87-20" tabindex="-1"></a>        <span class="at">.by =</span> doc_id</span>
+<span id="cb87-21"><a href="misc.html#cb87-21" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb87-22"><a href="misc.html#cb87-22" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">slice_tail</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">by =</span> doc_id) <span class="sc">|&gt;</span></span>
+<span id="cb87-23"><a href="misc.html#cb87-23" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;total_cost&quot;</span>)</span>
+<span id="cb87-24"><a href="misc.html#cb87-24" tabindex="-1"></a>    ret</span>
+<span id="cb87-25"><a href="misc.html#cb87-25" tabindex="-1"></a>  }</span>
+<span id="cb87-26"><a href="misc.html#cb87-26" tabindex="-1"></a>  cost1 <span class="ot">&lt;-</span> <span class="fu">calc_cumcost</span>(sentences)</span>
+<span id="cb87-27"><a href="misc.html#cb87-27" tabindex="-1"></a>  cost2 <span class="ot">&lt;-</span> <span class="fu">calc_cumcost</span>(sentences_mod)</span>
+<span id="cb87-28"><a href="misc.html#cb87-28" tabindex="-1"></a></span>
+<span id="cb87-29"><a href="misc.html#cb87-29" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(sentences_mod, <span class="at">sys_dic =</span> sys_dic, <span class="at">user_dic =</span> user_dic, <span class="at">partial =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb87-30"><a href="misc.html#cb87-30" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(surface <span class="sc">%in%</span> target_word) <span class="sc">|&gt;</span></span>
+<span id="cb87-31"><a href="misc.html#cb87-31" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">reframe</span>(</span>
+<span id="cb87-32"><a href="misc.html#cb87-32" tabindex="-1"></a>      <span class="at">stat =</span> stat,</span>
+<span id="cb87-33"><a href="misc.html#cb87-33" tabindex="-1"></a>      <span class="at">surface =</span> surface,</span>
+<span id="cb87-34"><a href="misc.html#cb87-34" tabindex="-1"></a>      <span class="at">pos_id =</span> pos_id,</span>
+<span id="cb87-35"><a href="misc.html#cb87-35" tabindex="-1"></a>      <span class="at">feature =</span> feature,</span>
+<span id="cb87-36"><a href="misc.html#cb87-36" tabindex="-1"></a>      <span class="at">lcAttr =</span> lcAttr,</span>
+<span id="cb87-37"><a href="misc.html#cb87-37" tabindex="-1"></a>      <span class="at">rcAttr =</span> rcAttr,</span>
+<span id="cb87-38"><a href="misc.html#cb87-38" tabindex="-1"></a>      <span class="at">current_cost =</span> wcost,</span>
+<span id="cb87-39"><a href="misc.html#cb87-39" tabindex="-1"></a>      <span class="at">adjusted_cost =</span> wcost <span class="sc">+</span> (cost1[doc_id] <span class="sc">-</span> cost2[doc_id] <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb87-40"><a href="misc.html#cb87-40" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb87-41"><a href="misc.html#cb87-41" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">slice_min</span>(adjusted_cost, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">by =</span> surface)</span>
+<span id="cb87-42"><a href="misc.html#cb87-42" tabindex="-1"></a>}</span></code></pre></div>
+<p>この関数を使って、実際に適切な生起コストを計算してみます。</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="misc.html#cb88-1" tabindex="-1"></a>adjusted_cost <span class="ot">&lt;-</span></span>
+<span id="cb88-2"><a href="misc.html#cb88-2" tabindex="-1"></a>  <span class="fu">calc_adjusted_cost</span>(</span>
+<span id="cb88-3"><a href="misc.html#cb88-3" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">&quot;九州高等学校ゴルフ選手権&quot;</span>,</span>
+<span id="cb88-4"><a href="misc.html#cb88-4" tabindex="-1"></a>      <span class="st">&quot;地元の高等学校に進学した&quot;</span>,</span>
+<span id="cb88-5"><a href="misc.html#cb88-5" tabindex="-1"></a>      <span class="st">&quot;帝京高等学校のエースとして活躍&quot;</span>,</span>
+<span id="cb88-6"><a href="misc.html#cb88-6" tabindex="-1"></a>      <span class="st">&quot;開成高等学校117人が現役合格&quot;</span>,</span>
+<span id="cb88-7"><a href="misc.html#cb88-7" tabindex="-1"></a>      <span class="st">&quot;マンガを高等学校の授業で使う&quot;</span>),</span>
+<span id="cb88-8"><a href="misc.html#cb88-8" tabindex="-1"></a>    <span class="at">target_word =</span> <span class="st">&quot;高等学校&quot;</span>,</span>
+<span id="cb88-9"><a href="misc.html#cb88-9" tabindex="-1"></a>    <span class="at">user_dic =</span> user_dic</span>
+<span id="cb88-10"><a href="misc.html#cb88-10" tabindex="-1"></a>  )</span></code></pre></div>
+<p>この生起コストを使って改めてユーザー辞書をビルドし、結果を確認してみましょう。</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="misc.html#cb89-1" tabindex="-1"></a>adjusted_cost <span class="sc">|&gt;</span></span>
+<span id="cb89-2"><a href="misc.html#cb89-2" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unite</span>(</span>
+<span id="cb89-3"><a href="misc.html#cb89-3" tabindex="-1"></a>    csv_body,</span>
+<span id="cb89-4"><a href="misc.html#cb89-4" tabindex="-1"></a>    surface, lcAttr, rcAttr, adjusted_cost, feature,</span>
+<span id="cb89-5"><a href="misc.html#cb89-5" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;,&quot;</span></span>
+<span id="cb89-6"><a href="misc.html#cb89-6" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb89-7"><a href="misc.html#cb89-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(<span class="st">&quot;csv_body&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb89-8"><a href="misc.html#cb89-8" tabindex="-1"></a>  <span class="fu">writeLines</span>(<span class="at">con =</span> (csv_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)))</span>
+<span id="cb89-9"><a href="misc.html#cb89-9" tabindex="-1"></a></span>
+<span id="cb89-10"><a href="misc.html#cb89-10" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_user_dic</span>(</span>
+<span id="cb89-11"><a href="misc.html#cb89-11" tabindex="-1"></a>  <span class="at">dic_dir =</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()<span class="sc">$</span>file_path, <span class="at">end =</span> <span class="sc">-</span><span class="dv">8</span>),</span>
+<span id="cb89-12"><a href="misc.html#cb89-12" tabindex="-1"></a>  <span class="at">file =</span> (user_dic <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.dic&quot;</span>)),</span>
+<span id="cb89-13"><a href="misc.html#cb89-13" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
+<span id="cb89-14"><a href="misc.html#cb89-14" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
+<span id="cb89-15"><a href="misc.html#cb89-15" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## reading /tmp/RtmpaZDvpk/fileaf592c837e0d.csv ... 1
+## 
+## done!</code></pre>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="misc.html#cb91-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
+<span id="cb91-2"><a href="misc.html#cb91-2" tabindex="-1"></a>  <span class="fu">c</span>(<span class="st">&quot;九州高等学校ゴルフ選手権&quot;</span>,</span>
+<span id="cb91-3"><a href="misc.html#cb91-3" tabindex="-1"></a>    <span class="st">&quot;地元の高等学校に進学した&quot;</span>,</span>
+<span id="cb91-4"><a href="misc.html#cb91-4" tabindex="-1"></a>    <span class="st">&quot;帝京高等学校のエースとして活躍&quot;</span>,</span>
+<span id="cb91-5"><a href="misc.html#cb91-5" tabindex="-1"></a>    <span class="st">&quot;開成高等学校117人が現役合格&quot;</span>,</span>
+<span id="cb91-6"><a href="misc.html#cb91-6" tabindex="-1"></a>    <span class="st">&quot;マンガを高等学校の授業で使う&quot;</span>),</span>
+<span id="cb91-7"><a href="misc.html#cb91-7" tabindex="-1"></a>  <span class="at">user_dic =</span> user_dic</span>
+<span id="cb91-8"><a href="misc.html#cb91-8" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb91-9"><a href="misc.html#cb91-9" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span></code></pre></div>
+<pre><code>## # A tibble: 5 × 2
+##   doc_id text                               
+##   &lt;fct&gt;  &lt;chr&gt;                              
+## 1 1      九州 高等学校 ゴルフ 選手権        
+## 2 2      地元 の 高等学校 に 進学 し た     
+## 3 3      帝京 高等学校 の エース として 活躍
+## 4 4      開成 高等学校 117 人 が 現役 合格  
+## 5 5      マンガ を 高等学校 の 授業 で 使う</code></pre>
+<p>今度はうまくいっていそうです。</p>
+</div>
+<div id="システム辞書のビルド" class="section level3 hasAnchor" number="7.2.4">
+<h3><span class="header-section-number">7.2.4</span> システム辞書のビルド<a href="misc.html#システム辞書のビルド" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>ユーザー辞書ではなく、システム辞書をビルドすることもできます。
+ただ、ふつうに入手できるIPA辞書のソースの文字コードは<code>EUC-JP</code>であり、UTF-8のCSVファイルと混在させることができないため、扱いに注意が必要です。</p>
+<p>また、UniDicの2.3.xについては、同梱されているファイルに問題があるようで、そのままではビルドできないという話があるようです（<a href="https://ja.stackoverflow.com/questions/74178/">参考</a>）。
+UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリが必要なことからも、とくに事情がないかぎりはビルド済みのバイナリ辞書をダウンロードしてきて使ったほうがよいでしょう。</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="misc.html#cb93-1" tabindex="-1"></a>ipadic_temp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.tar.gz&quot;</span>)</span>
+<span id="cb93-2"><a href="misc.html#cb93-2" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;https://github.com/shogo82148/mecab/releases/download/v0.996.9/mecab-ipadic-2.7.0-20070801.tar.gz&quot;</span>, <span class="at">destfile =</span> ipadic_temp)</span>
+<span id="cb93-3"><a href="misc.html#cb93-3" tabindex="-1"></a><span class="fu">untar</span>(ipadic_temp, <span class="at">exdir =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb93-4"><a href="misc.html#cb93-4" tabindex="-1"></a></span>
+<span id="cb93-5"><a href="misc.html#cb93-5" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_sys_dic</span>(</span>
+<span id="cb93-6"><a href="misc.html#cb93-6" tabindex="-1"></a>  <span class="at">dic_dir =</span> <span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;mecab-ipadic-2.7.0-20070801&quot;</span>),</span>
+<span id="cb93-7"><a href="misc.html#cb93-7" tabindex="-1"></a>  <span class="at">out_dir =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb93-8"><a href="misc.html#cb93-8" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;euc-jp&quot;</span></span>
+<span id="cb93-9"><a href="misc.html#cb93-9" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/unk.def ... 40
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Others.csv ... 2
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795
+## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316
+## 
+## done!</code></pre>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="misc.html#cb95-1" tabindex="-1"></a><span class="co"># `dicrc`ファイルをビルドした辞書のあるディレクトリにコピーする</span></span>
+<span id="cb95-2"><a href="misc.html#cb95-2" tabindex="-1"></a><span class="fu">file.copy</span>(<span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;mecab-ipadic-2.7.0-20070801/dicrc&quot;</span>), <span class="fu">tempdir</span>())</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="misc.html#cb97-1" tabindex="-1"></a><span class="co"># ここでは`mecabrc`ファイルが適切な位置に配置されていないという想定で、</span></span>
+<span id="cb97-2"><a href="misc.html#cb97-2" tabindex="-1"></a><span class="co"># `mecabrc`ファイルを偽装している。</span></span>
+<span id="cb97-3"><a href="misc.html#cb97-3" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">with_envvar</span>(</span>
+<span id="cb97-4"><a href="misc.html#cb97-4" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb97-5"><a href="misc.html#cb97-5" tabindex="-1"></a>    <span class="st">&quot;MECABRC&quot;</span> <span class="ot">=</span> <span class="cf">if</span> (.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">&quot;windows&quot;</span>) {</span>
+<span id="cb97-6"><a href="misc.html#cb97-6" tabindex="-1"></a>      <span class="st">&quot;nul&quot;</span></span>
+<span id="cb97-7"><a href="misc.html#cb97-7" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb97-8"><a href="misc.html#cb97-8" tabindex="-1"></a>      <span class="st">&quot;/dev/null&quot;</span></span>
+<span id="cb97-9"><a href="misc.html#cb97-9" tabindex="-1"></a>    }</span>
+<span id="cb97-10"><a href="misc.html#cb97-10" tabindex="-1"></a>  ),</span>
+<span id="cb97-11"><a href="misc.html#cb97-11" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">sys_dic =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb97-12"><a href="misc.html#cb97-12" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 8 × 5
+##   doc_id sentence_id token_id token feature                                
+##   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                  
+## 1 1                1        1 月    名詞,一般,*,*,*,*,月,ツキ,ツキ         
+## 2 1                1        2 ノ    記号,一般,*,*,*,*,ノ,ノ,ノ             
+## 3 1                1        3 美    名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ 
+## 4 1                1        4 兎    名詞,一般,*,*,*,*,兎,ウサギ,ウサギ     
+## 5 1                1        5 は    助詞,係助詞,*,*,*,*,は,ハ,ワ           
+## 6 1                1        6 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ         
+## 7 1                1        7 の    助詞,連体化,*,*,*,*,の,ノ,ノ           
+## 8 1                1        8 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</code></pre>
 
 </div>
 </div>

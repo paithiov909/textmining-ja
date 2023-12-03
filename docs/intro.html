@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 1 gibasaの基本的な使い方 | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 1 gibasaの基本的な使い方 | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-08-01" />
+<meta name="date" content="2023-12-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/core-js-2.5.3/shim.min.js"></script>
-<script src="libs/react-17.0.0/react.min.js"></script>
-<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/react-18.2.0/react.min.js"></script>
+<script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
 <script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
@@ -214,6 +214,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.2</b> gibasaのインストール</a></li>
 <li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.3</b> 試すには</a></li>
 </ul></li>
+<li class="chapter" data-level="7.2" data-path="misc.html"><a href="misc.html#mecabの辞書をビルドするには"><i class="fa fa-check"></i><b>7.2</b> MeCabの辞書をビルドするには</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="misc.html"><a href="misc.html#必要な品詞情報を確認する"><i class="fa fa-check"></i><b>7.2.1</b> 必要な品詞情報を確認する</a></li>
+<li class="chapter" data-level="7.2.2" data-path="misc.html"><a href="misc.html#ユーザー辞書のビルド"><i class="fa fa-check"></i><b>7.2.2</b> ユーザー辞書のビルド</a></li>
+<li class="chapter" data-level="7.2.3" data-path="misc.html"><a href="misc.html#生起コストを調整する"><i class="fa fa-check"></i><b>7.2.3</b> 生起コストを調整する</a></li>
+<li class="chapter" data-level="7.2.4" data-path="misc.html"><a href="misc.html#システム辞書のビルド"><i class="fa fa-check"></i><b>7.2.4</b> システム辞書のビルド</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -273,9 +280,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [1] &quot;宮沢&quot; &quot;賢治&quot;
 ## 
 ## $`3`
-##  [1] &quot;前&quot;     &quot;十七&quot;   &quot;等&quot;     &quot;官&quot;    
-##  [5] &quot;レ&quot;     &quot;オー&quot;   &quot;ノ&quot;     &quot;キュー&quot;
-##  [9] &quot;スト&quot;   &quot;誌&quot;    
+##  [1] &quot;前&quot;     &quot;十七&quot;   &quot;等&quot;     &quot;官&quot;     &quot;レ&quot;     &quot;オー&quot;   &quot;ノ&quot;     &quot;キュー&quot; &quot;スト&quot;   &quot;誌&quot;    
 ## 
 ## $`4`
 ## [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</code></pre>
@@ -302,21 +307,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><code>gibasa::tokenize</code>の戻り値のデータフレームは、それぞれのトークンについて、MeCabから返される素性情報のすべてを含んでいるfeatureという列を持っています。</p>
 <p>MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（2.1.2, aka <a href="https://pypi.org/project/unidic-lite/">unidic-lite</a>）の素性は、次のような情報を持っています。</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="intro.html#cb9-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;ipa&quot;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;POS1&quot;        &quot;POS2&quot;       
-## [3] &quot;POS3&quot;        &quot;POS4&quot;       
-## [5] &quot;X5StageUse1&quot; &quot;X5StageUse2&quot;
-## [7] &quot;Original&quot;    &quot;Yomi1&quot;      
+<pre><code>## [1] &quot;POS1&quot;        &quot;POS2&quot;        &quot;POS3&quot;        &quot;POS4&quot;        &quot;X5StageUse1&quot; &quot;X5StageUse2&quot; &quot;Original&quot;    &quot;Yomi1&quot;      
 ## [9] &quot;Yomi2&quot;</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="intro.html#cb11-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>)</span></code></pre></div>
-<pre><code>##  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;     
-##  [4] &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;    
-##  [7] &quot;lForm&quot;     &quot;lemma&quot;     &quot;orth&quot;     
-## [10] &quot;pron&quot;      &quot;orthBase&quot;  &quot;pronBase&quot; 
-## [13] &quot;goshu&quot;     &quot;iType&quot;     &quot;iForm&quot;    
-## [16] &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;     
-## [19] &quot;kanaBase&quot;  &quot;form&quot;      &quot;formBase&quot; 
-## [22] &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;    
-## [25] &quot;aConType&quot;  &quot;aModeType&quot;</code></pre>
+<pre><code>##  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;      &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;     &quot;lForm&quot;     &quot;lemma&quot;     &quot;orth&quot;      &quot;pron&quot;     
+## [11] &quot;orthBase&quot;  &quot;pronBase&quot;  &quot;goshu&quot;     &quot;iType&quot;     &quot;iForm&quot;     &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;      &quot;kanaBase&quot;  &quot;form&quot;     
+## [21] &quot;formBase&quot;  &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;     &quot;aConType&quot;  &quot;aModeType&quot;</code></pre>
 <p>こうした素性情報をデータフレームの列にパースするには、<code>gibasa::prettify</code>という関数を利用できます。</p>
 <p>デフォルトではすべての素性についてパースしますが、<code>col_select</code>引数に残したい列名を指定することにより、特定の素性情報だけをパースすることもできます。このかたちのデータフレームは、解析するテキストの文章量によっては、数十万から数百万くらいの行からなることもよくあります。そのような規模のデータフレームについて、いちいちすべての素性をパースしていると、それだけでメモリを余計に消費してしまいます。メモリの消費を抑えるためにも、なるべく後で必要な素性だけをこまめに指定することをおすすめします。</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="intro.html#cb13-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat))</span></code></pre></div>
@@ -384,28 +380,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [1] &quot;宮沢&quot; &quot;賢治&quot;
 ## 
 ## 3 :
-## [1] &quot;前&quot;                  
-## [2] &quot;十&quot;                  
-## [3] &quot;七&quot;                  
-## [4] &quot;等&quot;                  
-## [5] &quot;官&quot;                  
-## [6] &quot;レオーノ・キュースト&quot;
-## [7] &quot;誌&quot;                  
+## [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  
+## [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  
 ## 
 ## 4 :
 ## [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;
 ## 
 ## 5 :
-##  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot;
-##  [4] &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot;
-##  [7] &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;    
-## [10] &quot;局&quot;       &quot;に&quot;       &quot;勤め&quot;    
+##  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;       &quot;に&quot;      
+## [12] &quot;勤め&quot;    
 ## [ ... and 5 more ]
 ## 
 ## 6 :
-##  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot;
-##  [6] &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot;
-## [11] &quot;でも&quot; &quot;、&quot;  
+##  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  
 ## [ ... and 219 more ]
 ## 
 ## [ reached max_ndoc ... 893 more documents ]</code></pre>

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-08-01" />
+<meta name="date" content="2023-12-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/core-js-2.5.3/shim.min.js"></script>
-<script src="libs/react-17.0.0/react.min.js"></script>
-<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/react-18.2.0/react.min.js"></script>
+<script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
 <script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
@@ -214,6 +214,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.2</b> gibasaのインストール</a></li>
 <li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.3</b> 試すには</a></li>
 </ul></li>
+<li class="chapter" data-level="7.2" data-path="misc.html"><a href="misc.html#mecabの辞書をビルドするには"><i class="fa fa-check"></i><b>7.2</b> MeCabの辞書をビルドするには</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="misc.html"><a href="misc.html#必要な品詞情報を確認する"><i class="fa fa-check"></i><b>7.2.1</b> 必要な品詞情報を確認する</a></li>
+<li class="chapter" data-level="7.2.2" data-path="misc.html"><a href="misc.html#ユーザー辞書のビルド"><i class="fa fa-check"></i><b>7.2.2</b> ユーザー辞書のビルド</a></li>
+<li class="chapter" data-level="7.2.3" data-path="misc.html"><a href="misc.html#生起コストを調整する"><i class="fa fa-check"></i><b>7.2.3</b> 生起コストを調整する</a></li>
+<li class="chapter" data-level="7.2.4" data-path="misc.html"><a href="misc.html#システム辞書のビルド"><i class="fa fa-check"></i><b>7.2.4</b> システム辞書のビルド</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -271,37 +278,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb41-4"><a href="ngram.html#cb41-4" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
 <pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
 ##     features
-## docs ポラーノ-の の-広場 宮沢-賢治 前-十
-##    1           1       1         0     0
-##    2           0       0         1     0
-##    3           0       0         0     1
-##    4           0       0         1     0
-##    5           0       0         0     0
-##    6           0       0         0     0
-##     features
-## docs 十-七 七-等 等-官
-##    1     0     0     0
-##    2     0     0     0
-##    3     1     1     1
-##    4     0     0     0
-##    5     0     0     0
-##    6     0     0     1
-##     features
-## docs 官-レオーノ・キュースト
-##    1                       0
-##    2                       0
-##    3                       1
-##    4                       0
-##    5                       0
-##    6                       0
-##     features
-## docs レオーノ・キュースト-誌 賢治-訳述
-##    1                       0         0
-##    2                       0         0
-##    3                       1         0
-##    4                       0         1
-##    5                       0         0
-##    6                       0         0
+## docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌 賢治-訳述
+##    1           1       1         0     0     0     0     0                       0                       0         0
+##    2           0       0         1     0     0     0     0                       0                       0         0
+##    3           0       0         0     1     1     1     1                       1                       1         0
+##    4           0       0         1     0     0     0     0                       0                       0         1
+##    5           0       0         0     0     0     0     0                       0                       0         0
+##    6           0       0         0     0     0     0     1                       0                       0         0
 ## [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</code></pre>
 </div>
 <div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
@@ -323,37 +306,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb45-5"><a href="ngram.html#cb45-5" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span></code></pre></div>
 <pre><code>## Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.
 ##     features
-## docs ポラーノ_の の_広場 宮沢_賢治 前_十
-##    1           1       1         0     0
-##    2           0       0         1     0
-##    3           0       0         0     1
-##    4           0       0         1     0
-##    5           0       0         0     0
-##    6           0       0         0     0
-##     features
-## docs 十_七 七_等 等_官
-##    1     0     0     0
-##    2     0     0     0
-##    3     1     1     1
-##    4     0     0     0
-##    5     0     0     0
-##    6     0     0     1
-##     features
-## docs 官_レオーノ・キュースト
-##    1                       0
-##    2                       0
-##    3                       1
-##    4                       0
-##    5                       0
-##    6                       0
-##     features
-## docs レオーノ・キュースト_誌 賢治_訳述
-##    1                       0         0
-##    2                       0         0
-##    3                       1         0
-##    4                       0         1
-##    5                       0         0
-##    6                       0         0
+## docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト レオーノ・キュースト_誌 賢治_訳述
+##    1           1       1         0     0     0     0     0                       0                       0         0
+##    2           0       0         1     0     0     0     0                       0                       0         0
+##    3           0       0         0     1     1     1     1                       1                       1         0
+##    4           0       0         1     0     0     0     0                       0                       0         1
+##    5           0       0         0     0     0     0     0                       0                       0         0
+##    6           0       0         0     0     0     0     1                       0                       0         0
 ## [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</code></pre>
 
 </div>

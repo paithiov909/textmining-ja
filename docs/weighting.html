@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 単語頻度の重みづけ | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 単語頻度の重みづけ | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-08-01" />
+<meta name="date" content="2023-12-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,8 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 <script src="libs/core-js-2.5.3/shim.min.js"></script>
-<script src="libs/react-17.0.0/react.min.js"></script>
-<script src="libs/react-17.0.0/react-dom.min.js"></script>
+<script src="libs/react-18.2.0/react.min.js"></script>
+<script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
 <script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
@@ -214,6 +214,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.1.2" data-path="misc.html"><a href="misc.html#gibasaのインストール"><i class="fa fa-check"></i><b>7.1.2</b> gibasaのインストール</a></li>
 <li class="chapter" data-level="7.1.3" data-path="misc.html"><a href="misc.html#試すには"><i class="fa fa-check"></i><b>7.1.3</b> 試すには</a></li>
 </ul></li>
+<li class="chapter" data-level="7.2" data-path="misc.html"><a href="misc.html#mecabの辞書をビルドするには"><i class="fa fa-check"></i><b>7.2</b> MeCabの辞書をビルドするには</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="misc.html"><a href="misc.html#必要な品詞情報を確認する"><i class="fa fa-check"></i><b>7.2.1</b> 必要な品詞情報を確認する</a></li>
+<li class="chapter" data-level="7.2.2" data-path="misc.html"><a href="misc.html#ユーザー辞書のビルド"><i class="fa fa-check"></i><b>7.2.2</b> ユーザー辞書のビルド</a></li>
+<li class="chapter" data-level="7.2.3" data-path="misc.html"><a href="misc.html#生起コストを調整する"><i class="fa fa-check"></i><b>7.2.3</b> 生起コストを調整する</a></li>
+<li class="chapter" data-level="7.2.4" data-path="misc.html"><a href="misc.html#システム辞書のビルド"><i class="fa fa-check"></i><b>7.2.4</b> システム辞書のビルド</a></li>
+</ul></li>
 </ul></li>
 </ul>
 
@@ -297,6 +304,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="udpipeによる重みづけ" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> udpipeによる重みづけ<a href="weighting.html#udpipeによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://bnosac.github.io/udpipe/en/">udpipe</a>を使っても単語頻度とTF-IDFを算出できます。また、<code>udpipe::document_term_frequencies_statistics</code>では、TF、IDFとTF-IDFにくわえて、<a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a>を計算することができます。</p>
+<p><code>udpipe::document_term_frequencies_statistics</code>には、パラメータとして<code>k</code>と<code>b</code>を渡すことができます。デフォルト値はそれぞれ<code>k=1.2</code>、<code>b=0.5</code>です。<code>k</code>の値を大きくすると、単語の出現数の増加に対してBM25の値もより大きくなりやすくなります。
+<code>k=1.2</code>というのは、Elasticsearchでもデフォルト値として採用されている値です。Wikipediaや<a href="https://www.elastic.co/jp/blog/practical-bm25-part-3-considerations-for-picking-b-and-k1-in-elasticsearch">Elasticsearchの技術記事</a>によると、<code>k</code>は<code>[1.2, 2.0]</code>、<code>b=.75</code>とした場合に、多くのケースでよい結果が得られるとされています。</p>
 <p>dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。</p>
 <div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="weighting.html#cb51-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">require</span>(dplyr))</span>
 <span id="cb51-2"><a href="weighting.html#cb51-2" tabindex="-1"></a></span>
@@ -308,32 +317,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb51-8"><a href="weighting.html#cb51-8" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
 <span id="cb51-9"><a href="weighting.html#cb51-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb51-10"><a href="weighting.html#cb51-10" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">&quot;doc_id&quot;</span>, <span class="at">term =</span> <span class="st">&quot;token&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb51-11"><a href="weighting.html#cb51-11" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">k =</span> <span class="fl">2.0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb51-12"><a href="weighting.html#cb51-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(bm25, <span class="at">n =</span> 5L)</span></code></pre></div>
-<pre><code>##    doc_id     term freq        tf      idf
-## 1:    698     誤解    2 0.3333333 6.775366
-## 2:    139     去年    1 1.0000000 6.775366
-## 3:    880   ざあい    1 1.0000000 6.775366
-## 4:     87 お父さん    1 0.5000000 6.775366
-## 5:     89   兄さん    1 0.5000000 6.775366
-## 6:    536     起訴    1 0.5000000 6.775366
-## 7:    790     休む    1 0.5000000 6.775366
-##      tf_idf  tf_bm25     bm25
-## 1: 2.258455 1.860062 12.60260
-## 2: 6.775366 1.850767 12.53962
-## 3: 6.775366 1.850767 12.53962
-## 4: 3.387683 1.722257 11.66892
-## 5: 3.387683 1.722257 11.66892
-## 6: 3.387683 1.722257 11.66892
-## 7: 3.387683 1.722257 11.66892</code></pre>
+<span id="cb51-11"><a href="weighting.html#cb51-11" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">b =</span> .<span class="dv">75</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-12"><a href="weighting.html#cb51-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_bm25, <span class="at">n =</span> 5L)</span></code></pre></div>
+<pre><code>##     doc_id term freq        tf      idf    tf_idf  tf_bm25     bm25
+##  1:    381 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898
+##  2:    398 決闘    2 0.5000000 4.829456 2.4147280 1.698658 8.203595
+##  3:    864 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898
+##  4:    859 呑む    3 0.3333333 3.639872 1.2132906 1.669563 6.076996
+##  5:     60   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773
+##  6:     62   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773
+##  7:    233   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773
+##  8:    260 飛ぶ    2 0.4000000 5.165928 2.0663713 1.652365 8.535999
+##  9:    428 する    2 0.4000000 1.533619 0.6134476 1.652365 2.534099
+## 10:    521   君    2 0.4000000 4.578142 1.8312566 1.652365 7.564761
+## 11:    742   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</code></pre>
 </div>
 <div id="tidyloによる重みづけ" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> tidyloによる重みづけ<a href="weighting.html#tidyloによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「レアな単語」を調べることにあります。</p>
+<p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「注目に値する語」を調べることにあります。</p>
 <p>こうしたことを実現するための値として、<a href="https://github.com/juliasilge/tidylo">tidylo</a>パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。</p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="weighting.html#cb53-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
 <span id="cb53-2"><a href="weighting.html#cb53-2" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
-<span id="cb53-3"><a href="weighting.html#cb53-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.infinite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
+<span id="cb53-3"><a href="weighting.html#cb53-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.finite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
 <span id="cb53-4"><a href="weighting.html#cb53-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> 5L)</span></code></pre></div>
 <pre><code>## # A tibble: 5 × 4
 ##   doc_id token        n log_odds_weighted
@@ -347,10 +352,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="weighting.html#cb55-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
 <span id="cb55-2"><a href="weighting.html#cb55-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb55-3"><a href="weighting.html#cb55-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span></code></pre></div>
-<pre><code>## [1] &quot;「承知しました。」&quot;                              
-## [2] &quot;「起訴するぞ。」&quot;                                
-## [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot;
-## [4] &quot;わたくしは思わずはねあがりました。&quot;</code></pre>
+<pre><code>## [1] &quot;「承知しました。」&quot;                               &quot;「起訴するぞ。」&quot;                                
+## [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot; &quot;わたくしは思わずはねあがりました。&quot;</code></pre>
 <p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
 
 </div>

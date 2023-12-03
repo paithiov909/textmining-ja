@@ -49,6 +49,9 @@ dat_count |>
 
 [udpipe](https://bnosac.github.io/udpipe/en/)を使っても単語頻度とTF-IDFを算出できます。また、`udpipe::document_term_frequencies_statistics`では、TF、IDFとTF-IDFにくわえて、[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25)を計算することができます。
 
+`udpipe::document_term_frequencies_statistics`には、パラメータとして`k`と`b`を渡すことができます。デフォルト値はそれぞれ`k=1.2`、`b=0.5`です。`k`の値を大きくすると、単語の出現数の増加に対してBM25の値もより大きくなりやすくなります。
+`k=1.2`というのは、Elasticsearchでもデフォルト値として採用されている値です。Wikipediaや[Elasticsearchの技術記事](https://www.elastic.co/jp/blog/practical-bm25-part-3-considerations-for-picking-b-and-k1-in-elasticsearch)によると、`k`は`[1.2, 2.0]`、`b=.75`とした場合に、多くのケースでよい結果が得られるとされています。
+
 dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。
 
 ```{r}
@@ -62,20 +65,20 @@ dat |>
     token = dplyr::if_else(is.na(Original), token, Original)
   ) |>
   udpipe::document_term_frequencies(document = "doc_id", term = "token") |>
-  udpipe::document_term_frequencies_statistics(k = 2.0) |>
-  dplyr::slice_max(bm25, n = 5L)
+  udpipe::document_term_frequencies_statistics(b = .75) |>
+  dplyr::slice_max(tf_bm25, n = 5L)
 ```
 
 ## tidyloによる重みづけ
 
-TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「レアな単語」を調べることにあります。
+TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「注目に値する語」を調べることにあります。
 
 こうしたことを実現するための値として、[tidylo](https://github.com/juliasilge/tidylo)パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。
 
 ```{r}
 dat_count |>
   tidylo::bind_log_odds(set = doc_id, feature = token, n = n) |>
-  dplyr::filter(!is.infinite(log_odds_weighted)) |>
+  dplyr::filter(is.finite(log_odds_weighted)) |>
   dplyr::slice_max(log_odds_weighted, n = 5L)
 ```
 

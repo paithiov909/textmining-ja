@@ -363,7 +363,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb77-4"><a href="misc.html#cb77-4" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb77-5"><a href="misc.html#cb77-5" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb77-6"><a href="misc.html#cb77-6" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## reading /tmp/RtmpaZDvpk/fileaf5930013aa4.csv ... 2
+<pre><code>## reading /tmp/Rtmpzd6y56/file16c9c6c728b82.csv ... 2
 ## 
 ## done!</code></pre>
 <p>なお、gibasaによる辞書のビルド時の注意点として、「<a href="https://taku910.github.io/mecab/dic.html">MeCab: 単語の追加方法</a>」で案内されている「コストの自動推定機能」はgibasaからは利用できません。
@@ -372,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="misc.html#cb79-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span></code></pre></div>
 <pre><code>##                                                       file_path charset lsize rsize   size type version
 ## 1 /usr/local/lib/python3.10/dist-packages/ipadic/dicdir/sys.dic    utf8  1316  1316 392126    0     102
-## 2                          /tmp/RtmpaZDvpk/fileaf593d47e64f.dic    utf8  1316  1316      2    1     102</code></pre>
+## 2                          /tmp/Rtmpzd6y56/file16c9cb01d07e.dic    utf8  1316  1316      2    1     102</code></pre>
 <div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="misc.html#cb81-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">user_dic =</span> user_dic)</span></code></pre></div>
 <pre><code>## # A tibble: 6 × 5
 ##   doc_id sentence_id token_id token feature                                     
@@ -404,7 +404,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb83-10"><a href="misc.html#cb83-10" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb83-11"><a href="misc.html#cb83-11" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb83-12"><a href="misc.html#cb83-12" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## reading /tmp/RtmpaZDvpk/fileaf59402d6af6.csv ... 1
+<pre><code>## reading /tmp/Rtmpzd6y56/file16c9c371c7e2a.csv ... 1
 ## 
 ## done!</code></pre>
 <div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="misc.html#cb85-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
@@ -496,7 +496,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb89-13"><a href="misc.html#cb89-13" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb89-14"><a href="misc.html#cb89-14" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb89-15"><a href="misc.html#cb89-15" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## reading /tmp/RtmpaZDvpk/fileaf592c837e0d.csv ... 1
+<pre><code>## reading /tmp/Rtmpzd6y56/file16c9c6a1f9727.csv ... 1
 ## 
 ## done!</code></pre>
 <div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="misc.html#cb91-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
@@ -533,39 +533,39 @@ UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリ�
 <span id="cb93-7"><a href="misc.html#cb93-7" tabindex="-1"></a>  <span class="at">out_dir =</span> <span class="fu">tempdir</span>(),</span>
 <span id="cb93-8"><a href="misc.html#cb93-8" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;euc-jp&quot;</span></span>
 <span id="cb93-9"><a href="misc.html#cb93-9" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/unk.def ... 40
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Others.csv ... 2
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795
-## reading /tmp/RtmpaZDvpk/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316
+<pre><code>## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/unk.def ... 40
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Others.csv ... 2
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795
+## reading /tmp/Rtmpzd6y56/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316
 ## 
 ## done!</code></pre>
 <div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="misc.html#cb95-1" tabindex="-1"></a><span class="co"># `dicrc`ファイルをビルドした辞書のあるディレクトリにコピーする</span></span>
 <span id="cb95-2"><a href="misc.html#cb95-2" tabindex="-1"></a><span class="fu">file.copy</span>(<span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;mecab-ipadic-2.7.0-20070801/dicrc&quot;</span>), <span class="fu">tempdir</span>())</span></code></pre></div>
-<pre><code>## [1] FALSE</code></pre>
+<pre><code>## [1] TRUE</code></pre>
 <div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="misc.html#cb97-1" tabindex="-1"></a><span class="co"># ここでは`mecabrc`ファイルが適切な位置に配置されていないという想定で、</span></span>
 <span id="cb97-2"><a href="misc.html#cb97-2" tabindex="-1"></a><span class="co"># `mecabrc`ファイルを偽装している。</span></span>
 <span id="cb97-3"><a href="misc.html#cb97-3" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">with_envvar</span>(</span>

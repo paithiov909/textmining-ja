@@ -10,7 +10,7 @@
 
   <meta property="og:title" content="Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
-  
+  <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png" />
   <meta property="og:description" content="Rによる自然言語処理・テキスト分析の練習" />
   <meta name="github-repo" content="paithiov909/textmining-ja" />
 
@@ -18,7 +18,7 @@
   <meta name="twitter:title" content="Chapter 3 N-gram | RとMeCabによる日本語テキストマイニングの前処理" />
   
   <meta name="twitter:description" content="Rによる自然言語処理・テキスト分析の練習" />
-  
+  <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png" />
 
 <meta name="author" content="Akiru Kato" />
 
@@ -279,14 +279,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb18-14"><a href="ngram.html#cb18-14" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
 <span id="cb18-15"><a href="ngram.html#cb18-15" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
 <span id="cb18-16"><a href="ngram.html#cb18-16" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
-<span id="cb18-17"><a href="ngram.html#cb18-17" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌 賢治-訳述</span></span>
-<span id="cb18-18"><a href="ngram.html#cb18-18" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-19"><a href="ngram.html#cb18-19" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-20"><a href="ngram.html#cb18-20" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
-<span id="cb18-21"><a href="ngram.html#cb18-21" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
-<span id="cb18-22"><a href="ngram.html#cb18-22" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-23"><a href="ngram.html#cb18-23" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
-<span id="cb18-24"><a href="ngram.html#cb18-24" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
+<span id="cb18-17"><a href="ngram.html#cb18-17" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト</span></span>
+<span id="cb18-18"><a href="ngram.html#cb18-18" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0</span></span>
+<span id="cb18-19"><a href="ngram.html#cb18-19" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0</span></span>
+<span id="cb18-20"><a href="ngram.html#cb18-20" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1</span></span>
+<span id="cb18-21"><a href="ngram.html#cb18-21" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0</span></span>
+<span id="cb18-22"><a href="ngram.html#cb18-22" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0</span></span>
+<span id="cb18-23"><a href="ngram.html#cb18-23" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0</span></span>
+<span id="cb18-24"><a href="ngram.html#cb18-24" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
+<span id="cb18-25"><a href="ngram.html#cb18-25" tabindex="-1"></a><span class="co">#&gt; docs レオーノ・キュースト-誌 賢治-訳述</span></span>
+<span id="cb18-26"><a href="ngram.html#cb18-26" tabindex="-1"></a><span class="co">#&gt;    1                       0         0</span></span>
+<span id="cb18-27"><a href="ngram.html#cb18-27" tabindex="-1"></a><span class="co">#&gt;    2                       0         0</span></span>
+<span id="cb18-28"><a href="ngram.html#cb18-28" tabindex="-1"></a><span class="co">#&gt;    3                       1         0</span></span>
+<span id="cb18-29"><a href="ngram.html#cb18-29" tabindex="-1"></a><span class="co">#&gt;    4                       0         1</span></span>
+<span id="cb18-30"><a href="ngram.html#cb18-30" tabindex="-1"></a><span class="co">#&gt;    5                       0         0</span></span>
+<span id="cb18-31"><a href="ngram.html#cb18-31" tabindex="-1"></a><span class="co">#&gt;    6                       0         0</span></span>
+<span id="cb18-32"><a href="ngram.html#cb18-32" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
 </div>
 <div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> quantedaでNgramを数える方法<a href="ngram.html#quantedaでngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -308,14 +316,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb19-15"><a href="ngram.html#cb19-15" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
 <span id="cb19-16"><a href="ngram.html#cb19-16" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
 <span id="cb19-17"><a href="ngram.html#cb19-17" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
-<span id="cb19-18"><a href="ngram.html#cb19-18" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト レオーノ・キュースト_誌 賢治_訳述</span></span>
-<span id="cb19-19"><a href="ngram.html#cb19-19" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-20"><a href="ngram.html#cb19-20" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-21"><a href="ngram.html#cb19-21" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
-<span id="cb19-22"><a href="ngram.html#cb19-22" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
-<span id="cb19-23"><a href="ngram.html#cb19-23" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-24"><a href="ngram.html#cb19-24" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
-<span id="cb19-25"><a href="ngram.html#cb19-25" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
+<span id="cb19-18"><a href="ngram.html#cb19-18" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト</span></span>
+<span id="cb19-19"><a href="ngram.html#cb19-19" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0</span></span>
+<span id="cb19-20"><a href="ngram.html#cb19-20" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0</span></span>
+<span id="cb19-21"><a href="ngram.html#cb19-21" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1</span></span>
+<span id="cb19-22"><a href="ngram.html#cb19-22" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0</span></span>
+<span id="cb19-23"><a href="ngram.html#cb19-23" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0</span></span>
+<span id="cb19-24"><a href="ngram.html#cb19-24" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0</span></span>
+<span id="cb19-25"><a href="ngram.html#cb19-25" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
+<span id="cb19-26"><a href="ngram.html#cb19-26" tabindex="-1"></a><span class="co">#&gt; docs レオーノ・キュースト_誌 賢治_訳述</span></span>
+<span id="cb19-27"><a href="ngram.html#cb19-27" tabindex="-1"></a><span class="co">#&gt;    1                       0         0</span></span>
+<span id="cb19-28"><a href="ngram.html#cb19-28" tabindex="-1"></a><span class="co">#&gt;    2                       0         0</span></span>
+<span id="cb19-29"><a href="ngram.html#cb19-29" tabindex="-1"></a><span class="co">#&gt;    3                       1         0</span></span>
+<span id="cb19-30"><a href="ngram.html#cb19-30" tabindex="-1"></a><span class="co">#&gt;    4                       0         1</span></span>
+<span id="cb19-31"><a href="ngram.html#cb19-31" tabindex="-1"></a><span class="co">#&gt;    5                       0         0</span></span>
+<span id="cb19-32"><a href="ngram.html#cb19-32" tabindex="-1"></a><span class="co">#&gt;    6                       0         0</span></span>
+<span id="cb19-33"><a href="ngram.html#cb19-33" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
 
 </div>
 </div>

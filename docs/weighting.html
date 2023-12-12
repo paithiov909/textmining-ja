@@ -10,7 +10,7 @@
 
   <meta property="og:title" content="Chapter 4 単語頻度の重みづけ | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
-  
+  <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png" />
   <meta property="og:description" content="Rによる自然言語処理・テキスト分析の練習" />
   <meta name="github-repo" content="paithiov909/textmining-ja" />
 
@@ -18,7 +18,7 @@
   <meta name="twitter:title" content="Chapter 4 単語頻度の重みづけ | RとMeCabによる日本語テキストマイニングの前処理" />
   
   <meta name="twitter:description" content="Rによる自然言語処理・テキスト分析の練習" />
-  
+  <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png" />
 
 <meta name="author" content="Akiru Kato" />
 
@@ -352,8 +352,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="weighting.html#cb24-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
 <span id="cb24-2"><a href="weighting.html#cb24-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb24-3"><a href="weighting.html#cb24-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span>
-<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                               &quot;「起訴するぞ。」&quot;                                </span></span>
-<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot; &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
+<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                              </span></span>
+<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; [2] &quot;「起訴するぞ。」&quot;                                </span></span>
+<span id="cb24-6"><a href="weighting.html#cb24-6" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot;</span></span>
+<span id="cb24-7"><a href="weighting.html#cb24-7" tabindex="-1"></a><span class="co">#&gt; [4] &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
 <p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
 
 </div>

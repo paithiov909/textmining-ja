@@ -11,6 +11,7 @@ description: |
   Rによる自然言語処理・テキスト分析の練習
 link-citations: yes
 github-repo: "paithiov909/textmining-ja"
+cover-image: "cover-s.png"
 ---
 
 # はじめに {-#about}

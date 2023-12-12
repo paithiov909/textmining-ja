@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
   <meta property="og:title" content="RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-03" />
+<meta name="date" content="2023-12-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -242,7 +242,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">RとMeCabによる日本語テキストマイニングの前処理</h1>
 <p class="author"><em>Akiru Kato</em></p>
-<p class="date"><em>2023-12-03</em></p>
+<p class="date"><em>2023-12-12</em></p>
 </div>
 <div id="about" class="section level1 unnumbered hasAnchor">
 <h1>はじめに<a href="index.html#about" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -254,7 +254,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="想定する知識など" class="section level3 hasAnchor" number="0.1.2">
 <h3><span class="header-section-number">0.1.2</span> 想定する知識など<a href="index.html#想定する知識など" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。</p>
+<p>R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。参考までに、tidyverseなどの使い方についての紹介は次の資料がおすすめです。</p>
+<ul>
+<li><a href="https://www.jaysong.net/RBook/">私たちのR</a></li>
+</ul>
+<p>また、以降の説明ではRでの日本語テキストの前処理のやり方のみにフォーカスしているため、具体的なテキストデータの分析のやり方には一切踏み込んでいません。Rでおこなうようなテキストデータの分析の方法については、いずれも英語の資料ですが、次が参考になると思います。</p>
+<ul>
+<li><a href="https://www.tidytextmining.com/">Text Mining with R</a></li>
+<li><a href="https://smltar.com/">Supervised Machine Learning for Text Analysis in R</a></li>
+</ul>
 </div>
 </div>
 <div id="rでテキストマイニングするということ" class="section level2 hasAnchor" number="0.2">
@@ -344,7 +352,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
-"github": false,
+"github": true,
 "facebook": true,
 "twitter": true,
 "linkedin": false,

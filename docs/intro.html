@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 1 gibasaの基本的な使い方 | RとMeCabによる日本語テキストマイニングの前処理</title>
   <meta name="description" content="Rによる自然言語処理・テキスト分析の練習" />
-  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 1 gibasaの基本的な使い方 | RとMeCabによる日本語テキストマイニングの前処理" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-03" />
+<meta name="date" content="2023-12-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -252,38 +252,39 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="intro.html#cb1-5" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb1-6"><a href="intro.html#cb1-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">text =</span> audubon<span class="sc">::</span><span class="fu">strj_normalize</span>(text))</span>
 <span id="cb1-7"><a href="intro.html#cb1-7" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="intro.html#cb1-8" tabindex="-1"></a><span class="fu">str</span>(dat_txt)</span></code></pre></div>
-<pre><code>## tibble [899 × 2] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id: chr [1:899] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ text  : chr [1:899] &quot;ポラーノの広場&quot; &quot;宮沢賢治&quot; &quot;前十七等官レオーノ・キュースト誌&quot; &quot;宮沢賢治訳述&quot; ...</code></pre>
+<span id="cb1-8"><a href="intro.html#cb1-8" tabindex="-1"></a><span class="fu">str</span>(dat_txt)</span>
+<span id="cb1-9"><a href="intro.html#cb1-9" tabindex="-1"></a><span class="co">#&gt; tibble [899 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb1-10"><a href="intro.html#cb1-10" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: chr [1:899] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...</span></span>
+<span id="cb1-11"><a href="intro.html#cb1-11" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノの広場&quot; &quot;宮沢賢治&quot; &quot;前十七等官レオーノ・キュースト誌&quot; &quot;宮沢賢治訳述&quot; ...</span></span></code></pre></div>
 <p>このかたちのデータフレームは、<a href="https://github.com/ropensci/tif">Text Interchange Formats（TIF）</a>という仕様を念頭においている形式です（ちなみに、このかたちのデータフレームは<a href="https://cran.r-project.org/web/packages/readtext/vignettes/readtext_vignette.html">readtext</a>パッケージを使うと簡単に得ることができますが、readtextクラスのオブジェクトはdplyrと相性が悪いようなので、使う場合は<code>dplyr::tibble</code>などでtibbleにしてしまうことをおすすめします）。</p>
 <p>Text Interchange Formats（TIF）は、2017年に<a href="https://textworkshop17.ropensci.org/">rOpenSci Text Workshop</a>で整備された、テキスト分析用のRパッケージのデザインパターンのようなものです。</p>
 <p>TIFでは、コーパス（corpus）、文書単語行列（dtm）、トークン（token）という3種類のオブジェクトの形式が定義されており、異なるパッケージ間で同様の形式を扱うようにすることで、複数のパッケージを通じて便利にテキスト分析を進められるようになっています。</p>
 <p>上の<code>dat_txt</code>は、文書の集合であるコーパスをデータフレームのかたちで保持したものです。この形式のデータフレームは、次のように、<a href="https://juliasilge.github.io/tidytext/">tidytext</a>や<a href="https://docs.ropensci.org/tokenizers/">tokenizers</a>の関数にそのまま渡すことができます。なお、これらの形式のオブジェクトは、TIFの枠組みのなかではトークンと呼ばれます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="intro.html#cb3-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="intro.html#cb3-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(token, text) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="intro.html#cb3-3" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 4 × 2
-##   doc_id token   
-##   &lt;chr&gt;  &lt;chr&gt;   
-## 1 1      ポラーノ
-## 2 1      の      
-## 3 1      広場    
-## 4 2      宮沢</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="intro.html#cb5-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="intro.html#cb5-2" tabindex="-1"></a>  tokenizers<span class="sc">::</span><span class="fu">tokenize_words</span>() <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="intro.html#cb5-3" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## $`1`
-## [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    
-## 
-## $`2`
-## [1] &quot;宮沢&quot; &quot;賢治&quot;
-## 
-## $`3`
-##  [1] &quot;前&quot;     &quot;十七&quot;   &quot;等&quot;     &quot;官&quot;     &quot;レ&quot;     &quot;オー&quot;   &quot;ノ&quot;     &quot;キュー&quot; &quot;スト&quot;   &quot;誌&quot;    
-## 
-## $`4`
-## [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="intro.html#cb2-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="intro.html#cb2-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(token, text) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="intro.html#cb2-3" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span>
+<span id="cb2-4"><a href="intro.html#cb2-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span id="cb2-5"><a href="intro.html#cb2-5" tabindex="-1"></a><span class="co">#&gt;   doc_id token   </span></span>
+<span id="cb2-6"><a href="intro.html#cb2-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;   </span></span>
+<span id="cb2-7"><a href="intro.html#cb2-7" tabindex="-1"></a><span class="co">#&gt; 1 1      ポラーノ</span></span>
+<span id="cb2-8"><a href="intro.html#cb2-8" tabindex="-1"></a><span class="co">#&gt; 2 1      の      </span></span>
+<span id="cb2-9"><a href="intro.html#cb2-9" tabindex="-1"></a><span class="co">#&gt; 3 1      広場    </span></span>
+<span id="cb2-10"><a href="intro.html#cb2-10" tabindex="-1"></a><span class="co">#&gt; 4 2      宮沢</span></span>
+<span id="cb2-11"><a href="intro.html#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="intro.html#cb2-12" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="intro.html#cb2-13" tabindex="-1"></a>  tokenizers<span class="sc">::</span><span class="fu">tokenize_words</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-14"><a href="intro.html#cb2-14" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span>
+<span id="cb2-15"><a href="intro.html#cb2-15" tabindex="-1"></a><span class="co">#&gt; $`1`</span></span>
+<span id="cb2-16"><a href="intro.html#cb2-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
+<span id="cb2-17"><a href="intro.html#cb2-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-18"><a href="intro.html#cb2-18" tabindex="-1"></a><span class="co">#&gt; $`2`</span></span>
+<span id="cb2-19"><a href="intro.html#cb2-19" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
+<span id="cb2-20"><a href="intro.html#cb2-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-21"><a href="intro.html#cb2-21" tabindex="-1"></a><span class="co">#&gt; $`3`</span></span>
+<span id="cb2-22"><a href="intro.html#cb2-22" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;前&quot;     &quot;十七&quot;   &quot;等&quot;     &quot;官&quot;     &quot;レ&quot;     &quot;オー&quot;   &quot;ノ&quot;     &quot;キュー&quot; &quot;スト&quot;   &quot;誌&quot;    </span></span>
+<span id="cb2-23"><a href="intro.html#cb2-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-24"><a href="intro.html#cb2-24" tabindex="-1"></a><span class="co">#&gt; $`4`</span></span>
+<span id="cb2-25"><a href="intro.html#cb2-25" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span></code></pre></div>
 </div>
 <div id="gibasaの使い方" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> gibasaの使い方<a href="intro.html#gibasaの使い方" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -293,131 +294,134 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>tokenizersパッケージの分かち書きは、内部的には、ICUの<a href="https://unicode-org.github.io/icu/userguide/boundaryanalysis/">Boundary Analysis</a>によるものです。この単語境界判定は、たとえば新聞記事のような、比較的整った文体の文章ではおおむね期待通り分かち書きがおこなわれ、また、日本語と英語などが混ざっている文章であってもとくに気にすることなく、高速に分かち書きできるという強みがあります。</p>
 <p>しかし、手元にある辞書に収録されている語の通りに分かち書きしたい場合や、品詞情報などがほしい場合には、やはりMeCabのような形態素解析器による分かち書きが便利なこともあります。</p>
 <p>gibasaは、そのようなケースにおいて、<code>tidytext::unnest_tokens</code>の代わりに使用できる機能を提供するために開発しているパッケージです。この機能は<code>gibasa::tokenize</code>という関数として提供していて、次のように使うことができます。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="intro.html#cb7-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> gibasa<span class="sc">::</span><span class="fu">tokenize</span>(dat_txt, text, doc_id)</span>
-<span id="cb7-2"><a href="intro.html#cb7-2" tabindex="-1"></a><span class="fu">str</span>(dat)</span></code></pre></div>
-<pre><code>## tibble [26,849 × 5] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
-##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
-##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
-##  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...
-##  $ feature    : chr [1:26849] &quot;名詞,一般,*,*,*,*,*&quot; &quot;助詞,連体化,*,*,*,*,の,ノ,ノ&quot; &quot;名詞,一般,*,*,*,*,広場,ヒロバ,ヒロバ&quot; &quot;名詞,固有名詞,人名,姓,*,*,宮沢,ミヤザワ,ミヤザワ&quot; ...</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="intro.html#cb3-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> gibasa<span class="sc">::</span><span class="fu">tokenize</span>(dat_txt, text, doc_id)</span>
+<span id="cb3-2"><a href="intro.html#cb3-2" tabindex="-1"></a><span class="fu">str</span>(dat)</span>
+<span id="cb3-3"><a href="intro.html#cb3-3" tabindex="-1"></a><span class="co">#&gt; tibble [26,849 × 5] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb3-4"><a href="intro.html#cb3-4" tabindex="-1"></a><span class="co">#&gt;  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb3-5"><a href="intro.html#cb3-5" tabindex="-1"></a><span class="co">#&gt;  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb3-6"><a href="intro.html#cb3-6" tabindex="-1"></a><span class="co">#&gt;  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...</span></span>
+<span id="cb3-7"><a href="intro.html#cb3-7" tabindex="-1"></a><span class="co">#&gt;  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span>
+<span id="cb3-8"><a href="intro.html#cb3-8" tabindex="-1"></a><span class="co">#&gt;  $ feature    : chr [1:26849] &quot;名詞,一般,*,*,*,*,*&quot; &quot;助詞,連体化,*,*,*,*,の,ノ,ノ&quot; &quot;名詞,一般,*,*,*,*,広場,ヒロバ,ヒロバ&quot; &quot;名詞,固有名詞,人名,姓,*,*,宮沢,ミヤザワ,ミヤザワ&quot; ...</span></span></code></pre></div>
 </div>
 <div id="prettify" class="section level3 hasAnchor" number="1.2.2">
 <h3><span class="header-section-number">1.2.2</span> prettify<a href="intro.html#prettify" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>gibasa::tokenize</code>の戻り値のデータフレームは、それぞれのトークンについて、MeCabから返される素性情報のすべてを含んでいるfeatureという列を持っています。</p>
 <p>MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（2.1.2, aka <a href="https://pypi.org/project/unidic-lite/">unidic-lite</a>）の素性は、次のような情報を持っています。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="intro.html#cb9-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;ipa&quot;</span>)</span></code></pre></div>
-<pre><code>## [1] &quot;POS1&quot;        &quot;POS2&quot;        &quot;POS3&quot;        &quot;POS4&quot;        &quot;X5StageUse1&quot; &quot;X5StageUse2&quot; &quot;Original&quot;    &quot;Yomi1&quot;      
-## [9] &quot;Yomi2&quot;</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="intro.html#cb11-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>)</span></code></pre></div>
-<pre><code>##  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;      &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;     &quot;lForm&quot;     &quot;lemma&quot;     &quot;orth&quot;      &quot;pron&quot;     
-## [11] &quot;orthBase&quot;  &quot;pronBase&quot;  &quot;goshu&quot;     &quot;iType&quot;     &quot;iForm&quot;     &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;      &quot;kanaBase&quot;  &quot;form&quot;     
-## [21] &quot;formBase&quot;  &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;     &quot;aConType&quot;  &quot;aModeType&quot;</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="intro.html#cb4-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;ipa&quot;</span>)</span>
+<span id="cb4-2"><a href="intro.html#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;POS1&quot;        &quot;POS2&quot;        &quot;POS3&quot;        &quot;POS4&quot;        &quot;X5StageUse1&quot; &quot;X5StageUse2&quot; &quot;Original&quot;    &quot;Yomi1&quot;       &quot;Yomi2&quot;</span></span>
+<span id="cb4-3"><a href="intro.html#cb4-3" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>)</span>
+<span id="cb4-4"><a href="intro.html#cb4-4" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;      &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;     &quot;lForm&quot;     &quot;lemma&quot;     &quot;orth&quot;      &quot;pron&quot;     </span></span>
+<span id="cb4-5"><a href="intro.html#cb4-5" tabindex="-1"></a><span class="co">#&gt; [11] &quot;orthBase&quot;  &quot;pronBase&quot;  &quot;goshu&quot;     &quot;iType&quot;     &quot;iForm&quot;     &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;      &quot;kanaBase&quot;  &quot;form&quot;     </span></span>
+<span id="cb4-6"><a href="intro.html#cb4-6" tabindex="-1"></a><span class="co">#&gt; [21] &quot;formBase&quot;  &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;     &quot;aConType&quot;  &quot;aModeType&quot;</span></span></code></pre></div>
 <p>こうした素性情報をデータフレームの列にパースするには、<code>gibasa::prettify</code>という関数を利用できます。</p>
 <p>デフォルトではすべての素性についてパースしますが、<code>col_select</code>引数に残したい列名を指定することにより、特定の素性情報だけをパースすることもできます。このかたちのデータフレームは、解析するテキストの文章量によっては、数十万から数百万くらいの行からなることもよくあります。そのような規模のデータフレームについて、いちいちすべての素性をパースしていると、それだけでメモリを余計に消費してしまいます。メモリの消費を抑えるためにも、なるべく後で必要な素性だけをこまめに指定することをおすすめします。</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="intro.html#cb13-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat))</span></code></pre></div>
-<pre><code>## tibble [26,849 × 13] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
-##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
-##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
-##  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...
-##  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...
-##  $ POS2       : chr [1:26849] &quot;一般&quot; &quot;連体化&quot; &quot;一般&quot; &quot;固有名詞&quot; ...
-##  $ POS3       : chr [1:26849] NA NA NA &quot;人名&quot; ...
-##  $ POS4       : chr [1:26849] NA NA NA &quot;姓&quot; ...
-##  $ X5StageUse1: chr [1:26849] NA NA NA NA ...
-##  $ X5StageUse2: chr [1:26849] NA NA NA NA ...
-##  $ Original   : chr [1:26849] NA &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...
-##  $ Yomi1      : chr [1:26849] NA &quot;ノ&quot; &quot;ヒロバ&quot; &quot;ミヤザワ&quot; ...
-##  $ Yomi2      : chr [1:26849] NA &quot;ノ&quot; &quot;ヒロバ&quot; &quot;ミヤザワ&quot; ...</code></pre>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="intro.html#cb15-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat, <span class="at">col_select =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)))</span></code></pre></div>
-<pre><code>## tibble [26,849 × 6] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
-##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
-##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
-##  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...
-##  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...
-##  $ POS2       : chr [1:26849] &quot;一般&quot; &quot;連体化&quot; &quot;一般&quot; &quot;固有名詞&quot; ...</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="intro.html#cb17-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat, <span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)))</span></code></pre></div>
-<pre><code>## tibble [26,849 × 6] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
-##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
-##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
-##  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...
-##  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...
-##  $ Original   : chr [1:26849] NA &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="intro.html#cb5-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat))</span>
+<span id="cb5-2"><a href="intro.html#cb5-2" tabindex="-1"></a><span class="co">#&gt; tibble [26,849 × 13] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb5-3"><a href="intro.html#cb5-3" tabindex="-1"></a><span class="co">#&gt;  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-4"><a href="intro.html#cb5-4" tabindex="-1"></a><span class="co">#&gt;  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-5"><a href="intro.html#cb5-5" tabindex="-1"></a><span class="co">#&gt;  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...</span></span>
+<span id="cb5-6"><a href="intro.html#cb5-6" tabindex="-1"></a><span class="co">#&gt;  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span>
+<span id="cb5-7"><a href="intro.html#cb5-7" tabindex="-1"></a><span class="co">#&gt;  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...</span></span>
+<span id="cb5-8"><a href="intro.html#cb5-8" tabindex="-1"></a><span class="co">#&gt;  $ POS2       : chr [1:26849] &quot;一般&quot; &quot;連体化&quot; &quot;一般&quot; &quot;固有名詞&quot; ...</span></span>
+<span id="cb5-9"><a href="intro.html#cb5-9" tabindex="-1"></a><span class="co">#&gt;  $ POS3       : chr [1:26849] NA NA NA &quot;人名&quot; ...</span></span>
+<span id="cb5-10"><a href="intro.html#cb5-10" tabindex="-1"></a><span class="co">#&gt;  $ POS4       : chr [1:26849] NA NA NA &quot;姓&quot; ...</span></span>
+<span id="cb5-11"><a href="intro.html#cb5-11" tabindex="-1"></a><span class="co">#&gt;  $ X5StageUse1: chr [1:26849] NA NA NA NA ...</span></span>
+<span id="cb5-12"><a href="intro.html#cb5-12" tabindex="-1"></a><span class="co">#&gt;  $ X5StageUse2: chr [1:26849] NA NA NA NA ...</span></span>
+<span id="cb5-13"><a href="intro.html#cb5-13" tabindex="-1"></a><span class="co">#&gt;  $ Original   : chr [1:26849] NA &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span>
+<span id="cb5-14"><a href="intro.html#cb5-14" tabindex="-1"></a><span class="co">#&gt;  $ Yomi1      : chr [1:26849] NA &quot;ノ&quot; &quot;ヒロバ&quot; &quot;ミヤザワ&quot; ...</span></span>
+<span id="cb5-15"><a href="intro.html#cb5-15" tabindex="-1"></a><span class="co">#&gt;  $ Yomi2      : chr [1:26849] NA &quot;ノ&quot; &quot;ヒロバ&quot; &quot;ミヤザワ&quot; ...</span></span>
+<span id="cb5-16"><a href="intro.html#cb5-16" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat, <span class="at">col_select =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)))</span>
+<span id="cb5-17"><a href="intro.html#cb5-17" tabindex="-1"></a><span class="co">#&gt; tibble [26,849 × 6] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb5-18"><a href="intro.html#cb5-18" tabindex="-1"></a><span class="co">#&gt;  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-19"><a href="intro.html#cb5-19" tabindex="-1"></a><span class="co">#&gt;  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-20"><a href="intro.html#cb5-20" tabindex="-1"></a><span class="co">#&gt;  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...</span></span>
+<span id="cb5-21"><a href="intro.html#cb5-21" tabindex="-1"></a><span class="co">#&gt;  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span>
+<span id="cb5-22"><a href="intro.html#cb5-22" tabindex="-1"></a><span class="co">#&gt;  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...</span></span>
+<span id="cb5-23"><a href="intro.html#cb5-23" tabindex="-1"></a><span class="co">#&gt;  $ POS2       : chr [1:26849] &quot;一般&quot; &quot;連体化&quot; &quot;一般&quot; &quot;固有名詞&quot; ...</span></span>
+<span id="cb5-24"><a href="intro.html#cb5-24" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat, <span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)))</span>
+<span id="cb5-25"><a href="intro.html#cb5-25" tabindex="-1"></a><span class="co">#&gt; tibble [26,849 × 6] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb5-26"><a href="intro.html#cb5-26" tabindex="-1"></a><span class="co">#&gt;  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-27"><a href="intro.html#cb5-27" tabindex="-1"></a><span class="co">#&gt;  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb5-28"><a href="intro.html#cb5-28" tabindex="-1"></a><span class="co">#&gt;  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...</span></span>
+<span id="cb5-29"><a href="intro.html#cb5-29" tabindex="-1"></a><span class="co">#&gt;  $ token      : chr [1:26849] &quot;ポラーノ&quot; &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span>
+<span id="cb5-30"><a href="intro.html#cb5-30" tabindex="-1"></a><span class="co">#&gt;  $ POS1       : chr [1:26849] &quot;名詞&quot; &quot;助詞&quot; &quot;名詞&quot; &quot;名詞&quot; ...</span></span>
+<span id="cb5-31"><a href="intro.html#cb5-31" tabindex="-1"></a><span class="co">#&gt;  $ Original   : chr [1:26849] NA &quot;の&quot; &quot;広場&quot; &quot;宮沢&quot; ...</span></span></code></pre></div>
 </div>
 <div id="pack" class="section level3 hasAnchor" number="1.2.3">
 <h3><span class="header-section-number">1.2.3</span> pack<a href="intro.html#pack" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>gibasa::pack</code>という関数を使うと、トークンの形式のデータフレームから、各トークンを半角スペースで区切ったコーパスの形式のデータフレームにすることができます。</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="intro.html#cb19-1" tabindex="-1"></a>dat_corpus <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb19-2"><a href="intro.html#cb19-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
-<span id="cb19-3"><a href="intro.html#cb19-3" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="intro.html#cb19-4" tabindex="-1"></a><span class="fu">str</span>(dat_corpus)</span></code></pre></div>
-<pre><code>## tibble [899 × 2] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...
-##  $ text  : chr [1:899] &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="intro.html#cb6-1" tabindex="-1"></a>dat_corpus <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="intro.html#cb6-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb6-3"><a href="intro.html#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="intro.html#cb6-4" tabindex="-1"></a><span class="fu">str</span>(dat_corpus)</span>
+<span id="cb6-5"><a href="intro.html#cb6-5" tabindex="-1"></a><span class="co">#&gt; tibble [899 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb6-6"><a href="intro.html#cb6-6" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb6-7"><a href="intro.html#cb6-7" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</span></span></code></pre></div>
 <p>このかたちのデータフレームはTIFに準拠していたため、他のパッケージと組み合わせて使うのに便利なことがあります。たとえば、このかたちから、次のように<code>tidytext::unnest_tokens</code>と組み合わせて、もう一度トークンの形式のデータフレームに戻すことができます。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="intro.html#cb21-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
-<span id="cb21-2"><a href="intro.html#cb21-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(token, text, <span class="at">token =</span> \(x) { <span class="fu">strsplit</span>(x, <span class="st">&quot; +&quot;</span>) }) <span class="sc">|&gt;</span></span>
-<span id="cb21-3"><a href="intro.html#cb21-3" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span></code></pre></div>
-<pre><code>## # A tibble: 4 × 2
-##   doc_id token   
-##   &lt;fct&gt;  &lt;chr&gt;   
-## 1 1      ポラーノ
-## 2 1      の      
-## 3 1      広場    
-## 4 2      宮沢</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="intro.html#cb7-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="intro.html#cb7-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">unnest_tokens</span>(token, text, <span class="at">token =</span> \(x) {</span>
+<span id="cb7-3"><a href="intro.html#cb7-3" tabindex="-1"></a>    <span class="fu">strsplit</span>(x, <span class="st">&quot; +&quot;</span>)</span>
+<span id="cb7-4"><a href="intro.html#cb7-4" tabindex="-1"></a>  }) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="intro.html#cb7-5" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span>
+<span id="cb7-6"><a href="intro.html#cb7-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span id="cb7-7"><a href="intro.html#cb7-7" tabindex="-1"></a><span class="co">#&gt;   doc_id token   </span></span>
+<span id="cb7-8"><a href="intro.html#cb7-8" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;   </span></span>
+<span id="cb7-9"><a href="intro.html#cb7-9" tabindex="-1"></a><span class="co">#&gt; 1 1      ポラーノ</span></span>
+<span id="cb7-10"><a href="intro.html#cb7-10" tabindex="-1"></a><span class="co">#&gt; 2 1      の      </span></span>
+<span id="cb7-11"><a href="intro.html#cb7-11" tabindex="-1"></a><span class="co">#&gt; 3 1      広場    </span></span>
+<span id="cb7-12"><a href="intro.html#cb7-12" tabindex="-1"></a><span class="co">#&gt; 4 2      宮沢</span></span></code></pre></div>
 <p>あるいは、次のように<a href="https://quanteda.io/">quanteda</a>と組み合わせて使うこともできます。</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="intro.html#cb23-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
-<span id="cb23-2"><a href="intro.html#cb23-2" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb23-3"><a href="intro.html#cb23-3" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>, <span class="at">remove_punct =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<pre><code>## Tokens consisting of 899 documents.
-## 1 :
-## [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    
-## 
-## 2 :
-## [1] &quot;宮沢&quot; &quot;賢治&quot;
-## 
-## 3 :
-## [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  
-## [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  
-## 
-## 4 :
-## [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;
-## 
-## 5 :
-##  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;       &quot;に&quot;      
-## [12] &quot;勤め&quot;    
-## [ ... and 5 more ]
-## 
-## 6 :
-##  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  
-## [ ... and 219 more ]
-## 
-## [ reached max_ndoc ... 893 more documents ]</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="intro.html#cb8-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="intro.html#cb8-2" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="intro.html#cb8-3" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>, <span class="at">remove_punct =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-4"><a href="intro.html#cb8-4" tabindex="-1"></a><span class="co">#&gt; Tokens consisting of 899 documents.</span></span>
+<span id="cb8-5"><a href="intro.html#cb8-5" tabindex="-1"></a><span class="co">#&gt; 1 :</span></span>
+<span id="cb8-6"><a href="intro.html#cb8-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
+<span id="cb8-7"><a href="intro.html#cb8-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-8"><a href="intro.html#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2 :</span></span>
+<span id="cb8-9"><a href="intro.html#cb8-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
+<span id="cb8-10"><a href="intro.html#cb8-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-11"><a href="intro.html#cb8-11" tabindex="-1"></a><span class="co">#&gt; 3 :</span></span>
+<span id="cb8-12"><a href="intro.html#cb8-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  </span></span>
+<span id="cb8-13"><a href="intro.html#cb8-13" tabindex="-1"></a><span class="co">#&gt; [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  </span></span>
+<span id="cb8-14"><a href="intro.html#cb8-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-15"><a href="intro.html#cb8-15" tabindex="-1"></a><span class="co">#&gt; 4 :</span></span>
+<span id="cb8-16"><a href="intro.html#cb8-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span>
+<span id="cb8-17"><a href="intro.html#cb8-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-18"><a href="intro.html#cb8-18" tabindex="-1"></a><span class="co">#&gt; 5 :</span></span>
+<span id="cb8-19"><a href="intro.html#cb8-19" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;       &quot;に&quot;      </span></span>
+<span id="cb8-20"><a href="intro.html#cb8-20" tabindex="-1"></a><span class="co">#&gt; [12] &quot;勤め&quot;    </span></span>
+<span id="cb8-21"><a href="intro.html#cb8-21" tabindex="-1"></a><span class="co">#&gt; [ ... and 5 more ]</span></span>
+<span id="cb8-22"><a href="intro.html#cb8-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-23"><a href="intro.html#cb8-23" tabindex="-1"></a><span class="co">#&gt; 6 :</span></span>
+<span id="cb8-24"><a href="intro.html#cb8-24" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  </span></span>
+<span id="cb8-25"><a href="intro.html#cb8-25" tabindex="-1"></a><span class="co">#&gt; [ ... and 219 more ]</span></span>
+<span id="cb8-26"><a href="intro.html#cb8-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-27"><a href="intro.html#cb8-27" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents ]</span></span></code></pre></div>
 </div>
 <div id="lazy_dtなどと組み合わせて使う場合" class="section level3 hasAnchor" number="1.2.4">
 <h3><span class="header-section-number">1.2.4</span> lazy_dtなどと組み合わせて使う場合<a href="intro.html#lazy_dtなどと組み合わせて使う場合" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>gibasa::prettify</code>はデータフレームにしか使えないため、<a href="https://rdatatable.gitlab.io/data.table/">data.table</a>などと組み合わせて使う場合には<code>tidyr::separate</code>を代わりに使ってください。</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="intro.html#cb25-1" tabindex="-1"></a>dat_toks <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="intro.html#cb25-2" tabindex="-1"></a>  dtplyr<span class="sc">::</span><span class="fu">lazy_dt</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="intro.html#cb25-3" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(feature, <span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(),</span>
-<span id="cb25-4"><a href="intro.html#cb25-4" tabindex="-1"></a>                  <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">extra =</span> <span class="st">&quot;merge&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;right&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-5"><a href="intro.html#cb25-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb25-6"><a href="intro.html#cb25-6" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(Original <span class="sc">==</span> <span class="st">&quot;*&quot;</span>, token, Original),</span>
-<span id="cb25-7"><a href="intro.html#cb25-7" tabindex="-1"></a>    <span class="at">token =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(token, POS1, POS2, <span class="at">sep =</span> <span class="st">&quot;/&quot;</span>)</span>
-<span id="cb25-8"><a href="intro.html#cb25-8" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb25-9"><a href="intro.html#cb25-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(doc_id, sentence_id, token_id, token) <span class="sc">|&gt;</span></span>
-<span id="cb25-10"><a href="intro.html#cb25-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
-<span id="cb25-11"><a href="intro.html#cb25-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">na_if</span>(., <span class="st">&quot;*&quot;</span>)))</span>
-<span id="cb25-12"><a href="intro.html#cb25-12" tabindex="-1"></a></span>
-<span id="cb25-13"><a href="intro.html#cb25-13" tabindex="-1"></a><span class="fu">str</span>(dat_toks)</span></code></pre></div>
-<pre><code>## tibble [26,849 × 4] (S3: tbl_df/tbl/data.frame)
-##  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...
-##  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...
-##  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...
-##  $ token      : chr [1:26849] &quot;ポラーノ/名詞/一般&quot; &quot;の/助詞/連体化&quot; &quot;広場/名詞/一般&quot; &quot;宮沢/名詞/固有名詞&quot; ...</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="intro.html#cb9-1" tabindex="-1"></a>dat_toks <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="intro.html#cb9-2" tabindex="-1"></a>  dtplyr<span class="sc">::</span><span class="fu">lazy_dt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="intro.html#cb9-3" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(feature,</span>
+<span id="cb9-4"><a href="intro.html#cb9-4" tabindex="-1"></a>    <span class="at">into =</span> gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(),</span>
+<span id="cb9-5"><a href="intro.html#cb9-5" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>, <span class="at">extra =</span> <span class="st">&quot;merge&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;right&quot;</span></span>
+<span id="cb9-6"><a href="intro.html#cb9-6" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="intro.html#cb9-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb9-8"><a href="intro.html#cb9-8" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(Original <span class="sc">==</span> <span class="st">&quot;*&quot;</span>, token, Original),</span>
+<span id="cb9-9"><a href="intro.html#cb9-9" tabindex="-1"></a>    <span class="at">token =</span> stringr<span class="sc">::</span><span class="fu">str_c</span>(token, POS1, POS2, <span class="at">sep =</span> <span class="st">&quot;/&quot;</span>)</span>
+<span id="cb9-10"><a href="intro.html#cb9-10" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-11"><a href="intro.html#cb9-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(doc_id, sentence_id, token_id, token) <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="intro.html#cb9-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-13"><a href="intro.html#cb9-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">na_if</span>(., <span class="st">&quot;*&quot;</span>)))</span>
+<span id="cb9-14"><a href="intro.html#cb9-14" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="intro.html#cb9-15" tabindex="-1"></a><span class="fu">str</span>(dat_toks)</span>
+<span id="cb9-16"><a href="intro.html#cb9-16" tabindex="-1"></a><span class="co">#&gt; tibble [26,849 × 4] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb9-17"><a href="intro.html#cb9-17" tabindex="-1"></a><span class="co">#&gt;  $ doc_id     : Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb9-18"><a href="intro.html#cb9-18" tabindex="-1"></a><span class="co">#&gt;  $ sentence_id: int [1:26849] 1 1 1 2 2 3 3 3 3 3 ...</span></span>
+<span id="cb9-19"><a href="intro.html#cb9-19" tabindex="-1"></a><span class="co">#&gt;  $ token_id   : int [1:26849] 1 2 3 1 2 1 2 3 4 5 ...</span></span>
+<span id="cb9-20"><a href="intro.html#cb9-20" tabindex="-1"></a><span class="co">#&gt;  $ token      : chr [1:26849] &quot;ポラーノ/名詞/一般&quot; &quot;の/助詞/連体化&quot; &quot;広場/名詞/一般&quot; &quot;宮沢/名詞/固有名詞&quot; ...</span></span></code></pre></div>
 
 </div>
 </div>
@@ -443,7 +447,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
-"github": false,
+"github": true,
 "facebook": true,
 "twitter": true,
 "linkedin": false,

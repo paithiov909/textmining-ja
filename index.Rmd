@@ -10,12 +10,17 @@ url: "https://paithiov909.github.io/textmining-ja/"
 description: |
   Rによる自然言語処理・テキスト分析の練習
 link-citations: yes
-github-repo: paithiov909/textmining-ja
+github-repo: "paithiov909/textmining-ja"
 ---
 
 # はじめに {-#about}
 
 ```{r include=FALSE}
+knitr::opts_chunk$set(
+  tidy = "styler",
+  collapse = TRUE,
+  comment = "#>"
+)
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), "bookdown", "knitr", "rmarkdown"
@@ -30,7 +35,14 @@ knitr::write_bib(c(
 
 ### 想定する知識など
 
-R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。
+R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。参考までに、tidyverseなどの使い方についての紹介は次の資料がおすすめです。
+
+- [私たちのR](https://www.jaysong.net/RBook/)
+
+また、以降の説明ではRでの日本語テキストの前処理のやり方のみにフォーカスしているため、具体的なテキストデータの分析のやり方には一切踏み込んでいません。Rでおこなうようなテキストデータの分析の方法については、いずれも英語の資料ですが、次が参考になると思います。
+
+- [Text Mining with R](https://www.tidytextmining.com/)
+- [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)
 
 ## Rでテキストマイニングするということ
 

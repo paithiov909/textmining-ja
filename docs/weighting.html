@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-12" />
+<meta name="date" content="2023-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -352,10 +352,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="weighting.html#cb24-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
 <span id="cb24-2"><a href="weighting.html#cb24-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb24-3"><a href="weighting.html#cb24-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span>
-<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                              </span></span>
-<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; [2] &quot;「起訴するぞ。」&quot;                                </span></span>
-<span id="cb24-6"><a href="weighting.html#cb24-6" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot;</span></span>
-<span id="cb24-7"><a href="weighting.html#cb24-7" tabindex="-1"></a><span class="co">#&gt; [4] &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
+<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                               &quot;「起訴するぞ。」&quot;                                </span></span>
+<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot; &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
 <p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
 
 </div>

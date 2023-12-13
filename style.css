@@ -12,3 +12,8 @@ pre {
 pre code {
   white-space: inherit;
 }
+
+.fa-twitter:before {
+  content: "\1d54f";
+  font-weight: bold;
+}

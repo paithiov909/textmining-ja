@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-12" />
+<meta name="date" content="2023-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -308,13 +308,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><code>gibasa::tokenize</code>の戻り値のデータフレームは、それぞれのトークンについて、MeCabから返される素性情報のすべてを含んでいるfeatureという列を持っています。</p>
 <p>MeCabから返される素性情報は、使用している辞書によって異なります。たとえば、IPA辞書やUniDic（2.1.2, aka <a href="https://pypi.org/project/unidic-lite/">unidic-lite</a>）の素性は、次のような情報を持っています。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="intro.html#cb4-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;ipa&quot;</span>)</span>
-<span id="cb4-2"><a href="intro.html#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;POS1&quot;        &quot;POS2&quot;        &quot;POS3&quot;        &quot;POS4&quot;        &quot;X5StageUse1&quot; &quot;X5StageUse2&quot;</span></span>
-<span id="cb4-3"><a href="intro.html#cb4-3" tabindex="-1"></a><span class="co">#&gt; [7] &quot;Original&quot;    &quot;Yomi1&quot;       &quot;Yomi2&quot;</span></span>
-<span id="cb4-4"><a href="intro.html#cb4-4" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>)</span>
-<span id="cb4-5"><a href="intro.html#cb4-5" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;      &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;     &quot;lForm&quot;    </span></span>
-<span id="cb4-6"><a href="intro.html#cb4-6" tabindex="-1"></a><span class="co">#&gt;  [8] &quot;lemma&quot;     &quot;orth&quot;      &quot;pron&quot;      &quot;orthBase&quot;  &quot;pronBase&quot;  &quot;goshu&quot;     &quot;iType&quot;    </span></span>
-<span id="cb4-7"><a href="intro.html#cb4-7" tabindex="-1"></a><span class="co">#&gt; [15] &quot;iForm&quot;     &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;      &quot;kanaBase&quot;  &quot;form&quot;      &quot;formBase&quot; </span></span>
-<span id="cb4-8"><a href="intro.html#cb4-8" tabindex="-1"></a><span class="co">#&gt; [22] &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;     &quot;aConType&quot;  &quot;aModeType&quot;</span></span></code></pre></div>
+<span id="cb4-2"><a href="intro.html#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;POS1&quot;        &quot;POS2&quot;        &quot;POS3&quot;        &quot;POS4&quot;        &quot;X5StageUse1&quot; &quot;X5StageUse2&quot; &quot;Original&quot;    &quot;Yomi1&quot;       &quot;Yomi2&quot;</span></span>
+<span id="cb4-3"><a href="intro.html#cb4-3" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">get_dict_features</span>(<span class="st">&quot;unidic26&quot;</span>)</span>
+<span id="cb4-4"><a href="intro.html#cb4-4" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;POS1&quot;      &quot;POS2&quot;      &quot;POS3&quot;      &quot;POS4&quot;      &quot;cType&quot;     &quot;cForm&quot;     &quot;lForm&quot;     &quot;lemma&quot;     &quot;orth&quot;      &quot;pron&quot;     </span></span>
+<span id="cb4-5"><a href="intro.html#cb4-5" tabindex="-1"></a><span class="co">#&gt; [11] &quot;orthBase&quot;  &quot;pronBase&quot;  &quot;goshu&quot;     &quot;iType&quot;     &quot;iForm&quot;     &quot;fType&quot;     &quot;fForm&quot;     &quot;kana&quot;      &quot;kanaBase&quot;  &quot;form&quot;     </span></span>
+<span id="cb4-6"><a href="intro.html#cb4-6" tabindex="-1"></a><span class="co">#&gt; [21] &quot;formBase&quot;  &quot;iConType&quot;  &quot;fConType&quot;  &quot;aType&quot;     &quot;aConType&quot;  &quot;aModeType&quot;</span></span></code></pre></div>
 <p>こうした素性情報をデータフレームの列にパースするには、<code>gibasa::prettify</code>という関数を利用できます。</p>
 <p>デフォルトではすべての素性についてパースしますが、<code>col_select</code>引数に残したい列名を指定することにより、特定の素性情報だけをパースすることもできます。このかたちのデータフレームは、解析するテキストの文章量によっては、数十万から数百万くらいの行からなることもよくあります。そのような規模のデータフレームについて、いちいちすべての素性をパースしていると、それだけでメモリを余計に消費してしまいます。メモリの消費を抑えるためにも、なるべく後で必要な素性だけをこまめに指定することをおすすめします。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="intro.html#cb5-1" tabindex="-1"></a><span class="fu">str</span>(gibasa<span class="sc">::</span><span class="fu">prettify</span>(dat))</span>
@@ -376,32 +374,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="intro.html#cb8-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="intro.html#cb8-2" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="intro.html#cb8-3" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>, <span class="at">remove_punct =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-4"><a href="intro.html#cb8-4" tabindex="-1"></a><span class="co">#&gt; Warning in .recacheSubclasses(def@className, def, env): undefined subclass &quot;ndiMatrix&quot; of class</span></span>
-<span id="cb8-5"><a href="intro.html#cb8-5" tabindex="-1"></a><span class="co">#&gt; &quot;replValueSp&quot;; definition not updated</span></span>
-<span id="cb8-6"><a href="intro.html#cb8-6" tabindex="-1"></a><span class="co">#&gt; Tokens consisting of 899 documents.</span></span>
-<span id="cb8-7"><a href="intro.html#cb8-7" tabindex="-1"></a><span class="co">#&gt; 1 :</span></span>
-<span id="cb8-8"><a href="intro.html#cb8-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
-<span id="cb8-9"><a href="intro.html#cb8-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-10"><a href="intro.html#cb8-10" tabindex="-1"></a><span class="co">#&gt; 2 :</span></span>
-<span id="cb8-11"><a href="intro.html#cb8-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
-<span id="cb8-12"><a href="intro.html#cb8-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-13"><a href="intro.html#cb8-13" tabindex="-1"></a><span class="co">#&gt; 3 :</span></span>
-<span id="cb8-14"><a href="intro.html#cb8-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                  </span></span>
-<span id="cb8-15"><a href="intro.html#cb8-15" tabindex="-1"></a><span class="co">#&gt; [5] &quot;官&quot;                   &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  </span></span>
-<span id="cb8-16"><a href="intro.html#cb8-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-17"><a href="intro.html#cb8-17" tabindex="-1"></a><span class="co">#&gt; 4 :</span></span>
-<span id="cb8-18"><a href="intro.html#cb8-18" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span>
-<span id="cb8-19"><a href="intro.html#cb8-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-20"><a href="intro.html#cb8-20" tabindex="-1"></a><span class="co">#&gt; 5 :</span></span>
-<span id="cb8-21"><a href="intro.html#cb8-21" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;      </span></span>
-<span id="cb8-22"><a href="intro.html#cb8-22" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;博物&quot;     &quot;局&quot;       &quot;に&quot;       &quot;勤め&quot;    </span></span>
-<span id="cb8-23"><a href="intro.html#cb8-23" tabindex="-1"></a><span class="co">#&gt; [ ... and 5 more ]</span></span>
-<span id="cb8-24"><a href="intro.html#cb8-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-25"><a href="intro.html#cb8-25" tabindex="-1"></a><span class="co">#&gt; 6 :</span></span>
-<span id="cb8-26"><a href="intro.html#cb8-26" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  </span></span>
-<span id="cb8-27"><a href="intro.html#cb8-27" tabindex="-1"></a><span class="co">#&gt; [ ... and 219 more ]</span></span>
-<span id="cb8-28"><a href="intro.html#cb8-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-29"><a href="intro.html#cb8-29" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents ]</span></span></code></pre></div>
+<span id="cb8-4"><a href="intro.html#cb8-4" tabindex="-1"></a><span class="co">#&gt; Tokens consisting of 899 documents.</span></span>
+<span id="cb8-5"><a href="intro.html#cb8-5" tabindex="-1"></a><span class="co">#&gt; 1 :</span></span>
+<span id="cb8-6"><a href="intro.html#cb8-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
+<span id="cb8-7"><a href="intro.html#cb8-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-8"><a href="intro.html#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2 :</span></span>
+<span id="cb8-9"><a href="intro.html#cb8-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
+<span id="cb8-10"><a href="intro.html#cb8-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-11"><a href="intro.html#cb8-11" tabindex="-1"></a><span class="co">#&gt; 3 :</span></span>
+<span id="cb8-12"><a href="intro.html#cb8-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  </span></span>
+<span id="cb8-13"><a href="intro.html#cb8-13" tabindex="-1"></a><span class="co">#&gt; [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  </span></span>
+<span id="cb8-14"><a href="intro.html#cb8-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-15"><a href="intro.html#cb8-15" tabindex="-1"></a><span class="co">#&gt; 4 :</span></span>
+<span id="cb8-16"><a href="intro.html#cb8-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span>
+<span id="cb8-17"><a href="intro.html#cb8-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-18"><a href="intro.html#cb8-18" tabindex="-1"></a><span class="co">#&gt; 5 :</span></span>
+<span id="cb8-19"><a href="intro.html#cb8-19" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;       &quot;に&quot;      </span></span>
+<span id="cb8-20"><a href="intro.html#cb8-20" tabindex="-1"></a><span class="co">#&gt; [12] &quot;勤め&quot;    </span></span>
+<span id="cb8-21"><a href="intro.html#cb8-21" tabindex="-1"></a><span class="co">#&gt; [ ... and 5 more ]</span></span>
+<span id="cb8-22"><a href="intro.html#cb8-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-23"><a href="intro.html#cb8-23" tabindex="-1"></a><span class="co">#&gt; 6 :</span></span>
+<span id="cb8-24"><a href="intro.html#cb8-24" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  </span></span>
+<span id="cb8-25"><a href="intro.html#cb8-25" tabindex="-1"></a><span class="co">#&gt; [ ... and 219 more ]</span></span>
+<span id="cb8-26"><a href="intro.html#cb8-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-27"><a href="intro.html#cb8-27" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents ]</span></span></code></pre></div>
 </div>
 <div id="lazy_dtなどと組み合わせて使う場合" class="section level3 hasAnchor" number="1.2.4">
 <h3><span class="header-section-number">1.2.4</span> lazy_dtなどと組み合わせて使う場合<a href="intro.html#lazy_dtなどと組み合わせて使う場合" class="anchor-section" aria-label="Anchor link to header"></a></h3>

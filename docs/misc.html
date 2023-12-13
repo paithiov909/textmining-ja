@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-12" />
+<meta name="date" content="2023-12-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -281,68 +281,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ここでの最適解（<code>is_best == "01"</code>）である結果について確認すると、「月ノ美兎」という語彙は次のように複数の形態素に分割されてしまっていることがわかります。</p>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="misc.html#cb34-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb34-2"><a href="misc.html#cb34-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">&quot;01&quot;</span>)</span>
-<span id="cb34-3"><a href="misc.html#cb34-3" tabindex="-1"></a><span class="co">#&gt;    doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha</span></span>
-<span id="cb34-4"><a href="misc.html#cb34-4" tabindex="-1"></a><span class="co">#&gt; 1       1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00</span></span>
-<span id="cb34-5"><a href="misc.html#cb34-5" tabindex="-1"></a><span class="co">#&gt; 2       1     38      月          名詞,一般,*,*,*,*,月,ツキ,ツキ   00   1285   1285  -6190.50</span></span>
-<span id="cb34-6"><a href="misc.html#cb34-6" tabindex="-1"></a><span class="co">#&gt; 3       1      4      ノ              記号,一般,*,*,*,*,ノ,ノ,ノ   00      5      5  -8874.75</span></span>
-<span id="cb34-7"><a href="misc.html#cb34-7" tabindex="-1"></a><span class="co">#&gt; 4       1     44      美  名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ   00   1291   1291 -13974.00</span></span>
-<span id="cb34-8"><a href="misc.html#cb34-8" tabindex="-1"></a><span class="co">#&gt; 5       1     38      兎      名詞,一般,*,*,*,*,兎,ウサギ,ウサギ   00   1285   1285 -18080.25</span></span>
-<span id="cb34-9"><a href="misc.html#cb34-9" tabindex="-1"></a><span class="co">#&gt; 6       1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -18095.25</span></span>
-<span id="cb34-10"><a href="misc.html#cb34-10" tabindex="-1"></a><span class="co">#&gt; 7       1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -22729.50</span></span>
-<span id="cb34-11"><a href="misc.html#cb34-11" tabindex="-1"></a><span class="co">#&gt; 8       1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -23010.00</span></span>
-<span id="cb34-12"><a href="misc.html#cb34-12" tabindex="-1"></a><span class="co">#&gt; 9       1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -24007.50</span></span>
-<span id="cb34-13"><a href="misc.html#cb34-13" tabindex="-1"></a><span class="co">#&gt; 10      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -22144.50</span></span>
-<span id="cb34-14"><a href="misc.html#cb34-14" tabindex="-1"></a><span class="co">#&gt;         beta is_best prob wcost  cost</span></span>
-<span id="cb34-15"><a href="misc.html#cb34-15" tabindex="-1"></a><span class="co">#&gt; 1  -22144.50      01    0     0     0</span></span>
-<span id="cb34-16"><a href="misc.html#cb34-16" tabindex="-1"></a><span class="co">#&gt; 2  -15954.00      01    1  8537  8254</span></span>
-<span id="cb34-17"><a href="misc.html#cb34-17" tabindex="-1"></a><span class="co">#&gt; 3  -13269.75      01    1  4929 11833</span></span>
-<span id="cb34-18"><a href="misc.html#cb34-18" tabindex="-1"></a><span class="co">#&gt; 4   -8170.50      01    1  7885 18632</span></span>
-<span id="cb34-19"><a href="misc.html#cb34-19" tabindex="-1"></a><span class="co">#&gt; 5   -4064.25      01    1  5290 24107</span></span>
-<span id="cb34-20"><a href="misc.html#cb34-20" tabindex="-1"></a><span class="co">#&gt; 6   -4049.25      01    1  3865 24127</span></span>
-<span id="cb34-21"><a href="misc.html#cb34-21" tabindex="-1"></a><span class="co">#&gt; 7     585.00      01    1  6142 30306</span></span>
-<span id="cb34-22"><a href="misc.html#cb34-22" tabindex="-1"></a><span class="co">#&gt; 8     865.50      01    1  4816 30680</span></span>
-<span id="cb34-23"><a href="misc.html#cb34-23" tabindex="-1"></a><span class="co">#&gt; 9    1863.00      01    1  6528 32010</span></span>
-<span id="cb34-24"><a href="misc.html#cb34-24" tabindex="-1"></a><span class="co">#&gt; 10      0.00      01    1     0 29526</span></span></code></pre></div>
+<span id="cb34-3"><a href="misc.html#cb34-3" tabindex="-1"></a><span class="co">#&gt;    doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha      beta is_best prob wcost  cost</span></span>
+<span id="cb34-4"><a href="misc.html#cb34-4" tabindex="-1"></a><span class="co">#&gt; 1       1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -22144.50      01    0     0     0</span></span>
+<span id="cb34-5"><a href="misc.html#cb34-5" tabindex="-1"></a><span class="co">#&gt; 2       1     38      月          名詞,一般,*,*,*,*,月,ツキ,ツキ   00   1285   1285  -6190.50 -15954.00      01    1  8537  8254</span></span>
+<span id="cb34-6"><a href="misc.html#cb34-6" tabindex="-1"></a><span class="co">#&gt; 3       1      4      ノ              記号,一般,*,*,*,*,ノ,ノ,ノ   00      5      5  -8874.75 -13269.75      01    1  4929 11833</span></span>
+<span id="cb34-7"><a href="misc.html#cb34-7" tabindex="-1"></a><span class="co">#&gt; 4       1     44      美  名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ   00   1291   1291 -13974.00  -8170.50      01    1  7885 18632</span></span>
+<span id="cb34-8"><a href="misc.html#cb34-8" tabindex="-1"></a><span class="co">#&gt; 5       1     38      兎      名詞,一般,*,*,*,*,兎,ウサギ,ウサギ   00   1285   1285 -18080.25  -4064.25      01    1  5290 24107</span></span>
+<span id="cb34-9"><a href="misc.html#cb34-9" tabindex="-1"></a><span class="co">#&gt; 6       1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -18095.25  -4049.25      01    1  3865 24127</span></span>
+<span id="cb34-10"><a href="misc.html#cb34-10" tabindex="-1"></a><span class="co">#&gt; 7       1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -22729.50    585.00      01    1  6142 30306</span></span>
+<span id="cb34-11"><a href="misc.html#cb34-11" tabindex="-1"></a><span class="co">#&gt; 8       1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -23010.00    865.50      01    1  4816 30680</span></span>
+<span id="cb34-12"><a href="misc.html#cb34-12" tabindex="-1"></a><span class="co">#&gt; 9       1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -24007.50   1863.00      01    1  6528 32010</span></span>
+<span id="cb34-13"><a href="misc.html#cb34-13" tabindex="-1"></a><span class="co">#&gt; 10      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -22144.50      0.00      01    1     0 29526</span></span></code></pre></div>
 <p>このような語については、<a href="https://paithiov909.github.io/gibasa/articles/partial.html">こちらのビネット</a>で説明しているように、制約付き解析を使って次のように強制的に抽出することもできます。</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="misc.html#cb35-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;月ノ</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">美兎</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">は箱の中&quot;</span>, <span class="at">partial =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb35-2"><a href="misc.html#cb35-2" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha</span></span>
-<span id="cb35-3"><a href="misc.html#cb35-3" tabindex="-1"></a><span class="co">#&gt; 1      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00</span></span>
-<span id="cb35-4"><a href="misc.html#cb35-4" tabindex="-1"></a><span class="co">#&gt; 2      1     38    月ノ                     名詞,一般,*,*,*,*,*   01   1285   1285  -6883.50</span></span>
-<span id="cb35-5"><a href="misc.html#cb35-5" tabindex="-1"></a><span class="co">#&gt; 3      1     38    美兎                     名詞,一般,*,*,*,*,*   01   1285   1285 -15499.50</span></span>
-<span id="cb35-6"><a href="misc.html#cb35-6" tabindex="-1"></a><span class="co">#&gt; 4      1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -15514.50</span></span>
-<span id="cb35-7"><a href="misc.html#cb35-7" tabindex="-1"></a><span class="co">#&gt; 5      1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -20148.75</span></span>
-<span id="cb35-8"><a href="misc.html#cb35-8" tabindex="-1"></a><span class="co">#&gt; 6      1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -20429.25</span></span>
-<span id="cb35-9"><a href="misc.html#cb35-9" tabindex="-1"></a><span class="co">#&gt; 7      1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -21426.75</span></span>
-<span id="cb35-10"><a href="misc.html#cb35-10" tabindex="-1"></a><span class="co">#&gt; 8      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -19563.75</span></span>
-<span id="cb35-11"><a href="misc.html#cb35-11" tabindex="-1"></a><span class="co">#&gt;        beta is_best prob wcost  cost</span></span>
-<span id="cb35-12"><a href="misc.html#cb35-12" tabindex="-1"></a><span class="co">#&gt; 1 -19563.75      01    0     0     0</span></span>
-<span id="cb35-13"><a href="misc.html#cb35-13" tabindex="-1"></a><span class="co">#&gt; 2 -12680.25      01    1  9461  9178</span></span>
-<span id="cb35-14"><a href="misc.html#cb35-14" tabindex="-1"></a><span class="co">#&gt; 3  -4064.25      01    1 11426 20666</span></span>
-<span id="cb35-15"><a href="misc.html#cb35-15" tabindex="-1"></a><span class="co">#&gt; 4  -4049.25      01    1  3865 20686</span></span>
-<span id="cb35-16"><a href="misc.html#cb35-16" tabindex="-1"></a><span class="co">#&gt; 5    585.00      01    1  6142 26865</span></span>
-<span id="cb35-17"><a href="misc.html#cb35-17" tabindex="-1"></a><span class="co">#&gt; 6    865.50      01    1  4816 27239</span></span>
-<span id="cb35-18"><a href="misc.html#cb35-18" tabindex="-1"></a><span class="co">#&gt; 7   1863.00      01    1  6528 28569</span></span>
-<span id="cb35-19"><a href="misc.html#cb35-19" tabindex="-1"></a><span class="co">#&gt; 8      0.00      01    1     0 26085</span></span></code></pre></div>
+<span id="cb35-2"><a href="misc.html#cb35-2" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                 feature stat lcAttr rcAttr     alpha      beta is_best prob wcost  cost</span></span>
+<span id="cb35-3"><a href="misc.html#cb35-3" tabindex="-1"></a><span class="co">#&gt; 1      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -19563.75      01    0     0     0</span></span>
+<span id="cb35-4"><a href="misc.html#cb35-4" tabindex="-1"></a><span class="co">#&gt; 2      1     38    月ノ                     名詞,一般,*,*,*,*,*   01   1285   1285  -6883.50 -12680.25      01    1  9461  9178</span></span>
+<span id="cb35-5"><a href="misc.html#cb35-5" tabindex="-1"></a><span class="co">#&gt; 3      1     38    美兎                     名詞,一般,*,*,*,*,*   01   1285   1285 -15499.50  -4064.25      01    1 11426 20666</span></span>
+<span id="cb35-6"><a href="misc.html#cb35-6" tabindex="-1"></a><span class="co">#&gt; 4      1     16      は            助詞,係助詞,*,*,*,*,は,ハ,ワ   00    261    261 -15514.50  -4049.25      01    1  3865 20686</span></span>
+<span id="cb35-7"><a href="misc.html#cb35-7" tabindex="-1"></a><span class="co">#&gt; 5      1     38      箱          名詞,一般,*,*,*,*,箱,ハコ,ハコ   00   1285   1285 -20148.75    585.00      01    1  6142 26865</span></span>
+<span id="cb35-8"><a href="misc.html#cb35-8" tabindex="-1"></a><span class="co">#&gt; 6      1     24      の            助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368 -20429.25    865.50      01    1  4816 27239</span></span>
+<span id="cb35-9"><a href="misc.html#cb35-9" tabindex="-1"></a><span class="co">#&gt; 7      1     66      中 名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ   00   1313   1313 -21426.75   1863.00      01    1  6528 28569</span></span>
+<span id="cb35-10"><a href="misc.html#cb35-10" tabindex="-1"></a><span class="co">#&gt; 8      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -19563.75      0.00      01    1     0 26085</span></span></code></pre></div>
 <p>一方で、IPA辞書には、たとえば「早見」のような<code>名詞,固有名詞,人名,姓,...</code>という品詞と、「沙織」のような<code>名詞,固有名詞,人名,名,...</code>という品詞があります。
 このような解析結果としてより望ましい品詞を確認するには、正しく解析させたい語（ここでは「月ノ美兎」）と同じような使われ方をする語（たとえば「早見沙織」）を実際に解析してみて、その結果を確認するとよいでしょう。</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="misc.html#cb36-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;早見沙織のラジオ番組&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb36-2"><a href="misc.html#cb36-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">&quot;01&quot;</span>)</span>
-<span id="cb36-3"><a href="misc.html#cb36-3" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                      feature stat lcAttr rcAttr</span></span>
-<span id="cb36-4"><a href="misc.html#cb36-4" tabindex="-1"></a><span class="co">#&gt; 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02      0      0</span></span>
-<span id="cb36-5"><a href="misc.html#cb36-5" tabindex="-1"></a><span class="co">#&gt; 2      1     43    早見 名詞,固有名詞,人名,姓,*,*,早見,ハヤミ,ハヤミ   00   1290   1290</span></span>
-<span id="cb36-6"><a href="misc.html#cb36-6" tabindex="-1"></a><span class="co">#&gt; 3      1     44    沙織 名詞,固有名詞,人名,名,*,*,沙織,サオリ,サオリ   00   1291   1291</span></span>
-<span id="cb36-7"><a href="misc.html#cb36-7" tabindex="-1"></a><span class="co">#&gt; 4      1     24      の                 助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368</span></span>
-<span id="cb36-8"><a href="misc.html#cb36-8" tabindex="-1"></a><span class="co">#&gt; 5      1     38  ラジオ       名詞,一般,*,*,*,*,ラジオ,ラジオ,ラジオ   00   1285   1285</span></span>
-<span id="cb36-9"><a href="misc.html#cb36-9" tabindex="-1"></a><span class="co">#&gt; 6      1     38    番組     名詞,一般,*,*,*,*,番組,バングミ,バングミ   00   1285   1285</span></span>
-<span id="cb36-10"><a href="misc.html#cb36-10" tabindex="-1"></a><span class="co">#&gt; 7      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   03      0      0</span></span>
-<span id="cb36-11"><a href="misc.html#cb36-11" tabindex="-1"></a><span class="co">#&gt;       alpha      beta is_best prob wcost  cost</span></span>
-<span id="cb36-12"><a href="misc.html#cb36-12" tabindex="-1"></a><span class="co">#&gt; 1      0.00 -10104.75      01    0     0     0</span></span>
-<span id="cb36-13"><a href="misc.html#cb36-13" tabindex="-1"></a><span class="co">#&gt; 2  -4362.75  -5742.00      01    1  7472  5817</span></span>
-<span id="cb36-14"><a href="misc.html#cb36-14" tabindex="-1"></a><span class="co">#&gt; 3  -5452.50  -4652.25      01    1  8462  7270</span></span>
-<span id="cb36-15"><a href="misc.html#cb36-15" tabindex="-1"></a><span class="co">#&gt; 4  -6658.50  -3446.25      01    1  4816  8878</span></span>
-<span id="cb36-16"><a href="misc.html#cb36-16" tabindex="-1"></a><span class="co">#&gt; 5  -7886.25  -2218.50      01    1  3942 10515</span></span>
-<span id="cb36-17"><a href="misc.html#cb36-17" tabindex="-1"></a><span class="co">#&gt; 6 -10534.50    429.75      01    1  3469 14046</span></span>
-<span id="cb36-18"><a href="misc.html#cb36-18" tabindex="-1"></a><span class="co">#&gt; 7 -10104.75      0.00      01    1     0 13473</span></span></code></pre></div>
+<span id="cb36-3"><a href="misc.html#cb36-3" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                      feature stat lcAttr rcAttr     alpha      beta is_best prob wcost</span></span>
+<span id="cb36-4"><a href="misc.html#cb36-4" tabindex="-1"></a><span class="co">#&gt; 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -10104.75      01    0     0</span></span>
+<span id="cb36-5"><a href="misc.html#cb36-5" tabindex="-1"></a><span class="co">#&gt; 2      1     43    早見 名詞,固有名詞,人名,姓,*,*,早見,ハヤミ,ハヤミ   00   1290   1290  -4362.75  -5742.00      01    1  7472</span></span>
+<span id="cb36-6"><a href="misc.html#cb36-6" tabindex="-1"></a><span class="co">#&gt; 3      1     44    沙織 名詞,固有名詞,人名,名,*,*,沙織,サオリ,サオリ   00   1291   1291  -5452.50  -4652.25      01    1  8462</span></span>
+<span id="cb36-7"><a href="misc.html#cb36-7" tabindex="-1"></a><span class="co">#&gt; 4      1     24      の                 助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368  -6658.50  -3446.25      01    1  4816</span></span>
+<span id="cb36-8"><a href="misc.html#cb36-8" tabindex="-1"></a><span class="co">#&gt; 5      1     38  ラジオ       名詞,一般,*,*,*,*,ラジオ,ラジオ,ラジオ   00   1285   1285  -7886.25  -2218.50      01    1  3942</span></span>
+<span id="cb36-9"><a href="misc.html#cb36-9" tabindex="-1"></a><span class="co">#&gt; 6      1     38    番組     名詞,一般,*,*,*,*,番組,バングミ,バングミ   00   1285   1285 -10534.50    429.75      01    1  3469</span></span>
+<span id="cb36-10"><a href="misc.html#cb36-10" tabindex="-1"></a><span class="co">#&gt; 7      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -10104.75      0.00      01    1     0</span></span>
+<span id="cb36-11"><a href="misc.html#cb36-11" tabindex="-1"></a><span class="co">#&gt;    cost</span></span>
+<span id="cb36-12"><a href="misc.html#cb36-12" tabindex="-1"></a><span class="co">#&gt; 1     0</span></span>
+<span id="cb36-13"><a href="misc.html#cb36-13" tabindex="-1"></a><span class="co">#&gt; 2  5817</span></span>
+<span id="cb36-14"><a href="misc.html#cb36-14" tabindex="-1"></a><span class="co">#&gt; 3  7270</span></span>
+<span id="cb36-15"><a href="misc.html#cb36-15" tabindex="-1"></a><span class="co">#&gt; 4  8878</span></span>
+<span id="cb36-16"><a href="misc.html#cb36-16" tabindex="-1"></a><span class="co">#&gt; 5 10515</span></span>
+<span id="cb36-17"><a href="misc.html#cb36-17" tabindex="-1"></a><span class="co">#&gt; 6 14046</span></span>
+<span id="cb36-18"><a href="misc.html#cb36-18" tabindex="-1"></a><span class="co">#&gt; 7 13473</span></span></code></pre></div>
 <p>この結果は狙いどおりのものであるため、「月ノ美兎」を正しく解析するために用意するCSVファイルは、仮に次のように作成しておくことができそうです。</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="misc.html#cb37-1" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
 <span id="cb37-2"><a href="misc.html#cb37-2" tabindex="-1"></a>  <span class="fu">c</span>(</span>
@@ -363,29 +343,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb38-4"><a href="misc.html#cb38-4" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb38-5"><a href="misc.html#cb38-5" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb38-6"><a href="misc.html#cb38-6" tabindex="-1"></a>)</span>
-<span id="cb38-7"><a href="misc.html#cb38-7" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/file1769b5047c2.csv ... 2</span></span>
+<span id="cb38-7"><a href="misc.html#cb38-7" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/file3c9724d85bf.csv ... 2</span></span>
 <span id="cb38-8"><a href="misc.html#cb38-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb38-9"><a href="misc.html#cb38-9" tabindex="-1"></a><span class="co">#&gt; done!</span></span></code></pre></div>
 <p>なお、gibasaによる辞書のビルド時の注意点として、「<a href="https://taku910.github.io/mecab/dic.html">MeCab: 単語の追加方法</a>」で案内されている「コストの自動推定機能」はgibasaからは利用できません。
 追加したい見出し語の生起コストは空にせず、必ず適当な値で埋めるようにしてください。</p>
 <p>さて、ビルドしたユーザー辞書を使ってみましょう。</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="misc.html#cb39-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span>
-<span id="cb39-2"><a href="misc.html#cb39-2" tabindex="-1"></a><span class="co">#&gt;                                                       file_path charset lsize rsize   size type</span></span>
-<span id="cb39-3"><a href="misc.html#cb39-3" tabindex="-1"></a><span class="co">#&gt; 1 /usr/local/lib/python3.10/dist-packages/ipadic/dicdir/sys.dic    utf8  1316  1316 392126    0</span></span>
-<span id="cb39-4"><a href="misc.html#cb39-4" tabindex="-1"></a><span class="co">#&gt; 2                          /tmp/RtmpJ9f5k1/file176960947e58.dic    utf8  1316  1316      2    1</span></span>
-<span id="cb39-5"><a href="misc.html#cb39-5" tabindex="-1"></a><span class="co">#&gt;   version</span></span>
-<span id="cb39-6"><a href="misc.html#cb39-6" tabindex="-1"></a><span class="co">#&gt; 1     102</span></span>
-<span id="cb39-7"><a href="misc.html#cb39-7" tabindex="-1"></a><span class="co">#&gt; 2     102</span></span>
-<span id="cb39-8"><a href="misc.html#cb39-8" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">user_dic =</span> user_dic)</span>
-<span id="cb39-9"><a href="misc.html#cb39-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
-<span id="cb39-10"><a href="misc.html#cb39-10" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                     </span></span>
-<span id="cb39-11"><a href="misc.html#cb39-11" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                       </span></span>
-<span id="cb39-12"><a href="misc.html#cb39-12" tabindex="-1"></a><span class="co">#&gt; 1 1                1        1 月ノ  名詞,固有名詞,人名,姓,*,*,月ノ,ツキノ,ツキノ</span></span>
-<span id="cb39-13"><a href="misc.html#cb39-13" tabindex="-1"></a><span class="co">#&gt; 2 1                1        2 美兎  名詞,固有名詞,人名,名,*,*,美兎,ミト,ミト    </span></span>
-<span id="cb39-14"><a href="misc.html#cb39-14" tabindex="-1"></a><span class="co">#&gt; 3 1                1        3 は    助詞,係助詞,*,*,*,*,は,ハ,ワ                </span></span>
-<span id="cb39-15"><a href="misc.html#cb39-15" tabindex="-1"></a><span class="co">#&gt; 4 1                1        4 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ              </span></span>
-<span id="cb39-16"><a href="misc.html#cb39-16" tabindex="-1"></a><span class="co">#&gt; 5 1                1        5 の    助詞,連体化,*,*,*,*,の,ノ,ノ                </span></span>
-<span id="cb39-17"><a href="misc.html#cb39-17" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code></pre></div>
+<span id="cb39-2"><a href="misc.html#cb39-2" tabindex="-1"></a><span class="co">#&gt;                                                       file_path charset lsize rsize   size type version</span></span>
+<span id="cb39-3"><a href="misc.html#cb39-3" tabindex="-1"></a><span class="co">#&gt; 1 /usr/local/lib/python3.10/dist-packages/ipadic/dicdir/sys.dic    utf8  1316  1316 392126    0     102</span></span>
+<span id="cb39-4"><a href="misc.html#cb39-4" tabindex="-1"></a><span class="co">#&gt; 2                           /tmp/Rtmp3PPYTw/file3c9689fd198.dic    utf8  1316  1316      2    1     102</span></span>
+<span id="cb39-5"><a href="misc.html#cb39-5" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">user_dic =</span> user_dic)</span>
+<span id="cb39-6"><a href="misc.html#cb39-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span id="cb39-7"><a href="misc.html#cb39-7" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                     </span></span>
+<span id="cb39-8"><a href="misc.html#cb39-8" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                       </span></span>
+<span id="cb39-9"><a href="misc.html#cb39-9" tabindex="-1"></a><span class="co">#&gt; 1 1                1        1 月ノ  名詞,固有名詞,人名,姓,*,*,月ノ,ツキノ,ツキノ</span></span>
+<span id="cb39-10"><a href="misc.html#cb39-10" tabindex="-1"></a><span class="co">#&gt; 2 1                1        2 美兎  名詞,固有名詞,人名,名,*,*,美兎,ミト,ミト    </span></span>
+<span id="cb39-11"><a href="misc.html#cb39-11" tabindex="-1"></a><span class="co">#&gt; 3 1                1        3 は    助詞,係助詞,*,*,*,*,は,ハ,ワ                </span></span>
+<span id="cb39-12"><a href="misc.html#cb39-12" tabindex="-1"></a><span class="co">#&gt; 4 1                1        4 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ              </span></span>
+<span id="cb39-13"><a href="misc.html#cb39-13" tabindex="-1"></a><span class="co">#&gt; 5 1                1        5 の    助詞,連体化,*,*,*,*,の,ノ,ノ                </span></span>
+<span id="cb39-14"><a href="misc.html#cb39-14" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code></pre></div>
 <p>狙いどおりに解析できているようです。</p>
 </div>
 <div id="生起コストを調整する" class="section level3 hasAnchor" number="7.2.3">
@@ -407,7 +384,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb40-10"><a href="misc.html#cb40-10" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb40-11"><a href="misc.html#cb40-11" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb40-12"><a href="misc.html#cb40-12" tabindex="-1"></a>)</span>
-<span id="cb40-13"><a href="misc.html#cb40-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/file17692889b79d.csv ... 1</span></span>
+<span id="cb40-13"><a href="misc.html#cb40-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/file3c911d9d8b8.csv ... 1</span></span>
 <span id="cb40-14"><a href="misc.html#cb40-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb40-15"><a href="misc.html#cb40-15" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb40-16"><a href="misc.html#cb40-16" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
@@ -505,7 +482,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb43-13"><a href="misc.html#cb43-13" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb43-14"><a href="misc.html#cb43-14" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb43-15"><a href="misc.html#cb43-15" tabindex="-1"></a>)</span>
-<span id="cb43-16"><a href="misc.html#cb43-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/file17694059f44b.csv ... 1</span></span>
+<span id="cb43-16"><a href="misc.html#cb43-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/file3c933dc86d.csv ... 1</span></span>
 <span id="cb43-17"><a href="misc.html#cb43-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb43-18"><a href="misc.html#cb43-18" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb43-19"><a href="misc.html#cb43-19" tabindex="-1"></a></span>
@@ -545,40 +522,40 @@ UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリ�
 <span id="cb44-7"><a href="misc.html#cb44-7" tabindex="-1"></a>  <span class="at">out_dir =</span> <span class="fu">tempdir</span>(),</span>
 <span id="cb44-8"><a href="misc.html#cb44-8" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;euc-jp&quot;</span></span>
 <span id="cb44-9"><a href="misc.html#cb44-9" tabindex="-1"></a>)</span>
-<span id="cb44-10"><a href="misc.html#cb44-10" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
-<span id="cb44-11"><a href="misc.html#cb44-11" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
-<span id="cb44-12"><a href="misc.html#cb44-12" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
-<span id="cb44-13"><a href="misc.html#cb44-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
-<span id="cb44-14"><a href="misc.html#cb44-14" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
-<span id="cb44-15"><a href="misc.html#cb44-15" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
-<span id="cb44-16"><a href="misc.html#cb44-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
-<span id="cb44-17"><a href="misc.html#cb44-17" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
-<span id="cb44-18"><a href="misc.html#cb44-18" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
-<span id="cb44-19"><a href="misc.html#cb44-19" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
-<span id="cb44-20"><a href="misc.html#cb44-20" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
-<span id="cb44-21"><a href="misc.html#cb44-21" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
-<span id="cb44-22"><a href="misc.html#cb44-22" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
-<span id="cb44-23"><a href="misc.html#cb44-23" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
-<span id="cb44-24"><a href="misc.html#cb44-24" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
-<span id="cb44-25"><a href="misc.html#cb44-25" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
-<span id="cb44-26"><a href="misc.html#cb44-26" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
-<span id="cb44-27"><a href="misc.html#cb44-27" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
-<span id="cb44-28"><a href="misc.html#cb44-28" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
-<span id="cb44-29"><a href="misc.html#cb44-29" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
-<span id="cb44-30"><a href="misc.html#cb44-30" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
-<span id="cb44-31"><a href="misc.html#cb44-31" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
-<span id="cb44-32"><a href="misc.html#cb44-32" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
-<span id="cb44-33"><a href="misc.html#cb44-33" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
-<span id="cb44-34"><a href="misc.html#cb44-34" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
-<span id="cb44-35"><a href="misc.html#cb44-35" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
-<span id="cb44-36"><a href="misc.html#cb44-36" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
-<span id="cb44-37"><a href="misc.html#cb44-37" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpJ9f5k1/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
+<span id="cb44-10"><a href="misc.html#cb44-10" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
+<span id="cb44-11"><a href="misc.html#cb44-11" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
+<span id="cb44-12"><a href="misc.html#cb44-12" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
+<span id="cb44-13"><a href="misc.html#cb44-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
+<span id="cb44-14"><a href="misc.html#cb44-14" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
+<span id="cb44-15"><a href="misc.html#cb44-15" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
+<span id="cb44-16"><a href="misc.html#cb44-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
+<span id="cb44-17"><a href="misc.html#cb44-17" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
+<span id="cb44-18"><a href="misc.html#cb44-18" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
+<span id="cb44-19"><a href="misc.html#cb44-19" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
+<span id="cb44-20"><a href="misc.html#cb44-20" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
+<span id="cb44-21"><a href="misc.html#cb44-21" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
+<span id="cb44-22"><a href="misc.html#cb44-22" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
+<span id="cb44-23"><a href="misc.html#cb44-23" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
+<span id="cb44-24"><a href="misc.html#cb44-24" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
+<span id="cb44-25"><a href="misc.html#cb44-25" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
+<span id="cb44-26"><a href="misc.html#cb44-26" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
+<span id="cb44-27"><a href="misc.html#cb44-27" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
+<span id="cb44-28"><a href="misc.html#cb44-28" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
+<span id="cb44-29"><a href="misc.html#cb44-29" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
+<span id="cb44-30"><a href="misc.html#cb44-30" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
+<span id="cb44-31"><a href="misc.html#cb44-31" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
+<span id="cb44-32"><a href="misc.html#cb44-32" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
+<span id="cb44-33"><a href="misc.html#cb44-33" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
+<span id="cb44-34"><a href="misc.html#cb44-34" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
+<span id="cb44-35"><a href="misc.html#cb44-35" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
+<span id="cb44-36"><a href="misc.html#cb44-36" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
+<span id="cb44-37"><a href="misc.html#cb44-37" tabindex="-1"></a><span class="co">#&gt; reading /tmp/Rtmp3PPYTw/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
 <span id="cb44-38"><a href="misc.html#cb44-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb44-39"><a href="misc.html#cb44-39" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb44-40"><a href="misc.html#cb44-40" tabindex="-1"></a></span>
 <span id="cb44-41"><a href="misc.html#cb44-41" tabindex="-1"></a><span class="co"># `dicrc`ファイルをビルドした辞書のあるディレクトリにコピーする</span></span>
 <span id="cb44-42"><a href="misc.html#cb44-42" tabindex="-1"></a><span class="fu">file.copy</span>(<span class="fu">file.path</span>(<span class="fu">tempdir</span>(), <span class="st">&quot;mecab-ipadic-2.7.0-20070801/dicrc&quot;</span>), <span class="fu">tempdir</span>())</span>
-<span id="cb44-43"><a href="misc.html#cb44-43" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb44-43"><a href="misc.html#cb44-43" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
 <span id="cb44-44"><a href="misc.html#cb44-44" tabindex="-1"></a></span>
 <span id="cb44-45"><a href="misc.html#cb44-45" tabindex="-1"></a><span class="co"># ここでは`mecabrc`ファイルが適切な位置に配置されていないという想定で、</span></span>
 <span id="cb44-46"><a href="misc.html#cb44-46" tabindex="-1"></a><span class="co"># `mecabrc`ファイルを偽装している。</span></span>

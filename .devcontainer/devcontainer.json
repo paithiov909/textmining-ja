@@ -8,10 +8,10 @@
         "ghcr.io/rocker-org/devcontainer-features/r-rig:1": {
             "version": "none",
             "installRadian": true,
-            "installVscDebugger": true
+            "installVscDebugger": false
         },
         "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-            "packages": "bookdown,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
+            "packages": "bookdown,servr,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
             "installSystemRequirements": true
         }
     },

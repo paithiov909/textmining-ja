@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-13" />
+<meta name="date" content="2024-02-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 <script src="libs/react-18.2.0/react.min.js"></script>
 <script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
 <script src="libs/reactable-binding-0.4.4/reactable.js"></script>
 
@@ -244,6 +244,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="更新情報" class="section level2 hasAnchor" number="6.1">
 <h2><span class="header-section-number">6.1</span> 更新情報<a href="sessioninfo.html#更新情報" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
+<li><strong>2024-02-17</strong>
+<ul>
+<li>「Chapter 3 N-gram」にNgramを品詞でフィルタする場合の説明を追加しました</li>
+<li>「Chapter 4 単語頻度の重みづけ」の「コサイン正規化」についての説明を修正しました。gibasa v1.1.0から<code>norm=TRUE</code>時の挙動をRMeCabと同じになるように変更したため、「（挙動の）細かな点が異なる」としていた説明を削除しました</li>
+</ul></li>
 <li><strong>2023-12-13</strong>
 <ul>
 <li>見た目を調整しました。内容に変更はありません</li>
@@ -267,105 +272,100 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="セッション情報" class="section level2 hasAnchor" number="6.2">
 <h2><span class="header-section-number">6.2</span> セッション情報<a href="sessioninfo.html#セッション情報" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="sessioninfo.html#cb29-1" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span>
-<span id="cb29-2"><a href="sessioninfo.html#cb29-2" tabindex="-1"></a><span class="co">#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb29-3"><a href="sessioninfo.html#cb29-3" tabindex="-1"></a><span class="co">#&gt;  setting  value</span></span>
-<span id="cb29-4"><a href="sessioninfo.html#cb29-4" tabindex="-1"></a><span class="co">#&gt;  version  R version 4.3.2 (2023-10-31)</span></span>
-<span id="cb29-5"><a href="sessioninfo.html#cb29-5" tabindex="-1"></a><span class="co">#&gt;  os       Ubuntu 22.04.3 LTS</span></span>
-<span id="cb29-6"><a href="sessioninfo.html#cb29-6" tabindex="-1"></a><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
-<span id="cb29-7"><a href="sessioninfo.html#cb29-7" tabindex="-1"></a><span class="co">#&gt;  ui       X11</span></span>
-<span id="cb29-8"><a href="sessioninfo.html#cb29-8" tabindex="-1"></a><span class="co">#&gt;  language (EN)</span></span>
-<span id="cb29-9"><a href="sessioninfo.html#cb29-9" tabindex="-1"></a><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
-<span id="cb29-10"><a href="sessioninfo.html#cb29-10" tabindex="-1"></a><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
-<span id="cb29-11"><a href="sessioninfo.html#cb29-11" tabindex="-1"></a><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span id="cb29-12"><a href="sessioninfo.html#cb29-12" tabindex="-1"></a><span class="co">#&gt;  date     2023-12-13</span></span>
-<span id="cb29-13"><a href="sessioninfo.html#cb29-13" tabindex="-1"></a><span class="co">#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)</span></span>
-<span id="cb29-14"><a href="sessioninfo.html#cb29-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb29-15"><a href="sessioninfo.html#cb29-15" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb29-16"><a href="sessioninfo.html#cb29-16" tabindex="-1"></a><span class="co">#&gt;  package      * version date (UTC) lib source</span></span>
-<span id="cb29-17"><a href="sessioninfo.html#cb29-17" tabindex="-1"></a><span class="co">#&gt;  audubon        0.5.1   2023-05-02 [1] RSPM</span></span>
-<span id="cb29-18"><a href="sessioninfo.html#cb29-18" tabindex="-1"></a><span class="co">#&gt;  bit            4.0.5   2022-11-15 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-19"><a href="sessioninfo.html#cb29-19" tabindex="-1"></a><span class="co">#&gt;  bit64          4.0.5   2020-08-30 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-20"><a href="sessioninfo.html#cb29-20" tabindex="-1"></a><span class="co">#&gt;  bookdown       0.37    2023-12-01 [1] RSPM</span></span>
-<span id="cb29-21"><a href="sessioninfo.html#cb29-21" tabindex="-1"></a><span class="co">#&gt;  bslib          0.5.1   2023-08-11 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-22"><a href="sessioninfo.html#cb29-22" tabindex="-1"></a><span class="co">#&gt;  cachem         1.0.8   2023-05-01 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-23"><a href="sessioninfo.html#cb29-23" tabindex="-1"></a><span class="co">#&gt;  cli            3.6.1   2023-03-23 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-24"><a href="sessioninfo.html#cb29-24" tabindex="-1"></a><span class="co">#&gt;  crayon         1.5.2   2022-09-29 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-25"><a href="sessioninfo.html#cb29-25" tabindex="-1"></a><span class="co">#&gt;  curl           5.1.0   2023-10-02 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-26"><a href="sessioninfo.html#cb29-26" tabindex="-1"></a><span class="co">#&gt;  data.table     1.14.8  2023-02-17 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-27"><a href="sessioninfo.html#cb29-27" tabindex="-1"></a><span class="co">#&gt;  digest         0.6.33  2023-07-07 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-28"><a href="sessioninfo.html#cb29-28" tabindex="-1"></a><span class="co">#&gt;  dplyr        * 1.1.3   2023-09-03 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-29"><a href="sessioninfo.html#cb29-29" tabindex="-1"></a><span class="co">#&gt;  dtplyr         1.3.1   2023-03-22 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-30"><a href="sessioninfo.html#cb29-30" tabindex="-1"></a><span class="co">#&gt;  ellipsis       0.3.2   2021-04-29 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-31"><a href="sessioninfo.html#cb29-31" tabindex="-1"></a><span class="co">#&gt;  evaluate       0.22    2023-09-29 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-32"><a href="sessioninfo.html#cb29-32" tabindex="-1"></a><span class="co">#&gt;  fansi          1.0.5   2023-10-08 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-33"><a href="sessioninfo.html#cb29-33" tabindex="-1"></a><span class="co">#&gt;  fastmap        1.1.1   2023-02-24 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-34"><a href="sessioninfo.html#cb29-34" tabindex="-1"></a><span class="co">#&gt;  fastmatch      1.1-4   2023-08-18 [1] RSPM</span></span>
-<span id="cb29-35"><a href="sessioninfo.html#cb29-35" tabindex="-1"></a><span class="co">#&gt;  forcats        1.0.0   2023-01-29 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-36"><a href="sessioninfo.html#cb29-36" tabindex="-1"></a><span class="co">#&gt;  generics       0.1.3   2022-07-05 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-37"><a href="sessioninfo.html#cb29-37" tabindex="-1"></a><span class="co">#&gt;  gibasa         1.0.1   2023-12-03 [1] RSPM</span></span>
-<span id="cb29-38"><a href="sessioninfo.html#cb29-38" tabindex="-1"></a><span class="co">#&gt;  glue           1.6.2   2022-02-24 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-39"><a href="sessioninfo.html#cb29-39" tabindex="-1"></a><span class="co">#&gt;  hms            1.1.3   2023-03-21 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-40"><a href="sessioninfo.html#cb29-40" tabindex="-1"></a><span class="co">#&gt;  htmltools      0.5.6.1 2023-10-06 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-41"><a href="sessioninfo.html#cb29-41" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets    1.6.2   2023-03-17 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-42"><a href="sessioninfo.html#cb29-42" tabindex="-1"></a><span class="co">#&gt;  httpuv         1.6.12  2023-10-23 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-43"><a href="sessioninfo.html#cb29-43" tabindex="-1"></a><span class="co">#&gt;  janeaustenr    1.0.0   2022-08-26 [1] RSPM</span></span>
-<span id="cb29-44"><a href="sessioninfo.html#cb29-44" tabindex="-1"></a><span class="co">#&gt;  jquerylib      0.1.4   2021-04-26 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-45"><a href="sessioninfo.html#cb29-45" tabindex="-1"></a><span class="co">#&gt;  jsonlite       1.8.8   2023-12-04 [1] RSPM</span></span>
-<span id="cb29-46"><a href="sessioninfo.html#cb29-46" tabindex="-1"></a><span class="co">#&gt;  knitr          1.44    2023-09-11 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-47"><a href="sessioninfo.html#cb29-47" tabindex="-1"></a><span class="co">#&gt;  later          1.3.1   2023-05-02 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-48"><a href="sessioninfo.html#cb29-48" tabindex="-1"></a><span class="co">#&gt;  lattice        0.21-9  2023-10-01 [2] CRAN (R 4.3.2)</span></span>
-<span id="cb29-49"><a href="sessioninfo.html#cb29-49" tabindex="-1"></a><span class="co">#&gt;  lifecycle      1.0.3   2022-10-07 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-50"><a href="sessioninfo.html#cb29-50" tabindex="-1"></a><span class="co">#&gt;  magrittr       2.0.3   2022-03-30 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-51"><a href="sessioninfo.html#cb29-51" tabindex="-1"></a><span class="co">#&gt;  Matrix         1.6-1.1 2023-09-18 [2] CRAN (R 4.3.2)</span></span>
-<span id="cb29-52"><a href="sessioninfo.html#cb29-52" tabindex="-1"></a><span class="co">#&gt;  memoise        2.0.1   2021-11-26 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-53"><a href="sessioninfo.html#cb29-53" tabindex="-1"></a><span class="co">#&gt;  mime           0.12    2021-09-28 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-54"><a href="sessioninfo.html#cb29-54" tabindex="-1"></a><span class="co">#&gt;  pillar         1.9.0   2023-03-22 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-55"><a href="sessioninfo.html#cb29-55" tabindex="-1"></a><span class="co">#&gt;  pkgconfig      2.0.3   2019-09-22 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-56"><a href="sessioninfo.html#cb29-56" tabindex="-1"></a><span class="co">#&gt;  promises       1.2.1   2023-08-10 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-57"><a href="sessioninfo.html#cb29-57" tabindex="-1"></a><span class="co">#&gt;  purrr          1.0.2   2023-08-10 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-58"><a href="sessioninfo.html#cb29-58" tabindex="-1"></a><span class="co">#&gt;  quanteda       3.3.1   2023-05-18 [1] RSPM</span></span>
-<span id="cb29-59"><a href="sessioninfo.html#cb29-59" tabindex="-1"></a><span class="co">#&gt;  R.cache        0.16.0  2022-07-21 [1] RSPM</span></span>
-<span id="cb29-60"><a href="sessioninfo.html#cb29-60" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3    1.8.2   2022-06-13 [1] RSPM</span></span>
-<span id="cb29-61"><a href="sessioninfo.html#cb29-61" tabindex="-1"></a><span class="co">#&gt;  R.oo           1.25.0  2022-06-12 [1] RSPM</span></span>
-<span id="cb29-62"><a href="sessioninfo.html#cb29-62" tabindex="-1"></a><span class="co">#&gt;  R.utils        2.12.2  2022-11-11 [1] RSPM</span></span>
-<span id="cb29-63"><a href="sessioninfo.html#cb29-63" tabindex="-1"></a><span class="co">#&gt;  R6             2.5.1   2021-08-19 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-64"><a href="sessioninfo.html#cb29-64" tabindex="-1"></a><span class="co">#&gt;  Rcpp           1.0.11  2023-07-06 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-65"><a href="sessioninfo.html#cb29-65" tabindex="-1"></a><span class="co">#&gt;  RcppParallel   5.1.7   2023-02-27 [1] RSPM</span></span>
-<span id="cb29-66"><a href="sessioninfo.html#cb29-66" tabindex="-1"></a><span class="co">#&gt;  reactable      0.4.4   2023-03-12 [1] RSPM</span></span>
-<span id="cb29-67"><a href="sessioninfo.html#cb29-67" tabindex="-1"></a><span class="co">#&gt;  reactR         0.5.0   2023-10-11 [1] RSPM</span></span>
-<span id="cb29-68"><a href="sessioninfo.html#cb29-68" tabindex="-1"></a><span class="co">#&gt;  readr          2.1.4   2023-02-10 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-69"><a href="sessioninfo.html#cb29-69" tabindex="-1"></a><span class="co">#&gt;  rlang          1.1.2   2023-11-04 [1] RSPM</span></span>
-<span id="cb29-70"><a href="sessioninfo.html#cb29-70" tabindex="-1"></a><span class="co">#&gt;  rmarkdown      2.25    2023-09-18 [1] RSPM</span></span>
-<span id="cb29-71"><a href="sessioninfo.html#cb29-71" tabindex="-1"></a><span class="co">#&gt;  rstudioapi     0.15.0  2023-07-07 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-72"><a href="sessioninfo.html#cb29-72" tabindex="-1"></a><span class="co">#&gt;  sass           0.4.7   2023-07-15 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-73"><a href="sessioninfo.html#cb29-73" tabindex="-1"></a><span class="co">#&gt;  servr          0.27    2023-05-02 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-74"><a href="sessioninfo.html#cb29-74" tabindex="-1"></a><span class="co">#&gt;  sessioninfo    1.2.2   2021-12-06 [1] RSPM</span></span>
-<span id="cb29-75"><a href="sessioninfo.html#cb29-75" tabindex="-1"></a><span class="co">#&gt;  SnowballC      0.7.1   2023-04-25 [1] RSPM</span></span>
-<span id="cb29-76"><a href="sessioninfo.html#cb29-76" tabindex="-1"></a><span class="co">#&gt;  stopwords      2.3     2021-10-28 [1] RSPM</span></span>
-<span id="cb29-77"><a href="sessioninfo.html#cb29-77" tabindex="-1"></a><span class="co">#&gt;  stringi        1.7.12  2023-01-11 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-78"><a href="sessioninfo.html#cb29-78" tabindex="-1"></a><span class="co">#&gt;  stringr        1.5.0   2022-12-02 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-79"><a href="sessioninfo.html#cb29-79" tabindex="-1"></a><span class="co">#&gt;  styler         1.10.2  2023-08-29 [1] RSPM</span></span>
-<span id="cb29-80"><a href="sessioninfo.html#cb29-80" tabindex="-1"></a><span class="co">#&gt;  tibble         3.2.1   2023-03-20 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-81"><a href="sessioninfo.html#cb29-81" tabindex="-1"></a><span class="co">#&gt;  tidylo         0.2.0   2022-03-22 [1] RSPM</span></span>
-<span id="cb29-82"><a href="sessioninfo.html#cb29-82" tabindex="-1"></a><span class="co">#&gt;  tidyr          1.3.0   2023-01-24 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-83"><a href="sessioninfo.html#cb29-83" tabindex="-1"></a><span class="co">#&gt;  tidyselect     1.2.0   2022-10-10 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-84"><a href="sessioninfo.html#cb29-84" tabindex="-1"></a><span class="co">#&gt;  tidytext       0.4.1   2023-01-07 [1] RSPM</span></span>
-<span id="cb29-85"><a href="sessioninfo.html#cb29-85" tabindex="-1"></a><span class="co">#&gt;  tokenizers     0.3.0   2022-12-22 [1] RSPM</span></span>
-<span id="cb29-86"><a href="sessioninfo.html#cb29-86" tabindex="-1"></a><span class="co">#&gt;  tzdb           0.4.0   2023-05-12 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-87"><a href="sessioninfo.html#cb29-87" tabindex="-1"></a><span class="co">#&gt;  udpipe         0.8.11  2023-01-06 [1] RSPM</span></span>
-<span id="cb29-88"><a href="sessioninfo.html#cb29-88" tabindex="-1"></a><span class="co">#&gt;  utf8           1.2.4   2023-10-22 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-89"><a href="sessioninfo.html#cb29-89" tabindex="-1"></a><span class="co">#&gt;  V8             4.4.1   2023-12-04 [1] RSPM</span></span>
-<span id="cb29-90"><a href="sessioninfo.html#cb29-90" tabindex="-1"></a><span class="co">#&gt;  vctrs          0.6.4   2023-10-12 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-91"><a href="sessioninfo.html#cb29-91" tabindex="-1"></a><span class="co">#&gt;  vroom          1.6.4   2023-10-02 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-92"><a href="sessioninfo.html#cb29-92" tabindex="-1"></a><span class="co">#&gt;  withr          2.5.1   2023-09-26 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-93"><a href="sessioninfo.html#cb29-93" tabindex="-1"></a><span class="co">#&gt;  xfun           0.40    2023-08-09 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-94"><a href="sessioninfo.html#cb29-94" tabindex="-1"></a><span class="co">#&gt;  yaml           2.3.7   2023-01-23 [1] RSPM (R 4.3.0)</span></span>
-<span id="cb29-95"><a href="sessioninfo.html#cb29-95" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb29-96"><a href="sessioninfo.html#cb29-96" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
-<span id="cb29-97"><a href="sessioninfo.html#cb29-97" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
-<span id="cb29-98"><a href="sessioninfo.html#cb29-98" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb29-99"><a href="sessioninfo.html#cb29-99" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="sessioninfo.html#cb30-1" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>()</span>
+<span id="cb30-2"><a href="sessioninfo.html#cb30-2" tabindex="-1"></a><span class="co">#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb30-3"><a href="sessioninfo.html#cb30-3" tabindex="-1"></a><span class="co">#&gt;  setting  value</span></span>
+<span id="cb30-4"><a href="sessioninfo.html#cb30-4" tabindex="-1"></a><span class="co">#&gt;  version  R version 4.3.2 (2023-10-31)</span></span>
+<span id="cb30-5"><a href="sessioninfo.html#cb30-5" tabindex="-1"></a><span class="co">#&gt;  os       Ubuntu 22.04.3 LTS</span></span>
+<span id="cb30-6"><a href="sessioninfo.html#cb30-6" tabindex="-1"></a><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
+<span id="cb30-7"><a href="sessioninfo.html#cb30-7" tabindex="-1"></a><span class="co">#&gt;  ui       X11</span></span>
+<span id="cb30-8"><a href="sessioninfo.html#cb30-8" tabindex="-1"></a><span class="co">#&gt;  language (EN)</span></span>
+<span id="cb30-9"><a href="sessioninfo.html#cb30-9" tabindex="-1"></a><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
+<span id="cb30-10"><a href="sessioninfo.html#cb30-10" tabindex="-1"></a><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
+<span id="cb30-11"><a href="sessioninfo.html#cb30-11" tabindex="-1"></a><span class="co">#&gt;  tz       Etc/UTC</span></span>
+<span id="cb30-12"><a href="sessioninfo.html#cb30-12" tabindex="-1"></a><span class="co">#&gt;  date     2024-02-17</span></span>
+<span id="cb30-13"><a href="sessioninfo.html#cb30-13" tabindex="-1"></a><span class="co">#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)</span></span>
+<span id="cb30-14"><a href="sessioninfo.html#cb30-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb30-15"><a href="sessioninfo.html#cb30-15" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb30-16"><a href="sessioninfo.html#cb30-16" tabindex="-1"></a><span class="co">#&gt;  package      * version date (UTC) lib source</span></span>
+<span id="cb30-17"><a href="sessioninfo.html#cb30-17" tabindex="-1"></a><span class="co">#&gt;  audubon        0.5.1   2023-05-02 [1] RSPM</span></span>
+<span id="cb30-18"><a href="sessioninfo.html#cb30-18" tabindex="-1"></a><span class="co">#&gt;  bit            4.0.5   2022-11-15 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-19"><a href="sessioninfo.html#cb30-19" tabindex="-1"></a><span class="co">#&gt;  bit64          4.0.5   2020-08-30 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-20"><a href="sessioninfo.html#cb30-20" tabindex="-1"></a><span class="co">#&gt;  bookdown       0.37    2023-12-01 [1] RSPM</span></span>
+<span id="cb30-21"><a href="sessioninfo.html#cb30-21" tabindex="-1"></a><span class="co">#&gt;  bslib          0.6.1   2023-11-28 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-22"><a href="sessioninfo.html#cb30-22" tabindex="-1"></a><span class="co">#&gt;  cachem         1.0.8   2023-05-01 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-23"><a href="sessioninfo.html#cb30-23" tabindex="-1"></a><span class="co">#&gt;  cli            3.6.2   2023-12-11 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-24"><a href="sessioninfo.html#cb30-24" tabindex="-1"></a><span class="co">#&gt;  crayon         1.5.2   2022-09-29 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-25"><a href="sessioninfo.html#cb30-25" tabindex="-1"></a><span class="co">#&gt;  curl           5.2.0   2023-12-08 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-26"><a href="sessioninfo.html#cb30-26" tabindex="-1"></a><span class="co">#&gt;  data.table     1.14.10 2023-12-08 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-27"><a href="sessioninfo.html#cb30-27" tabindex="-1"></a><span class="co">#&gt;  digest         0.6.34  2024-01-11 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-28"><a href="sessioninfo.html#cb30-28" tabindex="-1"></a><span class="co">#&gt;  dplyr        * 1.1.4   2023-11-17 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-29"><a href="sessioninfo.html#cb30-29" tabindex="-1"></a><span class="co">#&gt;  dtplyr         1.3.1   2023-03-22 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-30"><a href="sessioninfo.html#cb30-30" tabindex="-1"></a><span class="co">#&gt;  ellipsis       0.3.2   2021-04-29 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-31"><a href="sessioninfo.html#cb30-31" tabindex="-1"></a><span class="co">#&gt;  evaluate       0.23    2023-11-01 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-32"><a href="sessioninfo.html#cb30-32" tabindex="-1"></a><span class="co">#&gt;  fansi          1.0.6   2023-12-08 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-33"><a href="sessioninfo.html#cb30-33" tabindex="-1"></a><span class="co">#&gt;  fastmap        1.1.1   2023-02-24 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-34"><a href="sessioninfo.html#cb30-34" tabindex="-1"></a><span class="co">#&gt;  fastmatch      1.1-4   2023-08-18 [1] RSPM</span></span>
+<span id="cb30-35"><a href="sessioninfo.html#cb30-35" tabindex="-1"></a><span class="co">#&gt;  forcats        1.0.0   2023-01-29 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-36"><a href="sessioninfo.html#cb30-36" tabindex="-1"></a><span class="co">#&gt;  generics       0.1.3   2022-07-05 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-37"><a href="sessioninfo.html#cb30-37" tabindex="-1"></a><span class="co">#&gt;  gibasa         1.1.0   2024-02-17 [1] https://paithiov909.r-universe.dev (R 4.3.2)</span></span>
+<span id="cb30-38"><a href="sessioninfo.html#cb30-38" tabindex="-1"></a><span class="co">#&gt;  glue           1.7.0   2024-01-09 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-39"><a href="sessioninfo.html#cb30-39" tabindex="-1"></a><span class="co">#&gt;  hms            1.1.3   2023-03-21 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-40"><a href="sessioninfo.html#cb30-40" tabindex="-1"></a><span class="co">#&gt;  htmltools      0.5.7   2023-11-03 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-41"><a href="sessioninfo.html#cb30-41" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets    1.6.4   2023-12-06 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-42"><a href="sessioninfo.html#cb30-42" tabindex="-1"></a><span class="co">#&gt;  janeaustenr    1.0.0   2022-08-26 [1] RSPM</span></span>
+<span id="cb30-43"><a href="sessioninfo.html#cb30-43" tabindex="-1"></a><span class="co">#&gt;  jquerylib      0.1.4   2021-04-26 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-44"><a href="sessioninfo.html#cb30-44" tabindex="-1"></a><span class="co">#&gt;  jsonlite       1.8.8   2023-12-04 [1] RSPM</span></span>
+<span id="cb30-45"><a href="sessioninfo.html#cb30-45" tabindex="-1"></a><span class="co">#&gt;  knitr          1.45    2023-10-30 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-46"><a href="sessioninfo.html#cb30-46" tabindex="-1"></a><span class="co">#&gt;  lattice        0.21-9  2023-10-01 [2] CRAN (R 4.3.2)</span></span>
+<span id="cb30-47"><a href="sessioninfo.html#cb30-47" tabindex="-1"></a><span class="co">#&gt;  lifecycle      1.0.4   2023-11-07 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-48"><a href="sessioninfo.html#cb30-48" tabindex="-1"></a><span class="co">#&gt;  magrittr       2.0.3   2022-03-30 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-49"><a href="sessioninfo.html#cb30-49" tabindex="-1"></a><span class="co">#&gt;  Matrix         1.6-1.1 2023-09-18 [2] CRAN (R 4.3.2)</span></span>
+<span id="cb30-50"><a href="sessioninfo.html#cb30-50" tabindex="-1"></a><span class="co">#&gt;  memoise        2.0.1   2021-11-26 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-51"><a href="sessioninfo.html#cb30-51" tabindex="-1"></a><span class="co">#&gt;  pillar         1.9.0   2023-03-22 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-52"><a href="sessioninfo.html#cb30-52" tabindex="-1"></a><span class="co">#&gt;  pkgconfig      2.0.3   2019-09-22 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-53"><a href="sessioninfo.html#cb30-53" tabindex="-1"></a><span class="co">#&gt;  purrr          1.0.2   2023-08-10 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-54"><a href="sessioninfo.html#cb30-54" tabindex="-1"></a><span class="co">#&gt;  quanteda       3.3.1   2023-05-18 [1] RSPM</span></span>
+<span id="cb30-55"><a href="sessioninfo.html#cb30-55" tabindex="-1"></a><span class="co">#&gt;  R.cache        0.16.0  2022-07-21 [1] RSPM</span></span>
+<span id="cb30-56"><a href="sessioninfo.html#cb30-56" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3    1.8.2   2022-06-13 [1] RSPM</span></span>
+<span id="cb30-57"><a href="sessioninfo.html#cb30-57" tabindex="-1"></a><span class="co">#&gt;  R.oo           1.25.0  2022-06-12 [1] RSPM</span></span>
+<span id="cb30-58"><a href="sessioninfo.html#cb30-58" tabindex="-1"></a><span class="co">#&gt;  R.utils        2.12.3  2023-11-18 [1] RSPM</span></span>
+<span id="cb30-59"><a href="sessioninfo.html#cb30-59" tabindex="-1"></a><span class="co">#&gt;  R6             2.5.1   2021-08-19 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-60"><a href="sessioninfo.html#cb30-60" tabindex="-1"></a><span class="co">#&gt;  Rcpp           1.0.12  2024-01-09 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-61"><a href="sessioninfo.html#cb30-61" tabindex="-1"></a><span class="co">#&gt;  RcppParallel   5.1.7   2023-02-27 [1] RSPM</span></span>
+<span id="cb30-62"><a href="sessioninfo.html#cb30-62" tabindex="-1"></a><span class="co">#&gt;  reactable      0.4.4   2023-03-12 [1] RSPM</span></span>
+<span id="cb30-63"><a href="sessioninfo.html#cb30-63" tabindex="-1"></a><span class="co">#&gt;  reactR         0.5.0   2023-10-11 [1] RSPM</span></span>
+<span id="cb30-64"><a href="sessioninfo.html#cb30-64" tabindex="-1"></a><span class="co">#&gt;  readr          2.1.5   2024-01-10 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-65"><a href="sessioninfo.html#cb30-65" tabindex="-1"></a><span class="co">#&gt;  rlang          1.1.3   2024-01-10 [1] RSPM</span></span>
+<span id="cb30-66"><a href="sessioninfo.html#cb30-66" tabindex="-1"></a><span class="co">#&gt;  rmarkdown      2.25    2023-09-18 [1] RSPM</span></span>
+<span id="cb30-67"><a href="sessioninfo.html#cb30-67" tabindex="-1"></a><span class="co">#&gt;  rstudioapi     0.15.0  2023-07-07 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-68"><a href="sessioninfo.html#cb30-68" tabindex="-1"></a><span class="co">#&gt;  sass           0.4.8   2023-12-06 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-69"><a href="sessioninfo.html#cb30-69" tabindex="-1"></a><span class="co">#&gt;  sessioninfo    1.2.2   2021-12-06 [1] RSPM</span></span>
+<span id="cb30-70"><a href="sessioninfo.html#cb30-70" tabindex="-1"></a><span class="co">#&gt;  SnowballC      0.7.1   2023-04-25 [1] RSPM</span></span>
+<span id="cb30-71"><a href="sessioninfo.html#cb30-71" tabindex="-1"></a><span class="co">#&gt;  stopwords      2.3     2021-10-28 [1] RSPM</span></span>
+<span id="cb30-72"><a href="sessioninfo.html#cb30-72" tabindex="-1"></a><span class="co">#&gt;  stringi        1.8.3   2023-12-11 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-73"><a href="sessioninfo.html#cb30-73" tabindex="-1"></a><span class="co">#&gt;  stringr        1.5.1   2023-11-14 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-74"><a href="sessioninfo.html#cb30-74" tabindex="-1"></a><span class="co">#&gt;  styler         1.10.2  2023-08-29 [1] RSPM</span></span>
+<span id="cb30-75"><a href="sessioninfo.html#cb30-75" tabindex="-1"></a><span class="co">#&gt;  tibble         3.2.1   2023-03-20 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-76"><a href="sessioninfo.html#cb30-76" tabindex="-1"></a><span class="co">#&gt;  tidylo         0.2.0   2022-03-22 [1] RSPM</span></span>
+<span id="cb30-77"><a href="sessioninfo.html#cb30-77" tabindex="-1"></a><span class="co">#&gt;  tidyr          1.3.0   2023-01-24 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-78"><a href="sessioninfo.html#cb30-78" tabindex="-1"></a><span class="co">#&gt;  tidyselect     1.2.0   2022-10-10 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-79"><a href="sessioninfo.html#cb30-79" tabindex="-1"></a><span class="co">#&gt;  tidytext       0.4.1   2023-01-07 [1] RSPM</span></span>
+<span id="cb30-80"><a href="sessioninfo.html#cb30-80" tabindex="-1"></a><span class="co">#&gt;  tokenizers     0.3.0   2022-12-22 [1] RSPM</span></span>
+<span id="cb30-81"><a href="sessioninfo.html#cb30-81" tabindex="-1"></a><span class="co">#&gt;  tzdb           0.4.0   2023-05-12 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-82"><a href="sessioninfo.html#cb30-82" tabindex="-1"></a><span class="co">#&gt;  udpipe         0.8.11  2023-01-06 [1] RSPM</span></span>
+<span id="cb30-83"><a href="sessioninfo.html#cb30-83" tabindex="-1"></a><span class="co">#&gt;  utf8           1.2.4   2023-10-22 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-84"><a href="sessioninfo.html#cb30-84" tabindex="-1"></a><span class="co">#&gt;  V8             4.4.2   2024-02-15 [1] RSPM</span></span>
+<span id="cb30-85"><a href="sessioninfo.html#cb30-85" tabindex="-1"></a><span class="co">#&gt;  vctrs          0.6.5   2023-12-01 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-86"><a href="sessioninfo.html#cb30-86" tabindex="-1"></a><span class="co">#&gt;  vroom          1.6.5   2023-12-05 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-87"><a href="sessioninfo.html#cb30-87" tabindex="-1"></a><span class="co">#&gt;  withr          3.0.0   2024-01-16 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-88"><a href="sessioninfo.html#cb30-88" tabindex="-1"></a><span class="co">#&gt;  xfun           0.42    2024-02-08 [1] RSPM</span></span>
+<span id="cb30-89"><a href="sessioninfo.html#cb30-89" tabindex="-1"></a><span class="co">#&gt;  yaml           2.3.8   2023-12-11 [1] RSPM (R 4.3.0)</span></span>
+<span id="cb30-90"><a href="sessioninfo.html#cb30-90" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb30-91"><a href="sessioninfo.html#cb30-91" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
+<span id="cb30-92"><a href="sessioninfo.html#cb30-92" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
+<span id="cb30-93"><a href="sessioninfo.html#cb30-93" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb30-94"><a href="sessioninfo.html#cb30-94" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
 
 </div>
 </div>

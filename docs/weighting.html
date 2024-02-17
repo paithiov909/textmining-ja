@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-13" />
+<meta name="date" content="2024-02-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 <script src="libs/react-18.2.0/react.min.js"></script>
 <script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
 <script src="libs/reactable-binding-0.4.4/reactable.js"></script>
 
@@ -244,23 +244,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="tidytextによる重みづけ" class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> tidytextによる重みづけ<a href="weighting.html#tidytextによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>tidytext::bind_tf_idf</code>を使うと単語頻度からTF-IDFを算出することができます。</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="weighting.html#cb20-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb20-2"><a href="weighting.html#cb20-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">bind_tf_idf</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb20-3"><a href="weighting.html#cb20-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> 5L)</span>
-<span id="cb20-4"><a href="weighting.html#cb20-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
-<span id="cb20-5"><a href="weighting.html#cb20-5" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n    tf   idf tf_idf</span></span>
-<span id="cb20-6"><a href="weighting.html#cb20-6" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb20-7"><a href="weighting.html#cb20-7" tabindex="-1"></a><span class="co">#&gt; 1 139    去年         1     1  6.78   6.78</span></span>
-<span id="cb20-8"><a href="weighting.html#cb20-8" tabindex="-1"></a><span class="co">#&gt; 2 880    ざあい       1     1  6.78   6.78</span></span>
-<span id="cb20-9"><a href="weighting.html#cb20-9" tabindex="-1"></a><span class="co">#&gt; 3 255    あわてる     1     1  6.08   6.08</span></span>
-<span id="cb20-10"><a href="weighting.html#cb20-10" tabindex="-1"></a><span class="co">#&gt; 4 713    こちら       1     1  6.08   6.08</span></span>
-<span id="cb20-11"><a href="weighting.html#cb20-11" tabindex="-1"></a><span class="co">#&gt; 5 288    こいつ       1     1  5.39   5.39</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="weighting.html#cb21-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="weighting.html#cb21-2" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">bind_tf_idf</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="weighting.html#cb21-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> 5L)</span>
+<span id="cb21-4"><a href="weighting.html#cb21-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
+<span id="cb21-5"><a href="weighting.html#cb21-5" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n    tf   idf tf_idf</span></span>
+<span id="cb21-6"><a href="weighting.html#cb21-6" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb21-7"><a href="weighting.html#cb21-7" tabindex="-1"></a><span class="co">#&gt; 1 139    去年         1     1  6.78   6.78</span></span>
+<span id="cb21-8"><a href="weighting.html#cb21-8" tabindex="-1"></a><span class="co">#&gt; 2 880    ざあい       1     1  6.78   6.78</span></span>
+<span id="cb21-9"><a href="weighting.html#cb21-9" tabindex="-1"></a><span class="co">#&gt; 3 255    あわてる     1     1  6.08   6.08</span></span>
+<span id="cb21-10"><a href="weighting.html#cb21-10" tabindex="-1"></a><span class="co">#&gt; 4 713    こちら       1     1  6.08   6.08</span></span>
+<span id="cb21-11"><a href="weighting.html#cb21-11" tabindex="-1"></a><span class="co">#&gt; 5 288    こいつ       1     1  5.39   5.39</span></span></code></pre></div>
 <p>tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が<code>exp(1)</code>であるなどの違いがあります。</p>
 </div>
 <div id="gibasaによる重みづけ" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> gibasaによる重みづけ<a href="weighting.html#gibasaによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>gibasaはRMeCabにおける単語頻度の重みづけを<code>tidytext::bind_tf_idf</code>と同様のスタイルでおこなうことができる関数<code>gibasa::bind_tf_idf2</code>を提供しています。</p>
-<p><code>bind_tf_idf2</code>はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。たとえば、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、<code>norm=TRUE</code>にしてもRMeCabの計算結果とは一致しません。</p>
 <p>RMeCabは以下の単語頻度の重みづけをサポートしています。</p>
 <ul>
 <li>局所的重み（TF）
@@ -282,23 +281,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul>
 <p>gibasaはこれらの重みづけを再実装しています。ただし、<code>tf="tf"</code>はgibasaでは相対頻度になるため、RMeCabの<code>weight="tf*idf"</code>に相当する出力を得るには、たとえば次のように計算します。</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="weighting.html#cb21-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb21-2"><a href="weighting.html#cb21-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb21-3"><a href="weighting.html#cb21-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb21-4"><a href="weighting.html#cb21-4" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">/</span> idf</span>
-<span id="cb21-5"><a href="weighting.html#cb21-5" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb21-6"><a href="weighting.html#cb21-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> 5L)</span>
-<span id="cb21-7"><a href="weighting.html#cb21-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 6</span></span>
-<span id="cb21-8"><a href="weighting.html#cb21-8" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n     tf   idf tf_idf</span></span>
-<span id="cb21-9"><a href="weighting.html#cb21-9" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb21-10"><a href="weighting.html#cb21-10" tabindex="-1"></a><span class="co">#&gt; 1 715    の          11 0.103   3.74   2.94</span></span>
-<span id="cb21-11"><a href="weighting.html#cb21-11" tabindex="-1"></a><span class="co">#&gt; 2 732    いる         8 0.0842  3.10   2.58</span></span>
-<span id="cb21-12"><a href="weighting.html#cb21-12" tabindex="-1"></a><span class="co">#&gt; 3 715    わたくし     8 0.0748  3.32   2.41</span></span>
-<span id="cb21-13"><a href="weighting.html#cb21-13" tabindex="-1"></a><span class="co">#&gt; 4 825    いる         6 0.0638  3.10   1.94</span></span>
-<span id="cb21-14"><a href="weighting.html#cb21-14" tabindex="-1"></a><span class="co">#&gt; 5 615    する         6 0.0408  3.21   1.87</span></span>
-<span id="cb21-15"><a href="weighting.html#cb21-15" tabindex="-1"></a><span class="co">#&gt; 6 715    する         6 0.0561  3.21   1.87</span></span>
-<span id="cb21-16"><a href="weighting.html#cb21-16" tabindex="-1"></a><span class="co">#&gt; 7 822    する         6 0.0659  3.21   1.87</span></span>
-<span id="cb21-17"><a href="weighting.html#cb21-17" tabindex="-1"></a><span class="co">#&gt; 8 825    する         6 0.0638  3.21   1.87</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="weighting.html#cb22-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="weighting.html#cb22-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="weighting.html#cb22-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb22-4"><a href="weighting.html#cb22-4" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">/</span> idf</span>
+<span id="cb22-5"><a href="weighting.html#cb22-5" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a href="weighting.html#cb22-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> 5L)</span>
+<span id="cb22-7"><a href="weighting.html#cb22-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 6</span></span>
+<span id="cb22-8"><a href="weighting.html#cb22-8" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n     tf   idf tf_idf</span></span>
+<span id="cb22-9"><a href="weighting.html#cb22-9" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb22-10"><a href="weighting.html#cb22-10" tabindex="-1"></a><span class="co">#&gt; 1 715    の          11 0.103   3.74   2.94</span></span>
+<span id="cb22-11"><a href="weighting.html#cb22-11" tabindex="-1"></a><span class="co">#&gt; 2 732    いる         8 0.0842  3.10   2.58</span></span>
+<span id="cb22-12"><a href="weighting.html#cb22-12" tabindex="-1"></a><span class="co">#&gt; 3 715    わたくし     8 0.0748  3.32   2.41</span></span>
+<span id="cb22-13"><a href="weighting.html#cb22-13" tabindex="-1"></a><span class="co">#&gt; 4 825    いる         6 0.0638  3.10   1.94</span></span>
+<span id="cb22-14"><a href="weighting.html#cb22-14" tabindex="-1"></a><span class="co">#&gt; 5 615    する         6 0.0408  3.21   1.87</span></span>
+<span id="cb22-15"><a href="weighting.html#cb22-15" tabindex="-1"></a><span class="co">#&gt; 6 715    する         6 0.0561  3.21   1.87</span></span>
+<span id="cb22-16"><a href="weighting.html#cb22-16" tabindex="-1"></a><span class="co">#&gt; 7 822    する         6 0.0659  3.21   1.87</span></span>
+<span id="cb22-17"><a href="weighting.html#cb22-17" tabindex="-1"></a><span class="co">#&gt; 8 825    する         6 0.0638  3.21   1.87</span></span></code></pre></div>
 <p>なお、注意点として、RMeCabの単語を数える機能は、品詞情報（POS1とPOS2まで）を確認しながら単語を数えているようなので、ここでのように原形だけを見て数えた結果とは必ずしも一致しません。</p>
 </div>
 <div id="udpipeによる重みづけ" class="section level2 hasAnchor" number="4.3">
@@ -307,53 +306,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><code>udpipe::document_term_frequencies_statistics</code>には、パラメータとして<code>k</code>と<code>b</code>を渡すことができます。デフォルト値はそれぞれ<code>k=1.2</code>、<code>b=0.5</code>です。<code>k</code>の値を大きくすると、単語の出現数の増加に対してBM25の値もより大きくなりやすくなります。
 <code>k=1.2</code>というのは、Elasticsearchでもデフォルト値として採用されている値です。Wikipediaや<a href="https://www.elastic.co/jp/blog/practical-bm25-part-3-considerations-for-picking-b-and-k1-in-elasticsearch">Elasticsearchの技術記事</a>によると、<code>k</code>は<code>[1.2, 2.0]</code>、<code>b=.75</code>とした場合に、多くのケースでよい結果が得られるとされています。</p>
 <p>dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="weighting.html#cb22-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">require</span>(dplyr))</span>
-<span id="cb22-2"><a href="weighting.html#cb22-2" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="weighting.html#cb22-3" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb22-4"><a href="weighting.html#cb22-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb22-5"><a href="weighting.html#cb22-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb22-6"><a href="weighting.html#cb22-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb22-7"><a href="weighting.html#cb22-7" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
-<span id="cb22-8"><a href="weighting.html#cb22-8" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb22-9"><a href="weighting.html#cb22-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb22-10"><a href="weighting.html#cb22-10" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">&quot;doc_id&quot;</span>, <span class="at">term =</span> <span class="st">&quot;token&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb22-11"><a href="weighting.html#cb22-11" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">b =</span> .<span class="dv">75</span>) <span class="sc">|&gt;</span></span>
-<span id="cb22-12"><a href="weighting.html#cb22-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_bm25, <span class="at">n =</span> 5L)</span>
-<span id="cb22-13"><a href="weighting.html#cb22-13" tabindex="-1"></a><span class="co">#&gt;     doc_id term freq        tf      idf    tf_idf  tf_bm25     bm25</span></span>
-<span id="cb22-14"><a href="weighting.html#cb22-14" tabindex="-1"></a><span class="co">#&gt;  1:    381 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
-<span id="cb22-15"><a href="weighting.html#cb22-15" tabindex="-1"></a><span class="co">#&gt;  2:    398 決闘    2 0.5000000 4.829456 2.4147280 1.698658 8.203595</span></span>
-<span id="cb22-16"><a href="weighting.html#cb22-16" tabindex="-1"></a><span class="co">#&gt;  3:    864 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
-<span id="cb22-17"><a href="weighting.html#cb22-17" tabindex="-1"></a><span class="co">#&gt;  4:    859 呑む    3 0.3333333 3.639872 1.2132906 1.669563 6.076996</span></span>
-<span id="cb22-18"><a href="weighting.html#cb22-18" tabindex="-1"></a><span class="co">#&gt;  5:     60   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb22-19"><a href="weighting.html#cb22-19" tabindex="-1"></a><span class="co">#&gt;  6:     62   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb22-20"><a href="weighting.html#cb22-20" tabindex="-1"></a><span class="co">#&gt;  7:    233   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb22-21"><a href="weighting.html#cb22-21" tabindex="-1"></a><span class="co">#&gt;  8:    260 飛ぶ    2 0.4000000 5.165928 2.0663713 1.652365 8.535999</span></span>
-<span id="cb22-22"><a href="weighting.html#cb22-22" tabindex="-1"></a><span class="co">#&gt;  9:    428 する    2 0.4000000 1.533619 0.6134476 1.652365 2.534099</span></span>
-<span id="cb22-23"><a href="weighting.html#cb22-23" tabindex="-1"></a><span class="co">#&gt; 10:    521   君    2 0.4000000 4.578142 1.8312566 1.652365 7.564761</span></span>
-<span id="cb22-24"><a href="weighting.html#cb22-24" tabindex="-1"></a><span class="co">#&gt; 11:    742   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="weighting.html#cb23-1" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">require</span>(dplyr))</span>
+<span id="cb23-2"><a href="weighting.html#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="weighting.html#cb23-3" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb23-4"><a href="weighting.html#cb23-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb23-5"><a href="weighting.html#cb23-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞&quot;</span>, <span class="st">&quot;動詞&quot;</span>, <span class="st">&quot;形容詞&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb23-6"><a href="weighting.html#cb23-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb23-7"><a href="weighting.html#cb23-7" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
+<span id="cb23-8"><a href="weighting.html#cb23-8" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
+<span id="cb23-9"><a href="weighting.html#cb23-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb23-10"><a href="weighting.html#cb23-10" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">&quot;doc_id&quot;</span>, <span class="at">term =</span> <span class="st">&quot;token&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-11"><a href="weighting.html#cb23-11" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">b =</span> .<span class="dv">75</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-12"><a href="weighting.html#cb23-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_bm25, <span class="at">n =</span> 5L)</span>
+<span id="cb23-13"><a href="weighting.html#cb23-13" tabindex="-1"></a><span class="co">#&gt;     doc_id term freq        tf      idf    tf_idf  tf_bm25     bm25</span></span>
+<span id="cb23-14"><a href="weighting.html#cb23-14" tabindex="-1"></a><span class="co">#&gt;  1:    381 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
+<span id="cb23-15"><a href="weighting.html#cb23-15" tabindex="-1"></a><span class="co">#&gt;  2:    398 決闘    2 0.5000000 4.829456 2.4147280 1.698658 8.203595</span></span>
+<span id="cb23-16"><a href="weighting.html#cb23-16" tabindex="-1"></a><span class="co">#&gt;  3:    864 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
+<span id="cb23-17"><a href="weighting.html#cb23-17" tabindex="-1"></a><span class="co">#&gt;  4:    859 呑む    3 0.3333333 3.639872 1.2132906 1.669563 6.076996</span></span>
+<span id="cb23-18"><a href="weighting.html#cb23-18" tabindex="-1"></a><span class="co">#&gt;  5:     60   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
+<span id="cb23-19"><a href="weighting.html#cb23-19" tabindex="-1"></a><span class="co">#&gt;  6:     62   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
+<span id="cb23-20"><a href="weighting.html#cb23-20" tabindex="-1"></a><span class="co">#&gt;  7:    233   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
+<span id="cb23-21"><a href="weighting.html#cb23-21" tabindex="-1"></a><span class="co">#&gt;  8:    260 飛ぶ    2 0.4000000 5.165928 2.0663713 1.652365 8.535999</span></span>
+<span id="cb23-22"><a href="weighting.html#cb23-22" tabindex="-1"></a><span class="co">#&gt;  9:    428 する    2 0.4000000 1.533619 0.6134476 1.652365 2.534099</span></span>
+<span id="cb23-23"><a href="weighting.html#cb23-23" tabindex="-1"></a><span class="co">#&gt; 10:    521   君    2 0.4000000 4.578142 1.8312566 1.652365 7.564761</span></span>
+<span id="cb23-24"><a href="weighting.html#cb23-24" tabindex="-1"></a><span class="co">#&gt; 11:    742   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span></code></pre></div>
 </div>
 <div id="tidyloによる重みづけ" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> tidyloによる重みづけ<a href="weighting.html#tidyloによる重みづけ" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「注目に値する語」を調べることにあります。</p>
 <p>こうしたことを実現するための値として、<a href="https://github.com/juliasilge/tidylo">tidylo</a>パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="weighting.html#cb23-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb23-2"><a href="weighting.html#cb23-2" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
-<span id="cb23-3"><a href="weighting.html#cb23-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.finite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
-<span id="cb23-4"><a href="weighting.html#cb23-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> 5L)</span>
-<span id="cb23-5"><a href="weighting.html#cb23-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 4</span></span>
-<span id="cb23-6"><a href="weighting.html#cb23-6" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n log_odds_weighted</span></span>
-<span id="cb23-7"><a href="weighting.html#cb23-7" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;             &lt;dbl&gt;</span></span>
-<span id="cb23-8"><a href="weighting.html#cb23-8" tabindex="-1"></a><span class="co">#&gt; 1 536    する         1             117. </span></span>
-<span id="cb23-9"><a href="weighting.html#cb23-9" tabindex="-1"></a><span class="co">#&gt; 2 430    する         1             105. </span></span>
-<span id="cb23-10"><a href="weighting.html#cb23-10" tabindex="-1"></a><span class="co">#&gt; 3 824    わたくし     1             102. </span></span>
-<span id="cb23-11"><a href="weighting.html#cb23-11" tabindex="-1"></a><span class="co">#&gt; 4 577    いる         1              94.5</span></span>
-<span id="cb23-12"><a href="weighting.html#cb23-12" tabindex="-1"></a><span class="co">#&gt; 5 465    する         1              94.0</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="weighting.html#cb24-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="weighting.html#cb24-2" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="weighting.html#cb24-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.finite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> 5L)</span>
+<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 4</span></span>
+<span id="cb24-6"><a href="weighting.html#cb24-6" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n log_odds_weighted</span></span>
+<span id="cb24-7"><a href="weighting.html#cb24-7" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;             &lt;dbl&gt;</span></span>
+<span id="cb24-8"><a href="weighting.html#cb24-8" tabindex="-1"></a><span class="co">#&gt; 1 536    する         1             117. </span></span>
+<span id="cb24-9"><a href="weighting.html#cb24-9" tabindex="-1"></a><span class="co">#&gt; 2 430    する         1             105. </span></span>
+<span id="cb24-10"><a href="weighting.html#cb24-10" tabindex="-1"></a><span class="co">#&gt; 3 824    わたくし     1             102. </span></span>
+<span id="cb24-11"><a href="weighting.html#cb24-11" tabindex="-1"></a><span class="co">#&gt; 4 577    いる         1              94.5</span></span>
+<span id="cb24-12"><a href="weighting.html#cb24-12" tabindex="-1"></a><span class="co">#&gt; 5 465    する         1              94.0</span></span></code></pre></div>
 <p>ここで用いているデータは小説を改行ごとに一つの文書と見なしていたため、中には次のような極端に短い文書が含まれています。こうした文書では、直観的にはそれほどレアには思われない単語についてもオッズが極端に高くなってしまっているように見えます。</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="weighting.html#cb24-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
-<span id="cb24-2"><a href="weighting.html#cb24-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb24-3"><a href="weighting.html#cb24-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span>
-<span id="cb24-4"><a href="weighting.html#cb24-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                               &quot;「起訴するぞ。」&quot;                                </span></span>
-<span id="cb24-5"><a href="weighting.html#cb24-5" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot; &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="weighting.html#cb25-1" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="weighting.html#cb25-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="weighting.html#cb25-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span>
+<span id="cb25-4"><a href="weighting.html#cb25-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;「承知しました。」&quot;                               &quot;「起訴するぞ。」&quot;                                </span></span>
+<span id="cb25-5"><a href="weighting.html#cb25-5" tabindex="-1"></a><span class="co">#&gt; [3] &quot;「きっと遠くでございますわ。もし生きていれば。」&quot; &quot;わたくしは思わずはねあがりました。&quot;</span></span></code></pre></div>
 <p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
 
 </div>

@@ -18,6 +18,25 @@ dat_ngram <- dat |>
 str(dat_ngram)
 ```
 
+なお、RMeCabでできるような「名詞-名詞」の2-gramだけを抽出したいといったケースでは、2-gramをつくる前に品詞でフィルタしてしまうと元の文書内におけるトークンの隣接関係を破壊してしまい、正しい2-gramを抽出することができません。そのようなことをしたい場合には、あらかじめ品詞のNgramもつくったうえで、後から品詞のNgramでフィルタします。
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::reframe(
+    token = bigram(token, sep = "-"),
+    pos = bigram(POS1, sep = "-"), # 品詞のNgramをつくる
+    .by = doc_id
+  ) |>
+  dplyr::filter(pos %in% c("名詞-名詞")) |> # 品詞のNgramでフィルタする
+  dplyr::count(doc_id, token)
+
+str(dat_ngram)
+```
+
 ## quantedaにNgramを持ちこむ方法
 
 `gibasa::pack`を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。

@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2023-12-13" />
+<meta name="date" content="2024-02-17" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 <script src="libs/react-18.2.0/react.min.js"></script>
 <script src="libs/react-18.2.0/react-dom.min.js"></script>
 <script src="libs/reactwidget-1.0.0/react-tools.js"></script>
-<script src="libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="libs/reactable-0.4.4/reactable.css" rel="stylesheet" />
 <script src="libs/reactable-binding-0.4.4/reactable.js"></script>
 
@@ -259,63 +259,82 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-13"><a href="ngram.html#cb17-13" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 2 3 3 3 3 3 3 4 ...</span></span>
 <span id="cb17-14"><a href="ngram.html#cb17-14" tabindex="-1"></a><span class="co">#&gt;  $ token : chr [1:24398] &quot;の-広場&quot; &quot;ポラーノ-の&quot; &quot;宮沢-賢治&quot; &quot;レオーノ・キュースト-誌&quot; ...</span></span>
 <span id="cb17-15"><a href="ngram.html#cb17-15" tabindex="-1"></a><span class="co">#&gt;  $ n     : int [1:24398] 1 1 1 1 1 1 1 1 1 1 ...</span></span></code></pre></div>
+<p>なお、RMeCabでできるような「名詞-名詞」の2-gramだけを抽出したいといったケースでは、2-gramをつくる前に品詞でフィルタしてしまうと元の文書内におけるトークンの隣接関係を破壊してしまい、正しい2-gramを抽出することができません。そのようなことをしたい場合には、あらかじめ品詞のNgramもつくったうえで、後から品詞のNgramでフィルタします。</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="ngram.html#cb18-1" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="ngram.html#cb18-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">&quot;POS1&quot;</span>, <span class="st">&quot;Original&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="ngram.html#cb18-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb18-4"><a href="ngram.html#cb18-4" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
+<span id="cb18-5"><a href="ngram.html#cb18-5" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="ngram.html#cb18-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(</span>
+<span id="cb18-7"><a href="ngram.html#cb18-7" tabindex="-1"></a>    <span class="at">token =</span> <span class="fu">bigram</span>(token, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>),</span>
+<span id="cb18-8"><a href="ngram.html#cb18-8" tabindex="-1"></a>    <span class="at">pos =</span> <span class="fu">bigram</span>(POS1, <span class="at">sep =</span> <span class="st">&quot;-&quot;</span>), <span class="co"># 品詞のNgramをつくる</span></span>
+<span id="cb18-9"><a href="ngram.html#cb18-9" tabindex="-1"></a>    <span class="at">.by =</span> doc_id</span>
+<span id="cb18-10"><a href="ngram.html#cb18-10" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb18-11"><a href="ngram.html#cb18-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(pos <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;名詞-名詞&quot;</span>)) <span class="sc">|&gt;</span> <span class="co"># 品詞のNgramでフィルタする</span></span>
+<span id="cb18-12"><a href="ngram.html#cb18-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(doc_id, token)</span>
+<span id="cb18-13"><a href="ngram.html#cb18-13" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="ngram.html#cb18-14" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span>
+<span id="cb18-15"><a href="ngram.html#cb18-15" tabindex="-1"></a><span class="co">#&gt; tibble [866 × 3] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb18-16"><a href="ngram.html#cb18-16" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 2 3 3 3 3 3 4 4 5 5 ...</span></span>
+<span id="cb18-17"><a href="ngram.html#cb18-17" tabindex="-1"></a><span class="co">#&gt;  $ token : chr [1:866] &quot;宮沢-賢治&quot; &quot;レオーノ・キュースト-誌&quot; &quot;七-等&quot; &quot;十-七&quot; ...</span></span>
+<span id="cb18-18"><a href="ngram.html#cb18-18" tabindex="-1"></a><span class="co">#&gt;  $ n     : int [1:866] 1 1 1 1 1 1 1 1 1 1 ...</span></span></code></pre></div>
 </div>
 <div id="quantedaにngramを持ちこむ方法" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> quantedaにNgramを持ちこむ方法<a href="ngram.html#quantedaにngramを持ちこむ方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>gibasa::pack</code>を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="ngram.html#cb18-1" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
-<span id="cb18-2"><a href="ngram.html#cb18-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-3"><a href="ngram.html#cb18-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb18-4"><a href="ngram.html#cb18-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>(<span class="at">n =</span> <span class="dv">2</span>)</span>
-<span id="cb18-5"><a href="ngram.html#cb18-5" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="ngram.html#cb18-6" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span>
-<span id="cb18-7"><a href="ngram.html#cb18-7" tabindex="-1"></a><span class="co">#&gt; tibble [899 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
-<span id="cb18-8"><a href="ngram.html#cb18-8" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span id="cb18-9"><a href="ngram.html#cb18-9" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノ-の の-広場&quot; &quot;宮沢-賢治&quot; &quot;前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌&quot; &quot;宮沢-賢治 賢治-訳述&quot; ...</span></span>
-<span id="cb18-10"><a href="ngram.html#cb18-10" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="ngram.html#cb18-11" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
-<span id="cb18-12"><a href="ngram.html#cb18-12" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
-<span id="cb18-13"><a href="ngram.html#cb18-13" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb18-14"><a href="ngram.html#cb18-14" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
-<span id="cb18-15"><a href="ngram.html#cb18-15" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
-<span id="cb18-16"><a href="ngram.html#cb18-16" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
-<span id="cb18-17"><a href="ngram.html#cb18-17" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌 賢治-訳述</span></span>
-<span id="cb18-18"><a href="ngram.html#cb18-18" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-19"><a href="ngram.html#cb18-19" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-20"><a href="ngram.html#cb18-20" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
-<span id="cb18-21"><a href="ngram.html#cb18-21" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
-<span id="cb18-22"><a href="ngram.html#cb18-22" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb18-23"><a href="ngram.html#cb18-23" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
-<span id="cb18-24"><a href="ngram.html#cb18-24" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
-</div>
-<div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> quantedaでNgramを数える方法<a href="ngram.html#quantedaでngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="ngram.html#cb19-1" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
 <span id="cb19-2"><a href="ngram.html#cb19-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb19-3"><a href="ngram.html#cb19-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
-<span id="cb19-4"><a href="ngram.html#cb19-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb19-4"><a href="ngram.html#cb19-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>(<span class="at">n =</span> <span class="dv">2</span>)</span>
 <span id="cb19-5"><a href="ngram.html#cb19-5" tabindex="-1"></a></span>
 <span id="cb19-6"><a href="ngram.html#cb19-6" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span>
 <span id="cb19-7"><a href="ngram.html#cb19-7" tabindex="-1"></a><span class="co">#&gt; tibble [899 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
 <span id="cb19-8"><a href="ngram.html#cb19-8" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
-<span id="cb19-9"><a href="ngram.html#cb19-9" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</span></span>
+<span id="cb19-9"><a href="ngram.html#cb19-9" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノ-の の-広場&quot; &quot;宮沢-賢治&quot; &quot;前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌&quot; &quot;宮沢-賢治 賢治-訳述&quot; ...</span></span>
 <span id="cb19-10"><a href="ngram.html#cb19-10" tabindex="-1"></a></span>
 <span id="cb19-11"><a href="ngram.html#cb19-11" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
 <span id="cb19-12"><a href="ngram.html#cb19-12" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
 <span id="cb19-13"><a href="ngram.html#cb19-13" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-14"><a href="ngram.html#cb19-14" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_ngrams</span>(<span class="at">n =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-15"><a href="ngram.html#cb19-15" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
-<span id="cb19-16"><a href="ngram.html#cb19-16" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
-<span id="cb19-17"><a href="ngram.html#cb19-17" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
-<span id="cb19-18"><a href="ngram.html#cb19-18" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト レオーノ・キュースト_誌 賢治_訳述</span></span>
-<span id="cb19-19"><a href="ngram.html#cb19-19" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-20"><a href="ngram.html#cb19-20" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-21"><a href="ngram.html#cb19-21" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
-<span id="cb19-22"><a href="ngram.html#cb19-22" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
-<span id="cb19-23"><a href="ngram.html#cb19-23" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
-<span id="cb19-24"><a href="ngram.html#cb19-24" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
-<span id="cb19-25"><a href="ngram.html#cb19-25" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
+<span id="cb19-14"><a href="ngram.html#cb19-14" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
+<span id="cb19-15"><a href="ngram.html#cb19-15" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
+<span id="cb19-16"><a href="ngram.html#cb19-16" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
+<span id="cb19-17"><a href="ngram.html#cb19-17" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ-の の-広場 宮沢-賢治 前-十 十-七 七-等 等-官 官-レオーノ・キュースト レオーノ・キュースト-誌 賢治-訳述</span></span>
+<span id="cb19-18"><a href="ngram.html#cb19-18" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
+<span id="cb19-19"><a href="ngram.html#cb19-19" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
+<span id="cb19-20"><a href="ngram.html#cb19-20" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
+<span id="cb19-21"><a href="ngram.html#cb19-21" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
+<span id="cb19-22"><a href="ngram.html#cb19-22" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
+<span id="cb19-23"><a href="ngram.html#cb19-23" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
+<span id="cb19-24"><a href="ngram.html#cb19-24" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
+</div>
+<div id="quantedaでngramを数える方法" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> quantedaでNgramを数える方法<a href="ngram.html#quantedaでngramを数える方法" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="ngram.html#cb20-1" tabindex="-1"></a>dat_ngram <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="ngram.html#cb20-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="st">&quot;Original&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="ngram.html#cb20-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="ngram.html#cb20-4" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb20-5"><a href="ngram.html#cb20-5" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="ngram.html#cb20-6" tabindex="-1"></a><span class="fu">str</span>(dat_ngram)</span>
+<span id="cb20-7"><a href="ngram.html#cb20-7" tabindex="-1"></a><span class="co">#&gt; tibble [899 × 2] (S3: tbl_df/tbl/data.frame)</span></span>
+<span id="cb20-8"><a href="ngram.html#cb20-8" tabindex="-1"></a><span class="co">#&gt;  $ doc_id: Factor w/ 899 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 2 3 4 5 6 7 8 9 10 ...</span></span>
+<span id="cb20-9"><a href="ngram.html#cb20-9" tabindex="-1"></a><span class="co">#&gt;  $ text  : chr [1:899] &quot;ポラーノ の 広場&quot; &quot;宮沢 賢治&quot; &quot;前 十 七 等 官 レオーノ・キュースト 誌&quot; &quot;宮沢 賢治 訳述&quot; ...</span></span>
+<span id="cb20-10"><a href="ngram.html#cb20-10" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="ngram.html#cb20-11" tabindex="-1"></a>dat_ngram <span class="sc">|&gt;</span></span>
+<span id="cb20-12"><a href="ngram.html#cb20-12" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-13"><a href="ngram.html#cb20-13" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-14"><a href="ngram.html#cb20-14" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_ngrams</span>(<span class="at">n =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-15"><a href="ngram.html#cb20-15" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>()</span>
+<span id="cb20-16"><a href="ngram.html#cb20-16" tabindex="-1"></a><span class="co">#&gt; Document-feature matrix of: 899 documents, 10,890 features (99.75% sparse) and 0 docvars.</span></span>
+<span id="cb20-17"><a href="ngram.html#cb20-17" tabindex="-1"></a><span class="co">#&gt;     features</span></span>
+<span id="cb20-18"><a href="ngram.html#cb20-18" tabindex="-1"></a><span class="co">#&gt; docs ポラーノ_の の_広場 宮沢_賢治 前_十 十_七 七_等 等_官 官_レオーノ・キュースト レオーノ・キュースト_誌 賢治_訳述</span></span>
+<span id="cb20-19"><a href="ngram.html#cb20-19" tabindex="-1"></a><span class="co">#&gt;    1           1       1         0     0     0     0     0                       0                       0         0</span></span>
+<span id="cb20-20"><a href="ngram.html#cb20-20" tabindex="-1"></a><span class="co">#&gt;    2           0       0         1     0     0     0     0                       0                       0         0</span></span>
+<span id="cb20-21"><a href="ngram.html#cb20-21" tabindex="-1"></a><span class="co">#&gt;    3           0       0         0     1     1     1     1                       1                       1         0</span></span>
+<span id="cb20-22"><a href="ngram.html#cb20-22" tabindex="-1"></a><span class="co">#&gt;    4           0       0         1     0     0     0     0                       0                       0         1</span></span>
+<span id="cb20-23"><a href="ngram.html#cb20-23" tabindex="-1"></a><span class="co">#&gt;    5           0       0         0     0     0     0     0                       0                       0         0</span></span>
+<span id="cb20-24"><a href="ngram.html#cb20-24" tabindex="-1"></a><span class="co">#&gt;    6           0       0         0     0     0     0     1                       0                       0         0</span></span>
+<span id="cb20-25"><a href="ngram.html#cb20-25" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents, reached max_nfeat ... 10,880 more features ]</span></span></code></pre></div>
 
 </div>
 </div>

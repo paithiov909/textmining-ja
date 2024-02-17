@@ -16,8 +16,6 @@ tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用してい�
 
 gibasaはRMeCabにおける単語頻度の重みづけを`tidytext::bind_tf_idf`と同様のスタイルでおこなうことができる関数`gibasa::bind_tf_idf2`を提供しています。
 
-`bind_tf_idf2`はおおむねRMeCabの単語頻度の重みづけの挙動を再現していますが、細かな点が異なります。たとえば、gibasaは「コサイン正規化」がIDFの計算時のみにおこなわれるため、`norm=TRUE`にしてもRMeCabの計算結果とは一致しません。
-
 RMeCabは以下の単語頻度の重みづけをサポートしています。
 
 -   局所的重み（TF）

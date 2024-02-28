@@ -36,7 +36,7 @@ gibasaはこれらの重みづけを再実装しています。ただし、`tf="
 dat_count |>
   gibasa::bind_tf_idf2(token, doc_id, n) |>
   dplyr::mutate(
-    tf_idf = n / idf
+    tf_idf = n * idf
   ) |>
   dplyr::slice_max(tf_idf, n = 5L)
 ```

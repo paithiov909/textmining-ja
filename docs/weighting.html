@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2024-02-17" />
+<meta name="date" content="2024-02-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -284,20 +284,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="weighting.html#cb22-1" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
 <span id="cb22-2"><a href="weighting.html#cb22-2" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
 <span id="cb22-3"><a href="weighting.html#cb22-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb22-4"><a href="weighting.html#cb22-4" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">/</span> idf</span>
+<span id="cb22-4"><a href="weighting.html#cb22-4" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">*</span> idf</span>
 <span id="cb22-5"><a href="weighting.html#cb22-5" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb22-6"><a href="weighting.html#cb22-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> 5L)</span>
-<span id="cb22-7"><a href="weighting.html#cb22-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 6</span></span>
-<span id="cb22-8"><a href="weighting.html#cb22-8" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n     tf   idf tf_idf</span></span>
-<span id="cb22-9"><a href="weighting.html#cb22-9" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb22-10"><a href="weighting.html#cb22-10" tabindex="-1"></a><span class="co">#&gt; 1 715    の          11 0.103   3.74   2.94</span></span>
-<span id="cb22-11"><a href="weighting.html#cb22-11" tabindex="-1"></a><span class="co">#&gt; 2 732    いる         8 0.0842  3.10   2.58</span></span>
-<span id="cb22-12"><a href="weighting.html#cb22-12" tabindex="-1"></a><span class="co">#&gt; 3 715    わたくし     8 0.0748  3.32   2.41</span></span>
-<span id="cb22-13"><a href="weighting.html#cb22-13" tabindex="-1"></a><span class="co">#&gt; 4 825    いる         6 0.0638  3.10   1.94</span></span>
-<span id="cb22-14"><a href="weighting.html#cb22-14" tabindex="-1"></a><span class="co">#&gt; 5 615    する         6 0.0408  3.21   1.87</span></span>
-<span id="cb22-15"><a href="weighting.html#cb22-15" tabindex="-1"></a><span class="co">#&gt; 6 715    する         6 0.0561  3.21   1.87</span></span>
-<span id="cb22-16"><a href="weighting.html#cb22-16" tabindex="-1"></a><span class="co">#&gt; 7 822    する         6 0.0659  3.21   1.87</span></span>
-<span id="cb22-17"><a href="weighting.html#cb22-17" tabindex="-1"></a><span class="co">#&gt; 8 825    する         6 0.0638  3.21   1.87</span></span></code></pre></div>
+<span id="cb22-7"><a href="weighting.html#cb22-7" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 6</span></span>
+<span id="cb22-8"><a href="weighting.html#cb22-8" tabindex="-1"></a><span class="co">#&gt;   doc_id token     n     tf   idf tf_idf</span></span>
+<span id="cb22-9"><a href="weighting.html#cb22-9" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb22-10"><a href="weighting.html#cb22-10" tabindex="-1"></a><span class="co">#&gt; 1 825    勉強      6 0.0638  8.77   52.6</span></span>
+<span id="cb22-11"><a href="weighting.html#cb22-11" tabindex="-1"></a><span class="co">#&gt; 2 826    力        6 0.0667  8.77   52.6</span></span>
+<span id="cb22-12"><a href="weighting.html#cb22-12" tabindex="-1"></a><span class="co">#&gt; 3 822    勉強      5 0.0549  8.77   43.9</span></span>
+<span id="cb22-13"><a href="weighting.html#cb22-13" tabindex="-1"></a><span class="co">#&gt; 4 715    の       11 0.103   3.74   41.2</span></span>
+<span id="cb22-14"><a href="weighting.html#cb22-14" tabindex="-1"></a><span class="co">#&gt; 5 113    鞭        4 0.211   9.77   39.1</span></span>
+<span id="cb22-15"><a href="weighting.html#cb22-15" tabindex="-1"></a><span class="co">#&gt; 6 826    得る      4 0.0444  9.77   39.1</span></span></code></pre></div>
 <p>なお、注意点として、RMeCabの単語を数える機能は、品詞情報（POS1とPOS2まで）を確認しながら単語を数えているようなので、ここでのように原形だけを見て数えた結果とは必ずしも一致しません。</p>
 </div>
 <div id="udpipeによる重みづけ" class="section level2 hasAnchor" number="4.3">

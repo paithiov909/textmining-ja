@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2024-02-17" />
+<meta name="date" content="2024-02-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -375,30 +375,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="intro.html#cb8-1" tabindex="-1"></a>dat_corpus <span class="sc">|&gt;</span></span>
 <span id="cb8-2"><a href="intro.html#cb8-2" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
 <span id="cb8-3"><a href="intro.html#cb8-3" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">&quot;fastestword&quot;</span>, <span class="at">remove_punct =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb8-4"><a href="intro.html#cb8-4" tabindex="-1"></a><span class="co">#&gt; Tokens consisting of 899 documents.</span></span>
-<span id="cb8-5"><a href="intro.html#cb8-5" tabindex="-1"></a><span class="co">#&gt; 1 :</span></span>
-<span id="cb8-6"><a href="intro.html#cb8-6" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
-<span id="cb8-7"><a href="intro.html#cb8-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-8"><a href="intro.html#cb8-8" tabindex="-1"></a><span class="co">#&gt; 2 :</span></span>
-<span id="cb8-9"><a href="intro.html#cb8-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
-<span id="cb8-10"><a href="intro.html#cb8-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-11"><a href="intro.html#cb8-11" tabindex="-1"></a><span class="co">#&gt; 3 :</span></span>
-<span id="cb8-12"><a href="intro.html#cb8-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  </span></span>
-<span id="cb8-13"><a href="intro.html#cb8-13" tabindex="-1"></a><span class="co">#&gt; [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  </span></span>
-<span id="cb8-14"><a href="intro.html#cb8-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-15"><a href="intro.html#cb8-15" tabindex="-1"></a><span class="co">#&gt; 4 :</span></span>
-<span id="cb8-16"><a href="intro.html#cb8-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span>
-<span id="cb8-17"><a href="intro.html#cb8-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-18"><a href="intro.html#cb8-18" tabindex="-1"></a><span class="co">#&gt; 5 :</span></span>
-<span id="cb8-19"><a href="intro.html#cb8-19" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;      </span></span>
-<span id="cb8-20"><a href="intro.html#cb8-20" tabindex="-1"></a><span class="co">#&gt; [11] &quot;に&quot;       &quot;勤め&quot;    </span></span>
-<span id="cb8-21"><a href="intro.html#cb8-21" tabindex="-1"></a><span class="co">#&gt; [ ... and 5 more ]</span></span>
-<span id="cb8-22"><a href="intro.html#cb8-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-23"><a href="intro.html#cb8-23" tabindex="-1"></a><span class="co">#&gt; 6 :</span></span>
-<span id="cb8-24"><a href="intro.html#cb8-24" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  </span></span>
-<span id="cb8-25"><a href="intro.html#cb8-25" tabindex="-1"></a><span class="co">#&gt; [ ... and 219 more ]</span></span>
-<span id="cb8-26"><a href="intro.html#cb8-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-27"><a href="intro.html#cb8-27" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents ]</span></span></code></pre></div>
+<span id="cb8-4"><a href="intro.html#cb8-4" tabindex="-1"></a><span class="co">#&gt; Warning in .recacheSubclasses(def@className, def, env): undefined subclass &quot;ndiMatrix&quot; of class &quot;replValueSp&quot;;</span></span>
+<span id="cb8-5"><a href="intro.html#cb8-5" tabindex="-1"></a><span class="co">#&gt; definition not updated</span></span>
+<span id="cb8-6"><a href="intro.html#cb8-6" tabindex="-1"></a><span class="co">#&gt; Tokens consisting of 899 documents.</span></span>
+<span id="cb8-7"><a href="intro.html#cb8-7" tabindex="-1"></a><span class="co">#&gt; 1 :</span></span>
+<span id="cb8-8"><a href="intro.html#cb8-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;ポラーノ&quot; &quot;の&quot;       &quot;広場&quot;    </span></span>
+<span id="cb8-9"><a href="intro.html#cb8-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-10"><a href="intro.html#cb8-10" tabindex="-1"></a><span class="co">#&gt; 2 :</span></span>
+<span id="cb8-11"><a href="intro.html#cb8-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot;</span></span>
+<span id="cb8-12"><a href="intro.html#cb8-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-13"><a href="intro.html#cb8-13" tabindex="-1"></a><span class="co">#&gt; 3 :</span></span>
+<span id="cb8-14"><a href="intro.html#cb8-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;前&quot;                   &quot;十&quot;                   &quot;七&quot;                   &quot;等&quot;                   &quot;官&quot;                  </span></span>
+<span id="cb8-15"><a href="intro.html#cb8-15" tabindex="-1"></a><span class="co">#&gt; [6] &quot;レオーノ・キュースト&quot; &quot;誌&quot;                  </span></span>
+<span id="cb8-16"><a href="intro.html#cb8-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-17"><a href="intro.html#cb8-17" tabindex="-1"></a><span class="co">#&gt; 4 :</span></span>
+<span id="cb8-18"><a href="intro.html#cb8-18" tabindex="-1"></a><span class="co">#&gt; [1] &quot;宮沢&quot; &quot;賢治&quot; &quot;訳述&quot;</span></span>
+<span id="cb8-19"><a href="intro.html#cb8-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-20"><a href="intro.html#cb8-20" tabindex="-1"></a><span class="co">#&gt; 5 :</span></span>
+<span id="cb8-21"><a href="intro.html#cb8-21" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;その&quot;     &quot;ころ&quot;     &quot;わたくし&quot; &quot;は&quot;       &quot;、&quot;       &quot;モリーオ&quot; &quot;市&quot;       &quot;の&quot;       &quot;博物&quot;     &quot;局&quot;      </span></span>
+<span id="cb8-22"><a href="intro.html#cb8-22" tabindex="-1"></a><span class="co">#&gt; [11] &quot;に&quot;       &quot;勤め&quot;    </span></span>
+<span id="cb8-23"><a href="intro.html#cb8-23" tabindex="-1"></a><span class="co">#&gt; [ ... and 5 more ]</span></span>
+<span id="cb8-24"><a href="intro.html#cb8-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-25"><a href="intro.html#cb8-25" tabindex="-1"></a><span class="co">#&gt; 6 :</span></span>
+<span id="cb8-26"><a href="intro.html#cb8-26" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;十&quot;   &quot;八&quot;   &quot;等&quot;   &quot;官&quot;   &quot;でし&quot; &quot;た&quot;   &quot;から&quot; &quot;役所&quot; &quot;の&quot;   &quot;なか&quot; &quot;でも&quot; &quot;、&quot;  </span></span>
+<span id="cb8-27"><a href="intro.html#cb8-27" tabindex="-1"></a><span class="co">#&gt; [ ... and 219 more ]</span></span>
+<span id="cb8-28"><a href="intro.html#cb8-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-29"><a href="intro.html#cb8-29" tabindex="-1"></a><span class="co">#&gt; [ reached max_ndoc ... 893 more documents ]</span></span></code></pre></div>
 </div>
 <div id="lazy_dtなどと組み合わせて使う場合" class="section level3 hasAnchor" number="1.2.4">
 <h3><span class="header-section-number">1.2.4</span> lazy_dtなどと組み合わせて使う場合<a href="intro.html#lazy_dtなどと組み合わせて使う場合" class="anchor-section" aria-label="Anchor link to header"></a></h3>

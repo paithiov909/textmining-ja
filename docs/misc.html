@@ -23,7 +23,7 @@
 <meta name="author" content="Akiru Kato" />
 
 
-<meta name="date" content="2024-02-17" />
+<meta name="date" content="2024-02-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -327,22 +327,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 このような解析結果としてより望ましい品詞を確認するには、正しく解析させたい語（ここでは「月ノ美兎」）と同じような使われ方をする語（たとえば「早見沙織」）を実際に解析してみて、その結果を確認するとよいでしょう。</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="misc.html#cb37-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">&quot;早見沙織のラジオ番組&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb37-2"><a href="misc.html#cb37-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">&quot;01&quot;</span>)</span>
-<span id="cb37-3"><a href="misc.html#cb37-3" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                      feature stat lcAttr rcAttr     alpha      beta is_best</span></span>
-<span id="cb37-4"><a href="misc.html#cb37-4" tabindex="-1"></a><span class="co">#&gt; 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -10104.75      01</span></span>
-<span id="cb37-5"><a href="misc.html#cb37-5" tabindex="-1"></a><span class="co">#&gt; 2      1     43    早見 名詞,固有名詞,人名,姓,*,*,早見,ハヤミ,ハヤミ   00   1290   1290  -4362.75  -5742.00      01</span></span>
-<span id="cb37-6"><a href="misc.html#cb37-6" tabindex="-1"></a><span class="co">#&gt; 3      1     44    沙織 名詞,固有名詞,人名,名,*,*,沙織,サオリ,サオリ   00   1291   1291  -5452.50  -4652.25      01</span></span>
-<span id="cb37-7"><a href="misc.html#cb37-7" tabindex="-1"></a><span class="co">#&gt; 4      1     24      の                 助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368  -6658.50  -3446.25      01</span></span>
-<span id="cb37-8"><a href="misc.html#cb37-8" tabindex="-1"></a><span class="co">#&gt; 5      1     38  ラジオ       名詞,一般,*,*,*,*,ラジオ,ラジオ,ラジオ   00   1285   1285  -7886.25  -2218.50      01</span></span>
-<span id="cb37-9"><a href="misc.html#cb37-9" tabindex="-1"></a><span class="co">#&gt; 6      1     38    番組     名詞,一般,*,*,*,*,番組,バングミ,バングミ   00   1285   1285 -10534.50    429.75      01</span></span>
-<span id="cb37-10"><a href="misc.html#cb37-10" tabindex="-1"></a><span class="co">#&gt; 7      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -10104.75      0.00      01</span></span>
-<span id="cb37-11"><a href="misc.html#cb37-11" tabindex="-1"></a><span class="co">#&gt;   prob wcost  cost</span></span>
-<span id="cb37-12"><a href="misc.html#cb37-12" tabindex="-1"></a><span class="co">#&gt; 1    0     0     0</span></span>
-<span id="cb37-13"><a href="misc.html#cb37-13" tabindex="-1"></a><span class="co">#&gt; 2    1  7472  5817</span></span>
-<span id="cb37-14"><a href="misc.html#cb37-14" tabindex="-1"></a><span class="co">#&gt; 3    1  8462  7270</span></span>
-<span id="cb37-15"><a href="misc.html#cb37-15" tabindex="-1"></a><span class="co">#&gt; 4    1  4816  8878</span></span>
-<span id="cb37-16"><a href="misc.html#cb37-16" tabindex="-1"></a><span class="co">#&gt; 5    1  3942 10515</span></span>
-<span id="cb37-17"><a href="misc.html#cb37-17" tabindex="-1"></a><span class="co">#&gt; 6    1  3469 14046</span></span>
-<span id="cb37-18"><a href="misc.html#cb37-18" tabindex="-1"></a><span class="co">#&gt; 7    1     0 13473</span></span></code></pre></div>
+<span id="cb37-3"><a href="misc.html#cb37-3" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                      feature stat lcAttr rcAttr     alpha      beta is_best prob</span></span>
+<span id="cb37-4"><a href="misc.html#cb37-4" tabindex="-1"></a><span class="co">#&gt; 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02      0      0      0.00 -10104.75      01    0</span></span>
+<span id="cb37-5"><a href="misc.html#cb37-5" tabindex="-1"></a><span class="co">#&gt; 2      1     43    早見 名詞,固有名詞,人名,姓,*,*,早見,ハヤミ,ハヤミ   00   1290   1290  -4362.75  -5742.00      01    1</span></span>
+<span id="cb37-6"><a href="misc.html#cb37-6" tabindex="-1"></a><span class="co">#&gt; 3      1     44    沙織 名詞,固有名詞,人名,名,*,*,沙織,サオリ,サオリ   00   1291   1291  -5452.50  -4652.25      01    1</span></span>
+<span id="cb37-7"><a href="misc.html#cb37-7" tabindex="-1"></a><span class="co">#&gt; 4      1     24      の                 助詞,連体化,*,*,*,*,の,ノ,ノ   00    368    368  -6658.50  -3446.25      01    1</span></span>
+<span id="cb37-8"><a href="misc.html#cb37-8" tabindex="-1"></a><span class="co">#&gt; 5      1     38  ラジオ       名詞,一般,*,*,*,*,ラジオ,ラジオ,ラジオ   00   1285   1285  -7886.25  -2218.50      01    1</span></span>
+<span id="cb37-9"><a href="misc.html#cb37-9" tabindex="-1"></a><span class="co">#&gt; 6      1     38    番組     名詞,一般,*,*,*,*,番組,バングミ,バングミ   00   1285   1285 -10534.50    429.75      01    1</span></span>
+<span id="cb37-10"><a href="misc.html#cb37-10" tabindex="-1"></a><span class="co">#&gt; 7      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   03      0      0 -10104.75      0.00      01    1</span></span>
+<span id="cb37-11"><a href="misc.html#cb37-11" tabindex="-1"></a><span class="co">#&gt;   wcost  cost</span></span>
+<span id="cb37-12"><a href="misc.html#cb37-12" tabindex="-1"></a><span class="co">#&gt; 1     0     0</span></span>
+<span id="cb37-13"><a href="misc.html#cb37-13" tabindex="-1"></a><span class="co">#&gt; 2  7472  5817</span></span>
+<span id="cb37-14"><a href="misc.html#cb37-14" tabindex="-1"></a><span class="co">#&gt; 3  8462  7270</span></span>
+<span id="cb37-15"><a href="misc.html#cb37-15" tabindex="-1"></a><span class="co">#&gt; 4  4816  8878</span></span>
+<span id="cb37-16"><a href="misc.html#cb37-16" tabindex="-1"></a><span class="co">#&gt; 5  3942 10515</span></span>
+<span id="cb37-17"><a href="misc.html#cb37-17" tabindex="-1"></a><span class="co">#&gt; 6  3469 14046</span></span>
+<span id="cb37-18"><a href="misc.html#cb37-18" tabindex="-1"></a><span class="co">#&gt; 7     0 13473</span></span></code></pre></div>
 <p>この結果は狙いどおりのものであるため、「月ノ美兎」を正しく解析するために用意するCSVファイルは、仮に次のように作成しておくことができそうです。</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="misc.html#cb38-1" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
 <span id="cb38-2"><a href="misc.html#cb38-2" tabindex="-1"></a>  <span class="fu">c</span>(</span>
@@ -363,7 +363,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb39-4"><a href="misc.html#cb39-4" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb39-5"><a href="misc.html#cb39-5" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb39-6"><a href="misc.html#cb39-6" tabindex="-1"></a>)</span>
-<span id="cb39-7"><a href="misc.html#cb39-7" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/file3dd2261c6698.csv ... 2</span></span>
+<span id="cb39-7"><a href="misc.html#cb39-7" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/file58b7dc698ee.csv ... 2</span></span>
 <span id="cb39-8"><a href="misc.html#cb39-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb39-9"><a href="misc.html#cb39-9" tabindex="-1"></a><span class="co">#&gt; done!</span></span></code></pre></div>
 <p>なお、gibasaによる辞書のビルド時の注意点として、「<a href="https://taku910.github.io/mecab/dic.html">MeCab: 単語の追加方法</a>」で案内されている「コストの自動推定機能」はgibasaからは利用できません。
@@ -372,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="misc.html#cb40-1" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span>
 <span id="cb40-2"><a href="misc.html#cb40-2" tabindex="-1"></a><span class="co">#&gt;                                                       file_path charset lsize rsize   size type version</span></span>
 <span id="cb40-3"><a href="misc.html#cb40-3" tabindex="-1"></a><span class="co">#&gt; 1 /usr/local/lib/python3.10/dist-packages/ipadic/dicdir/sys.dic    utf8  1316  1316 392126    0     102</span></span>
-<span id="cb40-4"><a href="misc.html#cb40-4" tabindex="-1"></a><span class="co">#&gt; 2                          /tmp/RtmpBZfRfx/file3dd22f1d1d0e.dic    utf8  1316  1316      2    1     102</span></span>
+<span id="cb40-4"><a href="misc.html#cb40-4" tabindex="-1"></a><span class="co">#&gt; 2                           /tmp/RtmpXkUedm/file58b1afd0d89.dic    utf8  1316  1316      2    1     102</span></span>
 <span id="cb40-5"><a href="misc.html#cb40-5" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">&quot;月ノ美兎は箱の中&quot;</span>, <span class="at">user_dic =</span> user_dic)</span>
 <span id="cb40-6"><a href="misc.html#cb40-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
 <span id="cb40-7"><a href="misc.html#cb40-7" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                     </span></span>
@@ -404,7 +404,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb41-10"><a href="misc.html#cb41-10" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb41-11"><a href="misc.html#cb41-11" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb41-12"><a href="misc.html#cb41-12" tabindex="-1"></a>)</span>
-<span id="cb41-13"><a href="misc.html#cb41-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/file3dd22d2e6a84.csv ... 1</span></span>
+<span id="cb41-13"><a href="misc.html#cb41-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/file58b31985617.csv ... 1</span></span>
 <span id="cb41-14"><a href="misc.html#cb41-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb41-15"><a href="misc.html#cb41-15" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb41-16"><a href="misc.html#cb41-16" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
@@ -502,7 +502,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb44-13"><a href="misc.html#cb44-13" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb44-14"><a href="misc.html#cb44-14" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;utf8&quot;</span></span>
 <span id="cb44-15"><a href="misc.html#cb44-15" tabindex="-1"></a>)</span>
-<span id="cb44-16"><a href="misc.html#cb44-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/file3dd27747c44a.csv ... 1</span></span>
+<span id="cb44-16"><a href="misc.html#cb44-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/file58b3db6766b.csv ... 1</span></span>
 <span id="cb44-17"><a href="misc.html#cb44-17" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb44-18"><a href="misc.html#cb44-18" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb44-19"><a href="misc.html#cb44-19" tabindex="-1"></a></span>
@@ -542,34 +542,34 @@ UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリ�
 <span id="cb45-7"><a href="misc.html#cb45-7" tabindex="-1"></a>  <span class="at">out_dir =</span> <span class="fu">tempdir</span>(),</span>
 <span id="cb45-8"><a href="misc.html#cb45-8" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">&quot;euc-jp&quot;</span></span>
 <span id="cb45-9"><a href="misc.html#cb45-9" tabindex="-1"></a>)</span>
-<span id="cb45-10"><a href="misc.html#cb45-10" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
-<span id="cb45-11"><a href="misc.html#cb45-11" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
-<span id="cb45-12"><a href="misc.html#cb45-12" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
-<span id="cb45-13"><a href="misc.html#cb45-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
-<span id="cb45-14"><a href="misc.html#cb45-14" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
-<span id="cb45-15"><a href="misc.html#cb45-15" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
-<span id="cb45-16"><a href="misc.html#cb45-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
-<span id="cb45-17"><a href="misc.html#cb45-17" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
-<span id="cb45-18"><a href="misc.html#cb45-18" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
-<span id="cb45-19"><a href="misc.html#cb45-19" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
-<span id="cb45-20"><a href="misc.html#cb45-20" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
-<span id="cb45-21"><a href="misc.html#cb45-21" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
-<span id="cb45-22"><a href="misc.html#cb45-22" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
-<span id="cb45-23"><a href="misc.html#cb45-23" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
-<span id="cb45-24"><a href="misc.html#cb45-24" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
-<span id="cb45-25"><a href="misc.html#cb45-25" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
-<span id="cb45-26"><a href="misc.html#cb45-26" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
-<span id="cb45-27"><a href="misc.html#cb45-27" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
-<span id="cb45-28"><a href="misc.html#cb45-28" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
-<span id="cb45-29"><a href="misc.html#cb45-29" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
-<span id="cb45-30"><a href="misc.html#cb45-30" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
-<span id="cb45-31"><a href="misc.html#cb45-31" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
-<span id="cb45-32"><a href="misc.html#cb45-32" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
-<span id="cb45-33"><a href="misc.html#cb45-33" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
-<span id="cb45-34"><a href="misc.html#cb45-34" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
-<span id="cb45-35"><a href="misc.html#cb45-35" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
-<span id="cb45-36"><a href="misc.html#cb45-36" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
-<span id="cb45-37"><a href="misc.html#cb45-37" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpBZfRfx/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
+<span id="cb45-10"><a href="misc.html#cb45-10" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
+<span id="cb45-11"><a href="misc.html#cb45-11" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
+<span id="cb45-12"><a href="misc.html#cb45-12" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
+<span id="cb45-13"><a href="misc.html#cb45-13" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
+<span id="cb45-14"><a href="misc.html#cb45-14" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
+<span id="cb45-15"><a href="misc.html#cb45-15" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
+<span id="cb45-16"><a href="misc.html#cb45-16" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
+<span id="cb45-17"><a href="misc.html#cb45-17" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
+<span id="cb45-18"><a href="misc.html#cb45-18" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
+<span id="cb45-19"><a href="misc.html#cb45-19" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
+<span id="cb45-20"><a href="misc.html#cb45-20" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
+<span id="cb45-21"><a href="misc.html#cb45-21" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
+<span id="cb45-22"><a href="misc.html#cb45-22" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
+<span id="cb45-23"><a href="misc.html#cb45-23" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
+<span id="cb45-24"><a href="misc.html#cb45-24" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
+<span id="cb45-25"><a href="misc.html#cb45-25" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
+<span id="cb45-26"><a href="misc.html#cb45-26" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
+<span id="cb45-27"><a href="misc.html#cb45-27" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
+<span id="cb45-28"><a href="misc.html#cb45-28" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
+<span id="cb45-29"><a href="misc.html#cb45-29" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
+<span id="cb45-30"><a href="misc.html#cb45-30" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
+<span id="cb45-31"><a href="misc.html#cb45-31" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
+<span id="cb45-32"><a href="misc.html#cb45-32" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
+<span id="cb45-33"><a href="misc.html#cb45-33" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
+<span id="cb45-34"><a href="misc.html#cb45-34" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
+<span id="cb45-35"><a href="misc.html#cb45-35" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
+<span id="cb45-36"><a href="misc.html#cb45-36" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
+<span id="cb45-37"><a href="misc.html#cb45-37" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmpXkUedm/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
 <span id="cb45-38"><a href="misc.html#cb45-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb45-39"><a href="misc.html#cb45-39" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb45-40"><a href="misc.html#cb45-40" tabindex="-1"></a></span>

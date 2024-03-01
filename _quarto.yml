@@ -27,16 +27,11 @@ book:
   sharing: [twitter, facebook]
   chapters:
     - index.qmd
-    - text: "gibasaの基本的な使い方"
-      file: intro.qmd
-    - text: "トークンの集計と文書単語行列への整形"
-      file: dtm.qmd
-    - text: "N-gram"
-      file: ngram.qmd
-    - text: "単語頻度の重みづけ"
-      file: weighting.qmd
-    - text: "セッション情報"
-      file: sessioninfo.qmd
+    - intro.qmd
+    - dtm.qmd
+    - ngram.qmd
+    - weighting.qmd
+    - sessioninfo.qmd
   appendices:
     - misc.qmd
   comments:

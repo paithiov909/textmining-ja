@@ -31,6 +31,7 @@ book:
     - dtm.qmd
     - ngram.qmd
     - weighting.qmd
+    - collocation.qmd
     - sessioninfo.qmd
   appendices:
     - misc.qmd

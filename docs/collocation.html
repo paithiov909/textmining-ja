@@ -8,7 +8,7 @@
 
 <meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
 
-<title>RとMeCabによる日本語テキストマイニングの前処理 - 4&nbsp; 単語頻度の重みづけ</title>
+<title>RとMeCabによる日本語テキストマイニングの前処理 - 5&nbsp; コロケーション</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -65,8 +65,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./collocation.html" rel="next">
-<link href="./ngram.html" rel="prev">
+<link href="./sessioninfo.html" rel="next">
+<link href="./weighting.html" rel="prev">
 <link href="./favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -107,14 +107,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="style.css">
-<meta property="og:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 4&nbsp; 単語頻度の重みづけ">
+<meta property="og:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 5&nbsp; コロケーション">
 <meta property="og:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:locale" content="ja">
 <meta property="og:image:height" content="423">
 <meta property="og:image:width" content="423">
-<meta name="twitter:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 4&nbsp; 単語頻度の重みづけ">
+<meta name="twitter:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 5&nbsp; コロケーション">
 <meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta name="twitter:card" content="summary">
@@ -131,7 +131,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./weighting.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./collocation.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -202,13 +202,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./weighting.html" class="sidebar-item-text sidebar-link active">
+  <a href="./weighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./collocation.html" class="sidebar-item-text sidebar-link">
+  <a href="./collocation.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span></a>
   </div>
 </li>
@@ -245,10 +245,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#tidytextによる重みづけ" id="toc-tidytextによる重みづけ" class="nav-link active" data-scroll-target="#tidytextによる重みづけ"><span class="header-section-number">4.1</span> tidytextによる重みづけ</a></li>
-  <li><a href="#gibasaによる重みづけ" id="toc-gibasaによる重みづけ" class="nav-link" data-scroll-target="#gibasaによる重みづけ"><span class="header-section-number">4.2</span> gibasaによる重みづけ</a></li>
-  <li><a href="#udpipeによる重みづけ" id="toc-udpipeによる重みづけ" class="nav-link" data-scroll-target="#udpipeによる重みづけ"><span class="header-section-number">4.3</span> udpipeによる重みづけ</a></li>
-  <li><a href="#tidyloによる重みづけ" id="toc-tidyloによる重みづけ" class="nav-link" data-scroll-target="#tidyloによる重みづけ"><span class="header-section-number">4.4</span> tidyloによる重みづけ</a></li>
+  <li><a href="#文書内での共起" id="toc-文書内での共起" class="nav-link active" data-scroll-target="#文書内での共起"><span class="header-section-number">5.1</span> 文書内での共起</a></li>
+  <li><a href="#任意のウィンドウ内での共起" id="toc-任意のウィンドウ内での共起" class="nav-link" data-scroll-target="#任意のウィンドウ内での共起"><span class="header-section-number">5.2</span> 任意のウィンドウ内での共起</a>
+  <ul class="collapse">
+  <li><a href="#共起の集計" id="toc-共起の集計" class="nav-link" data-scroll-target="#共起の集計"><span class="header-section-number">5.2.1</span> 共起の集計</a></li>
+  <li><a href="#t値やmi値の算出" id="toc-t値やmi値の算出" class="nav-link" data-scroll-target="#t値やmi値の算出"><span class="header-section-number">5.2.2</span> T値やMI値の算出</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -257,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="weighting" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></span></h1>
+<h1 class="title"><span id="collocation" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span></h1>
 </div>
 
 
@@ -294,130 +296,146 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(doc_id, token)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="tidytextによる重みづけ" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="tidytextによる重みづけ"><span class="header-section-number">4.1</span> tidytextによる重みづけ</h2>
-<p><code>tidytext::bind_tf_idf</code>を使うと単語頻度からTF-IDFを算出することができます。</p>
+<section id="文書内での共起" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="文書内での共起"><span class="header-section-number">5.1</span> 文書内での共起</h2>
+<p>共起関係を数える機能はgibasaには実装されていません。文書内での共起を簡単に数えるには、たとえば次のようにします。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">bind_tf_idf</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">5</span>L)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 6</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n    tf   idf tf_idf</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 139    去年         1     1  6.78   6.78</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 880    ざあい       1     1  6.78   6.78</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 255    あわてる     1     1  6.08   6.08</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 713    こちら       1     1  6.08   6.08</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 288    こいつ       1     1  5.39   5.39</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>tidytextにおけるTFとIDFは、RMeCabにおけるそれとは採用している計算式が異なるため、計算結果が異なります。TFはRMeCabでは生の索引語頻度（tfの場合）ですが、tidytextでは文書内での相対頻度になります。また、IDFはRMeCabでは対数の底が2であるのに対して、tidytextでは底が<code>exp(1)</code>であるなどの違いがあります。</p>
-</section>
-<section id="gibasaによる重みづけ" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="gibasaによる重みづけ"><span class="header-section-number">4.2</span> gibasaによる重みづけ</h2>
-<p>gibasaはRMeCabにおける単語頻度の重みづけを<code>tidytext::bind_tf_idf</code>と同様のスタイルでおこなうことができる関数<code>gibasa::bind_tf_idf2</code>を提供しています。</p>
-<p>RMeCabは以下の単語頻度の重みづけをサポートしています。</p>
-<ul>
-<li>局所的重み（TF）
-<ul>
-<li>tf（索引語頻度）</li>
-<li>tf2（対数化索引語頻度）</li>
-<li>tf3（２進重み）</li>
-</ul></li>
-<li>大域的重み（IDF）
-<ul>
-<li>idf（文書頻度の逆数）</li>
-<li>idf2（大域的IDF）</li>
-<li>idf3（確率的IDF）</li>
-<li>idf4（エントロピー）</li>
-</ul></li>
-<li>正規化
-<ul>
-<li>norm（コサイン正規化）</li>
-</ul></li>
-</ul>
-<p>gibasaはこれらの重みづけを再実装しています。ただし、<code>tf="tf"</code>はgibasaでは相対頻度になるため、RMeCabの<code>weight="tf*idf"</code>に相当する出力を得るには、たとえば次のように計算します。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">bind_tf_idf2</span>(token, doc_id, n) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">tf_idf =</span> n <span class="sc">*</span> idf</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_idf, <span class="at">n =</span> <span class="dv">5</span>L)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 6</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id token     n     tf   idf tf_idf</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 825    勉強      6 0.0638  8.77   52.6</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 826    力        6 0.0667  8.77   52.6</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 822    勉強      5 0.0549  8.77   43.9</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 715    の       11 0.103   3.74   41.2</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 113    鞭        4 0.211   9.77   39.1</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 826    得る      4 0.0444  9.77   39.1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>なお、注意点として、RMeCabの単語を数える機能は、品詞情報（POS1とPOS2まで）を確認しながら単語を数えているようなので、ここでのように原形だけを見て数えた結果とは必ずしも一致しません。</p>
-</section>
-<section id="udpipeによる重みづけ" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="udpipeによる重みづけ"><span class="header-section-number">4.3</span> udpipeによる重みづけ</h2>
-<p><a href="https://bnosac.github.io/udpipe/en/">udpipe</a>を使っても単語頻度とTF-IDFを算出できます。また、<code>udpipe::document_term_frequencies_statistics</code>では、TF、IDFとTF-IDFにくわえて、<a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a>を計算することができます。</p>
-<p><code>udpipe::document_term_frequencies_statistics</code>には、パラメータとして<code>k</code>と<code>b</code>を渡すことができます。デフォルト値はそれぞれ<code>k=1.2</code>、<code>b=0.5</code>です。<code>k</code>の値を大きくすると、単語の出現数の増加に対してBM25の値もより大きくなりやすくなります。 <code>k=1.2</code>というのは、Elasticsearchでもデフォルト値として採用されている値です。Wikipediaや<a href="https://www.elastic.co/jp/blog/practical-bm25-part-3-considerations-for-picking-b-and-k1-in-elasticsearch">Elasticsearchの技術記事</a>によると、<code>k</code>は<code>[1.2, 2.0]</code>、<code>b=.75</code>とした場合に、多くのケースでよい結果が得られるとされています。</p>
-<p>dplyrを使っていればあまり意識する必要はないと思いますが、udpipeのこのあたりの関数の戻り値はdata.tableである点に注意してください。</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">require</span>(dplyr))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">"POS1"</span>, <span class="st">"Original"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(POS1 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"名詞"</span>, <span class="st">"動詞"</span>, <span class="st">"形容詞"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> forcats<span class="sc">::</span><span class="fu">fct_drop</span>(doc_id),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(Original), token, Original)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies</span>(<span class="at">document =</span> <span class="st">"doc_id"</span>, <span class="at">term =</span> <span class="st">"token"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  udpipe<span class="sc">::</span><span class="fu">document_term_frequencies_statistics</span>(<span class="at">b =</span> .<span class="dv">75</span>) <span class="sc">|&gt;</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(tf_bm25, <span class="at">n =</span> <span class="dv">5</span>L)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doc_id term freq        tf      idf    tf_idf  tf_bm25     bm25</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1:    381 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2:    398 決闘    2 0.5000000 4.829456 2.4147280 1.698658 8.203595</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3:    864 呑む    2 0.5000000 3.639872 1.8199359 1.698658 6.182898</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4:    859 呑む    3 0.3333333 3.639872 1.2132906 1.669563 6.076996</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5:     60   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6:     62   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7:    233   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8:    260 飛ぶ    2 0.4000000 5.165928 2.0663713 1.652365 8.535999</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9:    428 する    2 0.4000000 1.533619 0.6134476 1.652365 2.534099</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10:    521   君    2 0.4000000 4.578142 1.8312566 1.652365 7.564761</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11:    742   ん    2 0.4000000 1.900169 0.7600675 1.652365 3.139773</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_count <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(doc_id, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in .recacheSubclasses(def@className, def, env): undefined subclass</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; "ndiMatrix" of class "replValueSp"; definition not updated</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>dat_fcm</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Feature co-occurrence matrix of: 2,167 by 2,167 features.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       features</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; features               ポラーノ 広場 宮沢 賢治 レオーノ・キュースト 七 十 官 等</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   ポラーノ                    5   52    0    0                    0  0  2  0  0</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   広場                        0    5    0    0                    0  0  2  0  0</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   宮沢                        0    0    0    2                    0  0  0  0  0</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   賢治                        0    0    0    0                    0  0  0  0  0</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   レオーノ・キュースト        0    0    0    0                    0  1  3  3  3</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   七                          0    0    0    0                    0  0  9  1  1</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   十                          0    0    0    0                    0  0  8  6  6</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   官                          0    0    0    0                    0  0  0  0  5</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   等                          0    0    0    0                    0  0  0  0  0</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   誌                          0    0    0    0                    0  0  0  0  0</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       features</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; features               誌</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   ポラーノ              0</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   広場                  0</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   宮沢                  0</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   賢治                  0</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   レオーノ・キュースト  1</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   七                    1</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   十                    1</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   官                    1</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   等                    1</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   誌                    0</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [ reached max_feat ... 2,157 more features, reached max_nfeat ... 2,157 more features ]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="tidyloによる重みづけ" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="tidyloによる重みづけ"><span class="header-section-number">4.4</span> tidyloによる重みづけ</h2>
-<p>TF-IDFによる単語頻度の重みづけのモチベーションは、索引語のなかでも特定の文書だけに多く出現していて、ほかの文書ではそれほど出現しないような「注目に値する語」を調べることにあります。</p>
-<p>こうしたことを実現するための値として、<a href="https://github.com/juliasilge/tidylo">tidylo</a>パッケージでは「重み付きログオッズ（weighted log odds）」を計算することができます。</p>
+<section id="任意のウィンドウ内での共起" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="任意のウィンドウ内での共起"><span class="header-section-number">5.2</span> 任意のウィンドウ内での共起</h2>
+<section id="共起の集計" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="共起の集計"><span class="header-section-number">5.2.1</span> 共起の集計</h3>
+<p><code>RMeCab::collocate</code>のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。ここではwindowは前後5個のトークンを見るようにします。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dat_count <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  tidylo<span class="sc">::</span><span class="fu">bind_log_odds</span>(<span class="at">set =</span> doc_id, <span class="at">feature =</span> token, <span class="at">n =</span> n) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="fu">is.finite</span>(log_odds_weighted)) <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(log_odds_weighted, <span class="at">n =</span> <span class="dv">5</span>L)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 4</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id token        n log_odds_weighted</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;  &lt;chr&gt;    &lt;int&gt;             &lt;dbl&gt;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 536    する         1             117. </span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 430    する         1             105. </span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 824    わたくし     1             102. </span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 577    いる         1              94.5</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 465    する         1              94.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dat_corpus <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">pack</span>()</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">"fastestword"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>(<span class="at">context =</span> <span class="st">"window"</span>, <span class="at">window =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>ここで用いているデータは小説を改行ごとに一つの文書と見なしていたため、中には次のような極端に短い文書が含まれています。こうした文書では、直観的にはそれほどレアには思われない単語についてもオッズが極端に高くなってしまっているように見えます。</p>
+<p>こうすると、nodeについて共起しているtermとその頻度を確認できます。以下では、「わたくし」というnodeと共起しているtermで頻度が上位20までであるものを表示しています。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dat_txt <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(doc_id <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">430</span>, <span class="dv">536</span>, <span class="dv">577</span>, <span class="dv">824</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(text)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] "「承知しました。」"                              </span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] "「起訴するぞ。」"                                </span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3] "「きっと遠くでございますわ。もし生きていれば。」"</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4] "わたくしは思わずはねあがりました。"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="ot">&lt;-</span> dat_fcm <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">node =</span> document, <span class="at">term =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(node <span class="sc">==</span> <span class="st">"わたくし"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(count, <span class="at">n =</span> <span class="dv">20</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>dat_fcm</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 20 × 3</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    node     term  count</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 わたくし は      205</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 わたくし 。      122</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 わたくし た      110</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 わたくし て       99</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 わたくし 、       91</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 わたくし まし     90</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 わたくし を       62</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 わたくし に       61</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 わたくし が       51</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 わたくし し       37</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 わたくし も       35</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12 わたくし で       33</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13 わたくし ども     28</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14 わたくし と       23</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15 わたくし 」       23</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16 わたくし です     22</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17 わたくし へ       17</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18 わたくし い       15</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19 わたくし 「       15</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 20 わたくし から     14</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>weighted log oddsについては<a href="https://bookdown.org/Maxine/tidy-text-mining/weighted-log-odds-ratio.html">この資料</a>などを参照してください。</p>
+</section>
+<section id="t値やmi値の算出" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="t値やmi値の算出"><span class="header-section-number">5.2.2</span> T値やMI値の算出</h3>
+<p>T値やMI値は、たとえば次のようにして計算できます。</p>
+<p>T値については「1.65」を越える場合、その共起が偶然ではないと考える大まかな目安となるそうです。また、MI値については「1.58」を越える場合に共起関係の大まかな目安となります（いずれの値についても「2」などを目安とする場合もあります）。</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ntok <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">"fastestword"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">ntoken</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>total <span class="ot">&lt;-</span> dat_corpus <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">corpus</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens</span>(<span class="at">what =</span> <span class="st">"fastestword"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_select</span>(<span class="fu">c</span>(<span class="st">"わたくし"</span>, dat_fcm<span class="sc">$</span>term)) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">colSums</span>()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>dat_fcm <span class="sc">|&gt;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>node) <span class="sc">|&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">expect =</span> total[term] <span class="sc">/</span> ntok <span class="sc">*</span> total[<span class="st">"わたくし"</span>] <span class="sc">*</span> <span class="dv">5</span> <span class="sc">*</span> <span class="dv">2</span>, <span class="do">## 5はwindowのサイズ</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">t =</span> (count <span class="sc">-</span> expect) <span class="sc">/</span> <span class="fu">sqrt</span>(count),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">mi =</span> <span class="fu">log2</span>(count <span class="sc">/</span> expect)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 20 × 5</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    term  count expect       t      mi</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 は      205  88.1    8.17   1.22  </span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 。      122 161.    -3.53  -0.400 </span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 た      110 108.     0.190  0.0264</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 て       99 106.    -0.694 -0.0972</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 、       91 102.    -1.13  -0.162 </span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 まし     90  64.1    2.73   0.489 </span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 を       62  67.4   -0.689 -0.121 </span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 に       61  68.8   -1.00  -0.174 </span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 が       51  51.9   -0.126 -0.0252</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 し       37  24.1    2.11   0.616 </span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 も       35  31.4    0.615  0.158 </span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12 で       33  34.7   -0.290 -0.0710</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13 ども     28   3.11   4.70   3.17  </span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14 と       23  28.7   -1.18  -0.317 </span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15 」       23  54.8   -6.63  -1.25  </span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16 です     22  15.4    1.40   0.512 </span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17 へ       17  16.5    0.114  0.0403</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18 い       15  17.4   -0.628 -0.217 </span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19 「       15  56.2  -10.6   -1.91  </span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 20 から     14  20.4   -1.72  -0.546</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>注意点として、quantedaは全角スペースなどをトークンとして数えないようなので、ここでの総語数（<code>ntok</code>）は、RMeCabの計算で使われる総語数よりも少なくなることがあります。RMeCabでの計算結果と概ね一致させたい場合は、総語数として<code>gibasa::tokenize</code>の戻り値の行数を使ってください。</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -814,13 +832,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <input type="hidden" id="giscus-alt-theme" value="dark">
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ngram.html" class="pagination-link" aria-label="N-gram">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">N-gram</span></span>
+      <a href="./weighting.html" class="pagination-link" aria-label="単語頻度の重みづけ">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./collocation.html" class="pagination-link" aria-label="コロケーション">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./sessioninfo.html" class="pagination-link" aria-label="セッション情報">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">セッション情報</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

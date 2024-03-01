@@ -13,10 +13,11 @@
         "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
             "packages": "bookdown,servr,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
             "installSystemRequirements": true
-        }
+        },
+        "ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {},
+        "ghcr.io/devcontainers-contrib/features/volta:1": {}
     },
     "remoteEnv": {
         "MECABRC": "/usr/local/etc/mecabrc"
-    },
-    "postCreateCommand": "curl https://get.volta.sh | bash"
+    }
 }

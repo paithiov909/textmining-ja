@@ -1,0 +1,92 @@
+# コロケーション {#collocation}
+
+```{r}
+#| label: setup
+#| code-fold: true
+dat_txt <-
+  tibble::tibble(
+    doc_id = seq_along(audubon::polano) |> as.character(),
+    text = audubon::polano
+  ) |>
+  dplyr::mutate(text = audubon::strj_normalize(text))
+dat <- gibasa::tokenize(dat_txt, text, doc_id)
+dat_count <- dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::mutate(
+    doc_id = forcats::fct_drop(doc_id),
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::count(doc_id, token)
+```
+
+## 文書内での共起
+
+共起関係を数える機能はgibasaには実装されていません。文書内での共起を簡単に数えるには、たとえば次のようにします。
+
+```{r}
+dat_fcm <- dat_count |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::fcm()
+
+dat_fcm
+```
+
+## 任意のウィンドウ内での共起
+
+### 共起の集計
+
+`RMeCab::collocate`のような任意のウィンドウの中での共起を集計するには、次のようにする必要があります。ここではwindowは前後5個のトークンを見るようにします。
+
+```{r}
+dat_corpus <- dat |>
+  gibasa::pack()
+
+dat_fcm <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::fcm(context = "window", window = 5)
+```
+
+こうすると、nodeについて共起しているtermとその頻度を確認できます。以下では、「わたくし」というnodeと共起しているtermで頻度が上位20までであるものを表示しています。
+
+```{r}
+dat_fcm <- dat_fcm |>
+  tidytext::tidy() |>
+  dplyr::rename(node = document, term = term) |>
+  dplyr::filter(node == "わたくし") |>
+  dplyr::slice_max(count, n = 20)
+
+dat_fcm
+```
+
+### T値やMI値の算出
+
+T値やMI値は、たとえば次のようにして計算できます。
+
+T値については「1.65」を越える場合、その共起が偶然ではないと考える大まかな目安となるそうです。また、MI値については「1.58」を越える場合に共起関係の大まかな目安となります（いずれの値についても「2」などを目安とする場合もあります）。
+
+```{r}
+ntok <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::ntoken() |>
+  sum()
+
+total <- dat_corpus |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::tokens_select(c("わたくし", dat_fcm$term)) |>
+  quanteda::dfm() |>
+  quanteda::colSums()
+
+dat_fcm |>
+  dplyr::select(-node) |>
+  dplyr::mutate(
+    expect = total[term] / ntok * total["わたくし"] * 5 * 2, ## 5はwindowのサイズ
+    t = (count - expect) / sqrt(count),
+    mi = log2(count / expect)
+  )
+```
+
+注意点として、quantedaは全角スペースなどをトークンとして数えないようなので、ここでの総語数（`ntok`）は、RMeCabの計算で使われる総語数よりも少なくなることがあります。RMeCabでの計算結果と概ね一致させたい場合は、総語数として`gibasa::tokenize`の戻り値の行数を使ってください。

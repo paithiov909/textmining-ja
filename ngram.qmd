@@ -1,0 +1,87 @@
+# N-gram {#ngram}
+
+```{r}
+#| label: setup
+#| code-fold: true
+dat_txt <-
+  tibble::tibble(
+    doc_id = seq_along(audubon::polano) |> as.character(),
+    text = audubon::polano
+  ) |>
+  dplyr::mutate(text = audubon::strj_normalize(text))
+dat <- gibasa::tokenize(dat_txt, text, doc_id)
+```
+
+## dplyrを使ってNgramを数える方法
+
+dplyrを使って簡単にやる場合、次のようにすると2-gramを集計できます。
+
+```{r}
+bigram <- gibasa::ngram_tokenizer(2)
+
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::reframe(token = bigram(token, sep = "-"), .by = doc_id) |>
+  dplyr::count(doc_id, token)
+
+str(dat_ngram)
+```
+
+なお、RMeCabでできるような「名詞-名詞」の2-gramだけを抽出したいといったケースでは、2-gramをつくる前に品詞でフィルタしてしまうと元の文書内におけるトークンの隣接関係を破壊してしまい、正しい2-gramを抽出することができません。そのようなことをしたい場合には、あらかじめ品詞のNgramもつくったうえで、後から品詞のNgramでフィルタします。
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::reframe(
+    token = bigram(token, sep = "-"),
+    pos = bigram(POS1, sep = "-"), # 品詞のNgramをつくる
+    .by = doc_id
+  ) |>
+  dplyr::filter(pos %in% c("名詞-名詞")) |> # 品詞のNgramでフィルタする
+  dplyr::count(doc_id, token)
+
+str(dat_ngram)
+```
+
+## quantedaにNgramを持ちこむ方法
+
+`gibasa::pack`を使ってNgramの分かち書きをつくることもできます。この場合、次のようにquantedaの枠組みの中でNgramをトークンとして数えることで集計することができます。
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+  gibasa::pack(n = 2)
+
+str(dat_ngram)
+
+dat_ngram |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::dfm()
+```
+
+## quantedaでNgramを数える方法
+
+また、quantedaの枠組みの中でNgramをつくりながら数えて集計することもできます。
+
+```{r}
+dat_ngram <- dat |>
+  gibasa::prettify(col_select = "Original") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(Original), token, Original)) |>
+  gibasa::pack()
+
+str(dat_ngram)
+
+dat_ngram |>
+  quanteda::corpus() |>
+  quanteda::tokens(what = "fastestword") |>
+  quanteda::tokens_ngrams(n = 2) |>
+  quanteda::dfm()
+```

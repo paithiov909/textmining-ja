@@ -1,0 +1,68 @@
+project:
+  type: book
+  output-dir: docs
+  resources:
+    - google4a285867c35ac84f.html
+
+book:
+  repo-url: https://github.com/paithiov909/textmining-ja
+  site-url: https://paithiov909.github.io/textmining-ja
+  title: "RとMeCabによる日本語テキストマイニングの前処理"
+  author: "Akiru Kato"
+  date: today
+  description: |
+    Rによる自然言語処理・テキスト分析の練習
+  cover-image: cover-s.png
+  cover-image-alt: "RとMeCabによる日本語テキストマイニングの前処理"
+  image: cover-s.png
+  favicon: favicon.ico
+  open-graph:
+    description: |
+      gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します
+    locale: ja
+  twitter-card:
+    description: |
+      gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します
+    card-style: summary
+  sharing: [twitter, facebook]
+  chapters:
+    - index.qmd
+    - text: "gibasaの基本的な使い方"
+      file: intro.qmd
+    - text: "トークンの集計と文書単語行列への整形"
+      file: dtm.qmd
+    - text: "N-gram"
+      file: ngram.qmd
+    - text: "単語頻度の重みづけ"
+      file: weighting.qmd
+    - text: "セッション情報"
+      file: sessioninfo.qmd
+  appendices:
+    - misc.qmd
+  comments:
+    giscus:
+      repo: paithiov909/textmining-ja
+      repo-id: R_kgDOGMY_Ng
+      category: Announcements
+      category-id: DIC_kwDOGMY_Ns4Cdg6F
+      mapping: pathname
+      reactions-enabled: true
+      input-position: top
+      loading: lazy
+      language: ja
+
+format:
+  html:
+    # lang: ja
+    theme:
+      - cosmo
+    mainfont: |
+      -apple-system, "BlinkMacSystemFont", "Helvetica Neue", Helvetica, "Arial", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
+    code-fold: false
+    css: [style.css]
+
+knitr:
+  opts_chunk:
+    tidy: "styler"
+    collapse: true
+    comment: "#>"

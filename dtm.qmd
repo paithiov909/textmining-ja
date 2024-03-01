@@ -1,0 +1,124 @@
+# トークンの集計と文書単語行列への整形 {#dtm}
+
+```{r}
+#| label: setup
+#| code-fold: true
+dat_txt <-
+  tibble::tibble(
+    doc_id = seq_along(audubon::polano) |> as.character(),
+    text = audubon::polano
+  ) |>
+  dplyr::mutate(text = audubon::strj_normalize(text))
+dat <- gibasa::tokenize(dat_txt, text, doc_id)
+```
+
+## トークンの集計
+
+### 品詞などにもとづくしぼりこみ
+
+トークンを簡単に集計するには、dplyrの関数群を利用するのが便利です。
+
+たとえば、集計に先立って特定のトークンを素性情報にもとづいて選択するには`dplyr::filter`を使います。
+
+```{r}
+dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::slice_head(n = 30L) |>
+  reactable::reactable(compact = TRUE)
+```
+
+一方で、以下で紹介するようなトークンの再結合を後からやりたい場合には、この方法は適切ではありません。`dplyr::filter`を使うとデータフレーム中のトークンを抜き取ってしまうため、この操作をした後では、実際の文書のなかでは隣り合っていないトークンどうしが隣接しているように扱われてしまいます。
+
+品詞などの情報にもとづいてトークンを取捨選択しつつも、トークンの位置関係はとりあえず保持したいという場合には、`gibasa::mute_tokens`を使います。この関数は、条件にマッチしたトークンを`NA_character_`に置き換えます（reactableによる出力のなかでは空白として表示されています）。
+
+```{r}
+dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  gibasa::mute_tokens(!POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::slice_head(n = 30L) |>
+  reactable::reactable(compact = TRUE)
+```
+
+### 品詞などにもとづくトークンの再結合
+
+トークンを集計する目的によっては、形態素解析された結果の単語では単位として短すぎることがあります。
+
+たとえば、IPA辞書では「小田急線」は「小田急（名詞・固有名詞）+線（名詞・接尾）」として解析され、「小田急線」という単語としては解析されません。このように、必ずしも直感的な解析結果がえられないことは、UniDicを利用している場合により頻繁に発生します。実際、UniDicでは「水族館」も「水族（名詞・普通名詞）+館（接尾辞・名詞的）」として解析されるなど、IPA辞書よりもかなり細かな単位に解析されます。
+
+```{r}
+# IPA辞書による解析の例
+gibasa::tokenize(c(
+  "佐藤さんはそのとき小田急線で江の島水族館に向かっていた",
+  "秒速5センチメートルは新海誠が監督した映画作品",
+  "辛そうで辛くない少し辛いラー油の辛さ"
+)) |>
+  gibasa::prettify(col_select = c("POS1", "POS2", "POS3")) |>
+  reactable::reactable(compact = TRUE)
+```
+
+分析の関心によっては、こうした細かくなりすぎたトークンをまとめあげて、もっと長い単位の単語として扱えると便利かもしれません。
+
+`gibasa::collapse_tokens`を使うと、渡された条件にマッチする一連のトークンをまとめあげて、新しいトークンにすることができます。
+
+```{r}
+gibasa::tokenize(c(
+  "佐藤さんはそのとき小田急線で江の島水族館に向かっていた",
+  "秒速5センチメートルは新海誠が監督した映画作品",
+  "辛そうで辛くない少し辛いラー油の辛さ"
+)) |>
+  gibasa::prettify(col_select = c("POS1", "POS2", "POS3")) |>
+  gibasa::collapse_tokens(
+    (POS1 %in% c("名詞", "接頭詞")
+      & !stringr::str_detect(token, "^[あ-ン]+$")) |
+    (POS1 %in% c("名詞", "形容詞")
+      & POS2 %in% c("自立", "接尾", "数接続"))
+  ) |>
+  reactable::reactable(compact = TRUE)
+```
+
+この機能は強力ですが、条件を書くには、利用している辞書の品詞体系について理解している必要があります。また、機械的に処理しているにすぎないため、一部のトークンは、かえって意図しないかたちにまとめあげられてしまう場合があります。あるいは、機械学習の特徴量をつくるのが目的であるケースなどでは、単純にNgramを利用したほうが便利かもしれません。
+
+### 原形の集計
+
+`dplyr::count`でトークンを文書ごとに集計します。ここでは、IPA辞書の見出し語がある語については「原形（Original）」を、見出し語がない語（未知語）については表層形を数えています。
+
+MeCabは、未知語であっても品詞の推定をおこないますが、未知語の場合には「読み（Yomi1, Yomi2）」のような一部の素性については情報を返しません。このような未知語の素性については、`prettify`した結果のなかでは、`NA_character_`になっていることに注意してください。
+
+```{r}
+dat_count <- dat |>
+  gibasa::prettify(col_select = c("POS1", "Original")) |>
+  dplyr::filter(POS1 %in% c("名詞", "動詞", "形容詞")) |>
+  dplyr::mutate(
+    doc_id = forcats::fct_drop(doc_id),
+    token = dplyr::if_else(is.na(Original), token, Original)
+  ) |>
+  dplyr::count(doc_id, token)
+
+str(dat_count)
+```
+
+## 文書単語行列への整形
+
+こうして集計した縦持ちの頻度表を横持ちにすると、いわゆる文書単語行列になります。
+
+```{r}
+dtm <- dat_count |>
+  tidyr::pivot_wider(
+    id_cols = doc_id,
+    names_from = token,
+    values_from = n,
+    values_fill = 0
+  )
+
+dim(dtm)
+```
+
+ただし、このように`tidyr::pivot_wider`で単純に横持ちにすることは、非常に大量の列を持つ巨大なデータフレームを作成することになるため、おすすめしません。文書単語行列を作成するには、`tidytext::cast_sparse`や`tidytext::cast_dfm`などを使って、疎行列のオブジェクトにしましょう。
+
+```{r}
+dtm <- dat_count |>
+  tidytext::cast_sparse(doc_id, token, n)
+
+dim(dtm)
+```

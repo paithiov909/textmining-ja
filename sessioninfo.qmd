@@ -1,0 +1,44 @@
+# セッション情報 {#sessioninfo}
+
+## 更新情報
+
+- **2024-03-01**
+  - bookdownを利用したサイトからQuarto Booksを利用したサイトに置き換えました。内容に変更はありません。
+- **2024-02-28**
+  - 「Chapter 4 単語頻度の重みづけ」の「gibasaによる重みづけ」のコードに誤りがあったため、修正しました。
+- **2024-02-17**
+  - 「Chapter 3 N-gram」にNgramを品詞でフィルタする場合の説明を追加しました
+  - 「Chapter 4 単語頻度の重みづけ」の「コサイン正規化」についての説明を修正しました。gibasa v1.1.0から`norm=TRUE`時の挙動をRMeCabと同じになるように変更したため、「（挙動の）細かな点が異なる」としていた説明を削除しました
+- **2023-12-13**
+  - 見た目を調整しました。内容に変更はありません
+- **2023-12-12**
+  - 「想定する知識など」に参考となる他の資料へのリンクを追加しました
+  - コードブロックの表示のされ方を調整しました
+- **2023-12-03**
+  - 「Chapter 4 単語頻度の重みづけ」の内容を更新しました
+  - 「Chapter 7 Appendix」に「MeCabの辞書をビルドするには」という節を追加しました
+- **2023-08-02**
+  - 「tidytextによる重みづけ」についての記述に誤りがあったため、修正しました
+  - 「Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方」の内容を更新しました
+
+## セッション情報
+
+```{r}
+#| include: false
+suppressPackageStartupMessages({
+  library(gibasa)
+  library(audubon)
+  library(dplyr)
+  library(tidyr)
+  library(dtplyr)
+  library(reactable)
+  library(tidytext)
+  library(quanteda)
+  library(udpipe)
+  library(tidylo)
+})
+```
+
+```{r sessioninfo}
+sessioninfo::session_info()
+```

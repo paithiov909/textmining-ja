@@ -12,7 +12,7 @@
             "installVscDebugger": false
         },
         "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-            "packages": "bookdown,servr,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
+            "packages": "servr,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
             "installSystemRequirements": true
         },
         "ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {}

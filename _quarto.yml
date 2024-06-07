@@ -10,9 +10,9 @@ book:
   site-url: https://paithiov909.github.io/textmining-ja
   title: "RとMeCabによる日本語テキストマイニングの前処理"
   author: "Akiru Kato"
-  date: today
   description: |
     Rによる自然言語処理・テキスト分析の練習
+  date: today
   cover-image: cover-s.png
   cover-image-alt: "RとMeCabによる日本語テキストマイニングの前処理"
   image: cover-s.png
@@ -50,13 +50,12 @@ book:
 
 format:
   html:
-    # lang: ja
     theme:
       - cosmo
     mainfont: |
       -apple-system, "BlinkMacSystemFont", "Helvetica Neue", Helvetica, "Arial", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
-    code-fold: false
     css: [style.css]
+    code-fold: false
 
 knitr:
   opts_chunk:

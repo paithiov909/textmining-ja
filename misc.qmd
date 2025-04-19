@@ -10,10 +10,10 @@ Rによるデータ分析を手軽に試したい場合には、Posit Cloud（�
 
 ### 辞書（ipadic, unidic-lite）の配置
 
-MeCabの辞書は、Terminalタブからpipでインストールできます。ここでは、IPA辞書（[ipadic](https://pypi.org/project/ipadic/)）と[unidic-lite](https://pypi.org/project/unidic-lite/)をインストールします。
+MeCabの辞書は、Terminalタブからpipでインストールできます。ここでは、IPA辞書（[ipadic](https://pypi.org/project/ipadic/)）をインストールします。
 
 ```bash
-python3 -m pip install ipadic unidic-lite
+python3 -m pip install ipadic
 python3 -c "import ipadic; print('dicdir=' + ipadic.DICDIR);" > ~/.mecabrc
 ```
 
@@ -27,13 +27,11 @@ install.packages("gibasa")
 
 ### 試すには
 
-うまくいっていると、辞書を指定しない場合はIPA辞書が使われます。unidic-liteは`sys_dic`引数にフルパスを指定することで使用できます。
+うまくいっていると、辞書を指定しない場合はIPA辞書が使われます。
 
 ```r
+gibasa::dictionary_info()
 gibasa::tokenize("こんにちは")
-unidic_lite <- path.expand("~/.local/lib/python3.8/site-packages/unidic_lite/dicdir")
-gibasa::tokenize("こんにちは", sys_dic = unidic_lite) |>
-  gibasa::prettify(into = gibasa::get_dict_features("unidic26"))
 ```
 
 
@@ -259,7 +257,7 @@ UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリ�
 
 ```{r}
 ipadic_temp <- tempfile(fileext = ".tar.gz")
-download.file("https://github.com/shogo82148/mecab/releases/download/v0.996.9/mecab-ipadic-2.7.0-20070801.tar.gz", destfile = ipadic_temp)
+download.file("https://github.com/shogo82148/mecab/releases/download/v0.996.11/mecab-ipadic-2.7.0-20070801.tar.gz", destfile = ipadic_temp)
 untar(ipadic_temp, exdir = tempdir())
 
 gibasa::build_sys_dic(

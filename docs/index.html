@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.43">
+<meta name="generator" content="quarto-1.6.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Akiru Kato">
-<meta name="dcterms.date" content="2024-06-07">
+<meta name="dcterms.date" content="2025-04-19">
 <meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
 
 <title>RとMeCabによる日本語テキストマイニングの前処理</title>
@@ -40,10 +40,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-25237d2dca07ad8f289761e18ea85cbf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -79,12 +79,14 @@ ul.task-list li input[type="checkbox"] {
 <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:locale" content="ja">
+<meta property="og:image:alt" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:image:height" content="423">
 <meta property="og:image:width" content="423">
 <meta name="twitter:title" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image:alt" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta name="twitter:image-height" content="423">
 <meta name="twitter:image-width" content="423">
 </head>
@@ -256,7 +258,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Last Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">June 7, 2024</p>
+      <p class="date">April 19, 2025</p>
     </div>
   </div>
   
@@ -279,9 +281,10 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="想定する知識など" class="level3">
 <h3 class="anchored" data-anchor-id="想定する知識など">想定する知識など</h3>
-<p>R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。参考までに、tidyverseなどの使い方についての紹介は次の資料がおすすめです。</p>
+<p>R言語の基本的な使い方の説明はしません。tidyverseなどの使い方については、他の資料を参照してください。参考までに、R言語そのものやtidyverseの使い方についての紹介は次の資料がおすすめです。</p>
 <ul>
 <li><a href="https://www.jaysong.net/RBook/">私たちのR</a></li>
+<li><a href="https://sb8001at-oss.github.io/Rnyuumon.io/">R入門</a></li>
 </ul>
 <p>また、以降の説明ではRでの日本語テキストの前処理のやり方のみにフォーカスしているため、具体的なテキストデータの分析のやり方には一切踏み込んでいません。Rでおこなうようなテキストデータの分析の方法については、いずれも英語の資料ですが、次が参考になると思います。</p>
 <ul>
@@ -441,8 +444,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -553,7 +554,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

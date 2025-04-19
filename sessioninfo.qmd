@@ -1,7 +1,10 @@
 # セッション情報 {#sessioninfo}
 
+::: {.callout-note collapse="true"}
 ## 更新情報
 
+- **2025-04-19**
+  - R-4.5を使ってビルドしなおしました
 - **2024-03-10**
   - サイトの設定を更新しました。内容に変更はありません
 - **2024-03-01**
@@ -22,7 +25,10 @@
 - **2023-08-02**
   - 「tidytextによる重みづけ」についての記述に誤りがあったため、修正しました
   - 「Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方」の内容を更新しました
+:::
 
+
+:::{.callout-note collapse="true"}
 ## セッション情報
 
 ```{r}
@@ -44,3 +50,4 @@ suppressPackageStartupMessages({
 ```{r sessioninfo}
 sessioninfo::session_info()
 ```
+:::

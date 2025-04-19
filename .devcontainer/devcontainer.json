@@ -2,22 +2,20 @@
     "name": "${localWorkspaceFolderBasename}",
     "build": {
         "dockerfile": "Dockerfile",
-        "args": { "VARIANT": "4" }
+        "args": {
+            "VARIANT": "4"
+        }
     },
     "features": {
-        "ghcr.io/devcontainers-contrib/features/volta:1": {},
         "ghcr.io/rocker-org/devcontainer-features/r-rig:1": {
             "version": "none",
             "installRadian": true,
             "installVscDebugger": false
         },
-        "ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-            "packages": "servr,reactable,audubon,gibasa,tidytext,tidylo,udpipe,quanteda,sessioninfo",
-            "installSystemRequirements": true
-        },
         "ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {}
     },
-    "remoteEnv": {
-        "MECABRC": "/usr/local/etc/mecabrc"
+    "containerEnv": {
+        "TZ": "Asia/Tokyo",
+        "R_HISTSIZE": "200"
     }
 }

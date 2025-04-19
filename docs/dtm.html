@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.43">
+<meta name="generator" content="quarto-1.6.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
 
-<title>RとMeCabによる日本語テキストマイニングの前処理 – 2&nbsp; トークンの集計と文書単語行列への整形</title>
+<title>2&nbsp; トークンの集計と文書単語行列への整形 – RとMeCabによる日本語テキストマイニングの前処理</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -73,10 +73,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-25237d2dca07ad8f289761e18ea85cbf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
 <script src="site_libs/react-18.2.0/react.min.js"></script>
 <script src="site_libs/react-18.2.0/react-dom.min.js"></script>
-<script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+<script src="site_libs/reactwidget-2.0.0/react-tools.js"></script>
 <link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
 <script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <link href="site_libs/reactable-0.4.4/reactable.css" rel="stylesheet">
@@ -115,14 +115,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="style.css">
-<meta property="og:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 2&nbsp; トークンの集計と文書単語行列への整形">
+<meta property="og:title" content="2&nbsp; トークンの集計と文書単語行列への整形 – RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:locale" content="ja">
 <meta property="og:image:height" content="423">
 <meta property="og:image:width" content="423">
-<meta name="twitter:title" content="RとMeCabによる日本語テキストマイニングの前処理 - 2&nbsp; トークンの集計と文書単語行列への整形">
+<meta name="twitter:title" content="2&nbsp; トークンの集計と文書単語行列への整形 – RとMeCabによる日本語テキストマイニングの前処理">
 <meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta name="twitter:card" content="summary">
@@ -310,8 +310,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">30</span>L) <span class="sc">|&gt;</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>(<span class="at">compact =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-9224ce7aa03e9c44dced" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9224ce7aa03e9c44dced">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","2","2","3","3","3","3","3","3","4","4","4","5","5","5","5","5","5","5","5","6","6","6","6","6","6","6","6","6"],"sentence_id":[1,1,2,2,3,3,3,3,3,3,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6],"token_id":[1,3,1,2,2,3,4,5,6,7,1,2,3,2,3,6,7,9,10,12,14,1,2,3,4,8,10,14,16,18],"token":["ポラーノ","広場","宮沢","賢治","十","七","等","官","レオーノ・キュースト","誌","宮沢","賢治","訳述","ころ","わたくし","モリーオ","市","博物","局","勤め","居り","十","八","等","官","役所","なか","うっ","下","方"],"POS1":["名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","動詞","動詞","名詞","名詞","名詞","名詞","名詞","名詞","動詞","名詞","名詞"],"Original":[null,"広場","宮沢","賢治","十","七","等","官",null,"誌","宮沢","賢治","訳述","ころ","わたくし",null,"市","博物","局","勤める","居る","十","八","等","官","役所","なか","うつ","下","方"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"Original","name":"Original","type":"character"}],"compact":true,"dataKey":"ef472fdf4e44b15e6482662a7de2ed40"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-912225d1640ebc57d7a4" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-912225d1640ebc57d7a4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","2","2","3","3","3","3","3","3","4","4","4","5","5","5","5","5","5","5","5","6","6","6","6","6","6","6","6","6"],"sentence_id":[1,1,2,2,3,3,3,3,3,3,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6],"token_id":[1,3,1,2,2,3,4,5,6,7,1,2,3,2,3,6,7,9,10,12,14,1,2,3,4,8,10,14,16,18],"token":["ポラーノ","広場","宮沢","賢治","十","七","等","官","レオーノ・キュースト","誌","宮沢","賢治","訳述","ころ","わたくし","モリーオ","市","博物","局","勤め","居り","十","八","等","官","役所","なか","うっ","下","方"],"POS1":["名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","動詞","動詞","名詞","名詞","名詞","名詞","名詞","名詞","動詞","名詞","名詞"],"Original":[null,"広場","宮沢","賢治","十","七","等","官",null,"誌","宮沢","賢治","訳述","ころ","わたくし",null,"市","博物","局","勤める","居る","十","八","等","官","役所","なか","うつ","下","方"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"Original","name":"Original","type":"character"}],"compact":true,"dataKey":"ef472fdf4e44b15e6482662a7de2ed40"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>一方で、以下で紹介するようなトークンの再結合を後からやりたい場合には、この方法は適切ではありません。<code>dplyr::filter</code>を使うとデータフレーム中のトークンを抜き取ってしまうため、この操作をした後では、実際の文書のなかでは隣り合っていないトークンどうしが隣接しているように扱われてしまいます。</p>
@@ -323,8 +323,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">30</span>L) <span class="sc">|&gt;</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>(<span class="at">compact =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-89b47cace0cde39a8c86" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-89b47cace0cde39a8c86">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","2","2","3","3","3","3","3","3","3","4","4","4","5","5","5","5","5","5","5","5","5","5","5","5","5","5","5"],"sentence_id":[1,1,1,2,2,3,3,3,3,3,3,3,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"token_id":[1,2,3,1,2,1,2,3,4,5,6,7,1,2,3,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"token":["ポラーノ",null,"広場","宮沢","賢治",null,"十","七","等","官","レオーノ・キュースト","誌","宮沢","賢治","訳述",null,"ころ","わたくし",null,null,"モリーオ","市",null,"博物","局",null,"勤め",null,"居り",null],"POS1":["名詞","助詞","名詞","名詞","名詞","接頭詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","連体詞","名詞","名詞","助詞","記号","名詞","名詞","助詞","名詞","名詞","助詞","動詞","助詞","動詞","助動詞"],"Original":[null,"の","広場","宮沢","賢治","前","十","七","等","官",null,"誌","宮沢","賢治","訳述","その","ころ","わたくし","は","、",null,"市","の","博物","局","に","勤める","て","居る","ます"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"Original","name":"Original","type":"character"}],"compact":true,"dataKey":"56f88507385d1aa4fa61988169cc4f7d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-7cbe08bb39199f3da743" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7cbe08bb39199f3da743">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","2","2","3","3","3","3","3","3","3","4","4","4","5","5","5","5","5","5","5","5","5","5","5","5","5","5","5"],"sentence_id":[1,1,1,2,2,3,3,3,3,3,3,3,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"token_id":[1,2,3,1,2,1,2,3,4,5,6,7,1,2,3,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"token":["ポラーノ",null,"広場","宮沢","賢治",null,"十","七","等","官","レオーノ・キュースト","誌","宮沢","賢治","訳述",null,"ころ","わたくし",null,null,"モリーオ","市",null,"博物","局",null,"勤め",null,"居り",null],"POS1":["名詞","助詞","名詞","名詞","名詞","接頭詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","名詞","連体詞","名詞","名詞","助詞","記号","名詞","名詞","助詞","名詞","名詞","助詞","動詞","助詞","動詞","助動詞"],"Original":[null,"の","広場","宮沢","賢治","前","十","七","等","官",null,"誌","宮沢","賢治","訳述","その","ころ","わたくし","は","、",null,"市","の","博物","局","に","勤める","て","居る","ます"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"Original","name":"Original","type":"character"}],"compact":true,"dataKey":"56f88507385d1aa4fa61988169cc4f7d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -342,8 +342,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">prettify</span>(<span class="at">col_select =</span> <span class="fu">c</span>(<span class="st">"POS1"</span>, <span class="st">"POS2"</span>, <span class="st">"POS3"</span>)) <span class="sc">|&gt;</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>(<span class="at">compact =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-9dde9309e19b7e69149e" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9dde9309e19b7e69149e">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"],"sentence_id":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],"token_id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1,2,3,4,5,6,7,8,9,10,11,12,1,2,3,4,5,6,7,8,9,10,11],"token":["佐藤","さん","は","その","とき","小田急","線","で","江の島","水族館","に","向かっ","て","い","た","秒速","5","センチメートル","は","新海","誠","が","監督","し","た","映画","作品","辛","そう","で","辛く","ない","少し","辛い","ラー油","の","辛","さ"],"POS1":["名詞","名詞","助詞","連体詞","名詞","名詞","名詞","助詞","名詞","名詞","助詞","動詞","助詞","動詞","助動詞","名詞","名詞","名詞","助詞","名詞","名詞","助詞","名詞","動詞","助動詞","名詞","名詞","形容詞","名詞","助動詞","形容詞","助動詞","副詞","形容詞","名詞","助詞","形容詞","名詞"],"POS2":["固有名詞","接尾","係助詞",null,"非自立","固有名詞","接尾","格助詞","固有名詞","一般","格助詞","自立","接続助詞","非自立",null,"一般","数","接尾","係助詞","固有名詞","固有名詞","格助詞","サ変接続","自立",null,"一般","一般","自立","接尾",null,"自立",null,"助詞類接続","自立","一般","連体化","自立","接尾"],"POS3":["人名","人名",null,null,"副詞可能","組織","一般","一般","地域",null,"一般",null,null,null,null,null,null,"助数詞",null,"人名","人名","一般",null,null,null,null,null,null,"助動詞語幹",null,null,null,null,null,null,null,null,"特殊"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"POS2","name":"POS2","type":"character"},{"id":"POS3","name":"POS3","type":"character"}],"compact":true,"dataKey":"271a36df782400c743304e27f5bc665f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-05aefce70dea0df1b633" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-05aefce70dea0df1b633">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","1","1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3","3","3","3"],"sentence_id":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],"token_id":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,1,2,3,4,5,6,7,8,9,10,11,12,1,2,3,4,5,6,7,8,9,10,11],"token":["佐藤","さん","は","その","とき","小田急","線","で","江の島","水族館","に","向かっ","て","い","た","秒速","5","センチメートル","は","新海","誠","が","監督","し","た","映画","作品","辛","そう","で","辛く","ない","少し","辛い","ラー油","の","辛","さ"],"POS1":["名詞","名詞","助詞","連体詞","名詞","名詞","名詞","助詞","名詞","名詞","助詞","動詞","助詞","動詞","助動詞","名詞","名詞","名詞","助詞","名詞","名詞","助詞","名詞","動詞","助動詞","名詞","名詞","形容詞","名詞","助動詞","形容詞","助動詞","副詞","形容詞","名詞","助詞","形容詞","名詞"],"POS2":["固有名詞","接尾","係助詞",null,"非自立","固有名詞","接尾","格助詞","固有名詞","一般","格助詞","自立","接続助詞","非自立",null,"一般","数","接尾","係助詞","固有名詞","固有名詞","格助詞","サ変接続","自立",null,"一般","一般","自立","接尾",null,"自立",null,"助詞類接続","自立","一般","連体化","自立","接尾"],"POS3":["人名","人名",null,null,"副詞可能","組織","一般","一般","地域",null,"一般",null,null,null,null,null,null,"助数詞",null,"人名","人名","一般",null,null,null,null,null,null,"助動詞語幹",null,null,null,null,null,null,null,null,"特殊"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"},{"id":"POS1","name":"POS1","type":"character"},{"id":"POS2","name":"POS2","type":"character"},{"id":"POS3","name":"POS3","type":"character"}],"compact":true,"dataKey":"271a36df782400c743304e27f5bc665f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>分析の関心によっては、こうした細かくなりすぎたトークンをまとめあげて、もっと長い単位の単語として扱えると便利かもしれません。</p>
@@ -363,8 +363,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>(<span class="at">compact =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-5b1f8e0b372157a8afc3" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5b1f8e0b372157a8afc3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3"],"sentence_id":[1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3],"token_id":[1,2,3,4,5,6,7,8,9,10,11,12,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8],"token":["佐藤さん","は","その","とき","小田急線","で","江の島水族館","に","向かっ","て","い","た","秒速5センチメートル","は","新海誠","が","監督","し","た","映画作品","辛そう","で","辛く","ない","少し","辛いラー油","の","辛さ"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"}],"compact":true,"dataKey":"f2a23537b0a319de101c460e2b23c5be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-ed71b47f57a4996b7571" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ed71b47f57a4996b7571">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"doc_id":["1","1","1","1","1","1","1","1","1","1","1","1","2","2","2","2","2","2","2","2","3","3","3","3","3","3","3","3"],"sentence_id":[1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3],"token_id":[1,2,3,4,5,6,7,8,9,10,11,12,1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8],"token":["佐藤さん","は","その","とき","小田急線","で","江の島水族館","に","向かっ","て","い","た","秒速5センチメートル","は","新海誠","が","監督","し","た","映画作品","辛そう","で","辛く","ない","少し","辛いラー油","の","辛さ"]},"columns":[{"id":"doc_id","name":"doc_id","type":"factor"},{"id":"sentence_id","name":"sentence_id","type":"numeric"},{"id":"token_id","name":"token_id","type":"numeric"},{"id":"token","name":"token","type":"character"}],"compact":true,"dataKey":"f2a23537b0a319de101c460e2b23c5be"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>この機能は強力ですが、条件を書くには、利用している辞書の品詞体系について理解している必要があります。また、機械的に処理しているにすぎないため、一部のトークンは、かえって意図しないかたちにまとめあげられてしまう場合があります。あるいは、機械学習の特徴量をつくるのが目的であるケースなどでは、単純にNgramを利用したほうが便利かもしれません。</p>
@@ -501,8 +501,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -613,7 +611,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

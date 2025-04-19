@@ -13,10 +13,15 @@ R言語の基本的な使い方の説明はしません。tidyverseなどの使�
 - [私たちのR](https://www.jaysong.net/RBook/)
 - [R入門](https://sb8001at-oss.github.io/Rnyuumon.io/)
 
-また、以降の説明ではRでの日本語テキストの前処理のやり方のみにフォーカスしているため、具体的なテキストデータの分析のやり方には一切踏み込んでいません。Rでおこなうようなテキストデータの分析の方法については、いずれも英語の資料ですが、次が参考になると思います。
+また、以降の説明ではRでの日本語テキストの前処理のやり方のみにフォーカスしているため、具体的なテキストデータの分析のやり方には一切踏み込んでいません。Rでおこなうようなテキストデータの分析の方法については、いずれも英語の資料ですが、次が参考になると思います（3つめは計量言語学っぽい内容の教科書なので、この資料の読者向けではないかもしれません）。
 
 - [Text Mining with R](https://www.tidytextmining.com/)
 - [Supervised Machine Learning for Text Analysis in R](https://smltar.com/)
+- [An Introduction to Quantitative Text Analysis for Linguistics](https://qtalr.com/book/)
+
+日本語を扱っているテキストデータの可視化の例としては、筆者がまとめた次の資料も参考にできるかもしれません。ただし、ここでは何をしているかの説明はほとんどしていないのと、あまりメンテナンスされていないために、コードが動かなくなっている可能性がある点に注意が必要です。
+
+- [Cookbook to Draw KHCoder-like Visualizations Using R](https://paithiov909.github.io/textvis-recipes/)
 
 ## Rでテキストマイニングするということ
 

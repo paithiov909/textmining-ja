@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
+
+<title>Appendix F — コーディングメニュー – RとMeCabによる日本語テキストマイニングの前処理</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cb-docs-menu.html" rel="prev">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9b100948f3b98b6ce090cf5806fdf877.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+<link rel="stylesheet" href="style.css">
+<meta property="og:title" content="Appendix F — コーディングメニュー – RとMeCabによる日本語テキストマイニングの前処理">
+<meta property="og:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
+<meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cb-codes-menu_files/figure-html/plot-codes-heatmap-1.png">
+<meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
+<meta property="og:locale" content="ja">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="2304">
+<meta name="twitter:title" content="Appendix F — コーディングメニュー – RとMeCabによる日本語テキストマイニングの前処理">
+<meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
+<meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cb-codes-menu_files/figure-html/plot-codes-heatmap-1.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="2304">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cb-preproc-menu.html">Appendices</a></li><li class="breadcrumb-item"><a href="./cb-codes-menu.html"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">コーディングメニュー</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">RとMeCabによる日本語テキストマイニングの前処理</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/paithiov909/textmining-ja" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+      </ul>
+    </div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">gibasaの基本的な使い方</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dtm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">トークンの集計と文書単語行列への整形</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ngram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">N-gram</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./weighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./collocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./misc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">gibasaのセットアップ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sessioninfo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">セッション情報</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-preproc-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">前処理メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">抽出語メニュー1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">抽出語メニュー2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">抽出語メニュー3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-docs-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">文書メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-codes-menu.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">コーディングメニュー</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#単純集計a.7.1" id="toc-単純集計a.7.1" class="nav-link active" data-scroll-target="#単純集計a.7.1"><span class="header-section-number">F.1</span> 単純集計（A.7.1）</a></li>
+  <li><a href="#クロス集計a.7.2" id="toc-クロス集計a.7.2" class="nav-link" data-scroll-target="#クロス集計a.7.2"><span class="header-section-number">F.2</span> クロス集計（A.7.2）</a>
+  <ul class="collapse">
+  <li><a href="#クロス表" id="toc-クロス表" class="nav-link" data-scroll-target="#クロス表"><span class="header-section-number">F.2.1</span> クロス表</a></li>
+  <li><a href="#ヒートマップ" id="toc-ヒートマップ" class="nav-link" data-scroll-target="#ヒートマップ"><span class="header-section-number">F.2.2</span> ヒートマップ</a></li>
+  <li><a href="#バルーンプロット" id="toc-バルーンプロット" class="nav-link" data-scroll-target="#バルーンプロット"><span class="header-section-number">F.2.3</span> バルーンプロット</a></li>
+  </ul></li>
+  <li><a href="#類似度行列a.7.3" id="toc-類似度行列a.7.3" class="nav-link" data-scroll-target="#類似度行列a.7.3"><span class="header-section-number">F.3</span> 類似度行列（A.7.3）</a></li>
+  <li><a href="#その他の分析a.7.4-8" id="toc-その他の分析a.7.4-8" class="nav-link" data-scroll-target="#その他の分析a.7.4-8"><span class="header-section-number">F.4</span> その他の分析（A.7.4-8）</a>
+  <ul class="collapse">
+  <li><a href="#対応分析" id="toc-対応分析" class="nav-link" data-scroll-target="#対応分析"><span class="header-section-number">F.4.1</span> 対応分析</a></li>
+  <li><a href="#多次元尺度構成法mds" id="toc-多次元尺度構成法mds" class="nav-link" data-scroll-target="#多次元尺度構成法mds"><span class="header-section-number">F.4.2</span> 多次元尺度構成法（MDS）</a></li>
+  <li><a href="#lss" id="toc-lss" class="nav-link" data-scroll-target="#lss"><span class="header-section-number">F.4.3</span> LSS🍳</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cb-preproc-menu.html">Appendices</a></li><li class="breadcrumb-item"><a href="./cb-codes-menu.html"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">コーディングメニュー</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Appendix F — コーディングメニュー</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ca)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(duckdb)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>drv <span class="ot">&lt;-</span> duckdb<span class="sc">::</span><span class="fu">duckdb</span>()</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> duckdb<span class="sc">::</span><span class="fu">dbConnect</span>(drv, <span class="at">dbdir =</span> <span class="st">"tutorial_jp/kokoro.duckdb"</span>, <span class="at">read_only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  readxl<span class="sc">::</span><span class="fu">read_xls</span>(<span class="st">"tutorial_jp/kokoro.xls"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"text"</span>, <span class="st">"section"</span>, <span class="st">"chapter"</span>, <span class="st">"label"</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">skip =</span> <span class="dv">1</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> <span class="fu">factor</span>(dplyr<span class="sc">::</span><span class="fu">row_number</span>()),</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> audubon<span class="sc">::</span><span class="fu">strj_normalize</span>(.))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>gibasa<span class="sc">::</span><span class="fu">is_blank</span>(text)) <span class="sc">|&gt;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(doc_id, text, section, label, chapter)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+<section id="単純集計a.7.1" class="level2" data-number="F.1">
+<h2 data-number="F.1" class="anchored" data-anchor-id="単純集計a.7.1"><span class="header-section-number">F.1</span> 単純集計（A.7.1）</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"人の死"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"死後"</span>, <span class="st">"死病"</span>, <span class="st">"死期"</span>, <span class="st">"死因"</span>, <span class="st">"死骸"</span>, <span class="st">"生死"</span>, <span class="st">"自殺"</span>, <span class="st">"殉死"</span>, <span class="st">"頓死"</span>, <span class="st">"変死"</span>, <span class="st">"亡"</span>, <span class="st">"死ぬ"</span>, <span class="st">"亡くなる"</span>, <span class="st">"殺す"</span>, <span class="st">"亡くす"</span>, <span class="st">"死"</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"恋愛"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"愛"</span>, <span class="st">"恋"</span>, <span class="st">"愛す"</span>, <span class="st">"愛情"</span>, <span class="st">"恋人"</span>, <span class="st">"愛人"</span>, <span class="st">"恋愛"</span>, <span class="st">"失恋"</span>, <span class="st">"恋しい"</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"友情"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"友達"</span>, <span class="st">"友人"</span>, <span class="st">"旧友"</span>, <span class="st">"親友"</span>, <span class="st">"朋友"</span>, <span class="st">"友"</span>, <span class="st">"級友"</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"信用・不信"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"信用"</span>, <span class="st">"信じる"</span>, <span class="st">"信ずる"</span>, <span class="st">"不信"</span>, <span class="st">"疑い"</span>, <span class="st">"疑惑"</span>, <span class="st">"疑念"</span>, <span class="st">"猜疑"</span>, <span class="st">"狐疑"</span>, <span class="st">"疑問"</span>, <span class="st">"疑い深い"</span>, <span class="st">"疑う"</span>, <span class="st">"疑る"</span>, <span class="st">"警戒"</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"病気"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"医者"</span>, <span class="st">"病人"</span>, <span class="st">"病室"</span>, <span class="st">"病院"</span>, <span class="st">"病症"</span>, <span class="st">"病状"</span>, <span class="st">"持病"</span>, <span class="st">"死病"</span>, <span class="st">"主治医"</span>, <span class="st">"精神病"</span>, <span class="st">"仮病"</span>, <span class="st">"病気"</span>, <span class="st">"看病"</span>, <span class="st">"大病"</span>, <span class="st">"病む"</span>, <span class="st">"病"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dictionary</span>()</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>dfm <span class="ot">&lt;-</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), token, original)) <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(doc_id, token) <span class="sc">|&gt;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(doc_id, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm_lookup</span>(rules)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>dfm <span class="sc">|&gt;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">convert</span>(<span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">コードなし</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rowSums</span>(dplyr<span class="sc">::</span><span class="fu">pick</span>(<span class="fu">where</span>(is.numeric))) <span class="sc">==</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span>doc_id, <span class="at">names_to =</span> <span class="st">"code"</span>, <span class="at">values_to =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">total =</span> <span class="fu">sum</span>(count),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop =</span> total <span class="sc">/</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> code</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 3</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   code       total   prop</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 人の死       148 0.122 </span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 恋愛          65 0.0536</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 友情          51 0.0420</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 信用・不信   123 0.101 </span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 病気         150 0.124 </span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 コードなし   919 0.758</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="クロス集計a.7.2" class="level2" data-number="F.2">
+<h2 data-number="F.2" class="anchored" data-anchor-id="クロス集計a.7.2"><span class="header-section-number">F.2</span> クロス集計（A.7.2）</h2>
+<section id="クロス表" class="level3" data-number="F.2.1">
+<h3 data-number="F.2.1" class="anchored" data-anchor-id="クロス表"><span class="header-section-number">F.2.1</span> クロス表</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dfm <span class="ot">&lt;-</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), token, original)) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(label, token) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(label, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm_lookup</span>(rules)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>dfm <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">convert</span>(<span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">コードなし</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rowSums</span>(dplyr<span class="sc">::</span><span class="fu">pick</span>(<span class="fu">where</span>(is.numeric))) <span class="sc">==</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span>doc_id, <span class="at">names_to =</span> <span class="st">"code"</span>, <span class="at">values_to =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">distinct</span>(tbl, label, section),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> dplyr<span class="sc">::</span><span class="fu">join_by</span>(doc_id <span class="sc">==</span> label)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">uncount</span>(count) <span class="sc">|&gt;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  crosstable<span class="sc">::</span><span class="fu">crosstable</span>(section, <span class="at">by =</span> code, <span class="at">total =</span> <span class="st">"both"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  crosstable<span class="sc">::</span><span class="fu">as_flextable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-17849154{table-layout:auto;}.cl-177d2ed2{font-family:'DejaVu Sans';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-177d2edc{font-family:'DejaVu Sans';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-1780317c{margin:0;text-align:center;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-17803186{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-178051ca{background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(0, 0, 0, 1.00);border-top: 1.5pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-178051d4{background-color:transparent;vertical-align: middle;border-bottom: 1pt solid rgba(0, 0, 0, 1.00);border-top: 1.5pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-178051d5{background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(0, 0, 0, 1.00);border-top: 1pt solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-178051d6{background-color:transparent;vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-178051de{background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-17849154"><thead><tr style="overflow-wrap:break-word;"><th rowspan="2" class="cl-178051ca"><p class="cl-1780317c"><span class="cl-177d2ed2">label</span></p></th><th rowspan="2" class="cl-178051ca"><p class="cl-1780317c"><span class="cl-177d2ed2">variable</span></p></th><th colspan="6" class="cl-178051d4"><p class="cl-1780317c"><span class="cl-177d2ed2">code</span></p></th><th rowspan="2" class="cl-178051ca"><p class="cl-1780317c"><span class="cl-177d2ed2">Total</span></p></th></tr><tr style="overflow-wrap:break-word;"><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">コードなし</span></p></th><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">信用・不信</span></p></th><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">人の死</span></p></th><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">病気</span></p></th><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">友情</span></p></th><th class="cl-178051d5"><p class="cl-1780317c"><span class="cl-177d2ed2">恋愛</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td rowspan="4" class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">section</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">[1]上_先生と私</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">6 (3.26%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">36 (19.57%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">53 (28.80%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">51 (27.72%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">17 (9.24%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">21 (11.41%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">184 (33.21%)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">[2]中_両親と私</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">0 (0%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">13 (10.57%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">30 (24.39%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">76 (61.79%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">4 (3.25%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">0 (0%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">123 (22.20%)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">[3]下_先生と遺書</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">11 (4.45%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">74 (29.96%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">65 (26.32%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">23 (9.31%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">30 (12.15%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">44 (17.81%)</span></p></td><td class="cl-178051de"><p class="cl-17803186"><span class="cl-177d2edc">247 (44.58%)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">Total</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">17 (3.07%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">123 (22.20%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">148 (26.71%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">150 (27.08%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">51 (9.21%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">65 (11.73%)</span></p></td><td class="cl-178051d6"><p class="cl-17803186"><span class="cl-177d2edc">554 (100.00%)</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+</section>
+<section id="ヒートマップ" class="level3" data-number="F.2.2">
+<h3 data-number="F.2.2" class="anchored" data-anchor-id="ヒートマップ"><span class="header-section-number">F.2.2</span> ヒートマップ</h3>
+<p>横に長すぎてラベルが見づらいです。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dfm <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">convert</span>(<span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">コードなし</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rowSums</span>(dplyr<span class="sc">::</span><span class="fu">pick</span>(<span class="fu">where</span>(is.numeric))) <span class="sc">==</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span>doc_id, <span class="at">names_to =</span> <span class="st">"code"</span>, <span class="at">values_to =</span> <span class="st">"count"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(count <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(doc_id, <span class="at">levels =</span> <span class="fu">unique</span>(tbl<span class="sc">$</span>label)), <span class="at">y =</span> code)) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_raster</span>(<span class="fu">aes</span>(<span class="at">fill =</span> count)) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">element_blank</span>(), <span class="at">y =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">90</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: `label` cannot be a &lt;ggplot2::element_blank&gt; object.</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `label` cannot be a &lt;ggplot2::element_blank&gt; object.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-codes-heatmap-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="バルーンプロット" class="level3" data-number="F.2.3">
+<h3 data-number="F.2.3" class="anchored" data-anchor-id="バルーンプロット"><span class="header-section-number">F.2.3</span> バルーンプロット</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dfm <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), token, original)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(section, token) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(section, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm_lookup</span>(rules)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dfm <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">convert</span>(<span class="at">to =</span> <span class="st">"data.frame"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="st">`</span><span class="at">コードなし</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">rowSums</span>(dplyr<span class="sc">::</span><span class="fu">pick</span>(<span class="fu">where</span>(is.numeric))) <span class="sc">==</span> <span class="dv">0</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="sc">!</span>doc_id, <span class="at">names_to =</span> <span class="st">"code"</span>, <span class="at">values_to =</span> <span class="st">"count"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(doc_id, code, count) <span class="sc">|&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  proxyC<span class="sc">::</span><span class="fu">dist</span>(<span class="at">margin =</span> <span class="dv">2</span>, <span class="at">method =</span> <span class="st">"euclidean"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.dist</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hclust</span>(<span class="at">method =</span> <span class="st">"ward.D2"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  ggpubr<span class="sc">::</span><span class="fu">ggballoonplot</span>(<span class="at">x =</span> <span class="st">"doc_id"</span>, <span class="at">y =</span> <span class="st">"code"</span>, <span class="at">size =</span> <span class="st">"count"</span>, <span class="at">color =</span> <span class="st">"gray"</span>, <span class="at">fill =</span> <span class="st">"#f5f5f5"</span>, <span class="at">show.label =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  legendry<span class="sc">::</span><span class="fu">scale_y_dendro</span>(<span class="at">clust =</span> clusters)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-codes-balloon-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="類似度行列a.7.3" class="level2" data-number="F.3">
+<h2 data-number="F.3" class="anchored" data-anchor-id="類似度行列a.7.3"><span class="header-section-number">F.3</span> 類似度行列（A.7.3）</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dfm <span class="ot">&lt;-</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), token, original)) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(label, token) <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(label, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm_lookup</span>(rules) <span class="sc">|&gt;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dfm_weight</span>(<span class="at">scheme =</span> <span class="st">"boolean"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>quanteda.textstats<span class="sc">::</span><span class="fu">textstat_simil</span>(dfm, <span class="at">margin =</span> <span class="st">"features"</span>, <span class="at">method =</span> <span class="st">"jaccard"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; textstat_simil object; method = "jaccard"</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            人の死   恋愛   友情 信用・不信   病気</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 人の死      1.000 0.1129 0.1186      0.253 0.4310</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 恋愛        0.113 1.0000 0.0652      0.283 0.0476</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 友情        0.119 0.0652 1.0000      0.175 0.1053</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 信用・不信  0.253 0.2833 0.1746      1.000 0.2817</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 病気        0.431 0.0476 0.1053      0.282 1.0000</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="その他の分析a.7.4-8" class="level2" data-number="F.4">
+<h2 data-number="F.4" class="anchored" data-anchor-id="その他の分析a.7.4-8"><span class="header-section-number">F.4</span> その他の分析（A.7.4-8）</h2>
+<p>基本的に抽出語メニューのときと同じやり方でグラフをつくることができるはずです。階層的クラスター分析、共起ネットワーク、SOMについては省略しています。</p>
+<section id="対応分析" class="level3" data-number="F.4.1">
+<h3 data-number="F.4.1" class="anchored" data-anchor-id="対応分析"><span class="header-section-number">F.4.1</span> 対応分析</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ca)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>quanteda.textmodels<span class="sc">::</span><span class="fu">textmodel_ca</span>(dfm, <span class="at">nd =</span> <span class="dv">2</span>, <span class="at">sparse =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-ca-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="多次元尺度構成法mds" class="level3" data-number="F.4.2">
+<h3 data-number="F.4.2" class="anchored" data-anchor-id="多次元尺度構成法mds"><span class="header-section-number">F.4.2</span> 多次元尺度構成法（MDS）</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>simil <span class="ot">&lt;-</span> dfm <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  proxyC<span class="sc">::</span><span class="fu">simil</span>(<span class="at">margin =</span> <span class="dv">2</span>, <span class="at">method =</span> <span class="st">"jaccard"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> MASS<span class="sc">::</span><span class="fu">sammon</span>(<span class="dv">1</span> <span class="sc">-</span> simil, <span class="at">k =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">pluck</span>(<span class="st">"points"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Initial stress        : 0.09511</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; stress after  10 iters: 0.03043, magic = 0.500</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; stress after  20 iters: 0.03038, magic = 0.500</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">rownames =</span> <span class="st">"label"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">.name_repair =</span> <span class="sc">~</span> <span class="fu">c</span>(<span class="st">"Dim1"</span>, <span class="st">"Dim2"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">clust =</span> (<span class="fu">hclust</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>      proxyC<span class="sc">::</span><span class="fu">dist</span>(dat, <span class="at">method =</span> <span class="st">"euclidean"</span>) <span class="sc">|&gt;</span> <span class="fu">as.dist</span>(),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">method =</span> <span class="st">"ward.D2"</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span> <span class="fu">cutree</span>(<span class="at">k =</span> <span class="dv">3</span>))[label]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Dim1, <span class="at">y =</span> Dim2, <span class="at">label =</span> label, <span class="at">col =</span> <span class="fu">factor</span>(clust))) <span class="sc">+</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">3</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  ggrepel<span class="sc">::</span><span class="fu">geom_label_repel</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-mds-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="lss" class="level3" data-number="F.4.3">
+<h3 data-number="F.4.3" class="anchored" data-anchor-id="lss"><span class="header-section-number">F.4.3</span> LSS🍳</h3>
+<p>極性をあらわす少数の種語を使いつつ、指定した語と共起する語や文書について1次元の極性を与える手法だそうです。<a href="https://cran.r-project.org/package=LSX">LSX</a>というパッケージとして実装されています。</p>
+<p>本来は<code>k</code>（Truncated SVDにおけるランク）は200～300程度を指定するため、相当の量の文書が必要とされます。提案論文では、おおむね40文程度の長さの文書が5,000～10,000文書くらい必要と書かれています。ここでは分析にかける文書が足りていないので、意味を解釈できる結果は得られていないと思います。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rules <span class="ot">&lt;-</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"人の死"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"死後"</span>, <span class="st">"死病"</span>, <span class="st">"死期"</span>, <span class="st">"死因"</span>, <span class="st">"死骸"</span>, <span class="st">"生死"</span>, <span class="st">"自殺"</span>, <span class="st">"殉死"</span>, <span class="st">"頓死"</span>, <span class="st">"変死"</span>, <span class="st">"亡"</span>, <span class="st">"死ぬ"</span>, <span class="st">"亡くなる"</span>, <span class="st">"殺す"</span>, <span class="st">"亡くす"</span>, <span class="st">"死"</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"恋愛"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"愛"</span>, <span class="st">"恋"</span>, <span class="st">"愛す"</span>, <span class="st">"愛情"</span>, <span class="st">"恋人"</span>, <span class="st">"愛人"</span>, <span class="st">"恋愛"</span>, <span class="st">"失恋"</span>, <span class="st">"恋しい"</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"友情"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"友達"</span>, <span class="st">"友人"</span>, <span class="st">"旧友"</span>, <span class="st">"親友"</span>, <span class="st">"朋友"</span>, <span class="st">"友"</span>, <span class="st">"級友"</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"信用・不信"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"信用"</span>, <span class="st">"信じる"</span>, <span class="st">"信ずる"</span>, <span class="st">"不信"</span>, <span class="st">"疑い"</span>, <span class="st">"疑惑"</span>, <span class="st">"疑念"</span>, <span class="st">"猜疑"</span>, <span class="st">"狐疑"</span>, <span class="st">"疑問"</span>, <span class="st">"疑い深い"</span>, <span class="st">"疑う"</span>, <span class="st">"疑る"</span>, <span class="st">"警戒"</span>),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"病気"</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"医者"</span>, <span class="st">"病人"</span>, <span class="st">"病室"</span>, <span class="st">"病院"</span>, <span class="st">"病症"</span>, <span class="st">"病状"</span>, <span class="st">"持病"</span>, <span class="st">"死病"</span>, <span class="st">"主治医"</span>, <span class="st">"精神病"</span>, <span class="st">"仮病"</span>, <span class="st">"病気"</span>, <span class="st">"看病"</span>, <span class="st">"大病"</span>, <span class="st">"病む"</span>, <span class="st">"病"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dictionary</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 日本語評価極性辞書（用言編） https://www.cl.ecei.tohoku.ac.jp/Open_Resources-Japanese_Sentiment_Polarity_Dictionary.html</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>pn <span class="ot">&lt;-</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://www.cl.ecei.tohoku.ac.jp/resources/sent_lex/wago.121808.pn"</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"polarity"</span>, <span class="st">"word"</span>),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 極性辞書をもとに種語を用意する</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>seed <span class="ot">&lt;-</span> pn <span class="sc">|&gt;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">filter</span>(pos <span class="sc">==</span> <span class="st">"動詞"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">select</span>(token, pos, original) <span class="sc">|&gt;</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">collect</span>(),</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"word"</span> <span class="ot">=</span> <span class="st">"token"</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">polarity =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>      stringr<span class="sc">::</span><span class="fu">str_detect</span>(polarity, <span class="st">"ネガ"</span>),</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">"negative"</span>,</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">"positive"</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), word, original),</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="fu">paste</span>(token, pos, <span class="at">sep =</span> <span class="st">"/"</span>)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(polarity, token) <span class="sc">|&gt;</span></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">dict =</span> <span class="fu">list</span>(token), <span class="at">.by =</span> polarity) <span class="sc">|&gt;</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">deframe</span>()</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>seed <span class="ot">&lt;-</span> seed <span class="sc">|&gt;</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">dictionary</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>  LSX<span class="sc">::</span><span class="fu">as.seedwords</span>(<span class="at">upper =</span> <span class="dv">2</span>, <span class="at">lower =</span> <span class="dv">1</span>) <span class="co"># ここではpositiveが2番目, negativeが1番目</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Registered S3 methods overwritten by 'LSX':</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   method                       from               </span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   print.coefficients_textmodel quanteda.textmodels</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   print.statistics_textmodel   quanteda.textmodels</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   print.summary.textmodel      quanteda.textmodels</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>toks <span class="ot">&lt;-</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>    pos <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>      <span class="st">"名詞"</span>, <span class="st">"名詞C"</span>,</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>      <span class="st">"地名"</span>, <span class="st">"人名"</span>, <span class="st">"組織名"</span>, <span class="st">"固有名詞"</span>,</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>      <span class="st">"動詞"</span>, <span class="st">"未知語"</span>, <span class="st">"タグ"</span></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> dplyr<span class="sc">::</span><span class="fu">if_else</span>(<span class="fu">is.na</span>(original), token, original),</span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">token =</span> <span class="fu">paste</span>(token, pos, <span class="at">sep =</span> <span class="st">"/"</span>)</span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(label, token) <span class="sc">|&gt;</span></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">dict =</span> <span class="fu">list</span>(token), <span class="at">.by =</span> label) <span class="sc">|&gt;</span></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">deframe</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">as.tokens</span>()</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>term <span class="ot">&lt;-</span></span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>  LSX<span class="sc">::</span><span class="fu">char_context</span>(</span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>    toks,</span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">pattern =</span> rules<span class="sc">$</span><span class="st">`</span><span class="at">信用・不信</span><span class="st">`</span>,</span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">window =</span> <span class="dv">10</span>,</span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">valuetype =</span> <span class="st">"regex"</span>,</span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">case_insensitive =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_count =</span> <span class="dv">2</span>,</span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">p =</span> <span class="fl">0.05</span></span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">toupper</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lss <span class="ot">&lt;-</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  LSX<span class="sc">::</span><span class="fu">textmodel_lss</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    quanteda<span class="sc">::</span><span class="fu">dfm</span>(toks),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">seeds =</span> seed,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">terms =</span> term,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">k =</span> <span class="dv">20</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">include_data =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">group_data =</span> <span class="cn">TRUE</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>単語の極性です。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>LSX<span class="sc">::</span><span class="fu">textplot_terms</span>(lss)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-polarity-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>文書の極性です。ここでは文書の数が少ないのでこのようにプロットしていますが、実際にはもっと大量の文書を分析にかけるはずなので、文書を横軸にとって<code>polarity</code>の曲線を描く可視化例がパッケージのvignetteで紹介されています。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">docs =</span> <span class="fu">factor</span>(<span class="fu">unique</span>(tbl<span class="sc">$</span>label), <span class="at">levels =</span> <span class="fu">unique</span>(tbl<span class="sc">$</span>label)),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">polarity =</span> <span class="fu">predict</span>(lss)[<span class="fu">as.character</span>(docs)],</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">section =</span> tbl<span class="sc">$</span>section[<span class="fu">match</span>(docs, tbl<span class="sc">$</span>label)]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(polarity)) <span class="sc">|&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> docs, <span class="at">y =</span> polarity, <span class="at">fill =</span> section)) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-codes-menu_files/figure-html/plot-polarity-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>duckdb<span class="sc">::</span><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>duckdb<span class="sc">::</span><span class="fu">duckdb_shutdown</span>(drv)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>(<span class="at">info =</span> <span class="st">"packages"</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ═ Session info ═══════════════════════════════════════════════════════════════</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  package             * version  date (UTC) lib source</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  abind                 1.4-8    2024-09-12 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  askpass               1.2.1    2024-10-04 [1] RSPM</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  audubon               0.5.2    2024-04-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  backports             1.5.0    2024-05-23 [1] RSPM</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit                   4.6.0    2025-03-06 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  bit64                 4.6.0-1  2025-01-16 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  blob                  1.2.4    2023-03-17 [1] RSPM</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  broom                 1.0.10   2025-09-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ca                  * 0.71.1   2020-01-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cachem                1.1.0    2024-05-16 [1] RSPM</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  car                   3.1-3    2024-09-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  carData               3.0-5    2022-01-06 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger            1.1.0    2016-07-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  checkmate             2.3.3    2025-08-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli                   3.6.5    2025-04-23 [1] RSPM</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  codetools             0.2-20   2024-03-31 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  crayon                1.5.3    2024-06-20 [1] RSPM</span></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  crosstable            0.8.2    2025-09-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  curl                  7.0.0    2025-08-19 [1] RSPM</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  data.table            1.17.8   2025-07-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI                 * 1.2.3    2024-06-02 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr                2.5.1    2025-09-10 [1] RSPM</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest                0.6.37   2024-08-19 [1] RSPM</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr                 1.1.4    2023-11-17 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  duckdb              * 1.4.0    2025-09-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate              1.0.5    2025-08-27 [1] RSPM</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver                2.1.2    2024-05-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap               1.2.0    2024-05-15 [1] RSPM</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmatch             1.1-6    2024-12-23 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  flextable             0.9.10   2025-08-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fontBitstreamVera     0.1.1    2017-02-01 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fontLiberation        0.1.0    2016-10-15 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fontquiver            0.2.1    2017-02-01 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  forcats               1.0.1    2025-09-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  foreach               1.5.2    2022-02-02 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Formula               1.2-5    2023-02-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gdtools               0.4.3    2025-08-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics              0.1.4    2025-05-09 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2             * 4.0.0    2025-09-11 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggpubr                0.6.1    2025-06-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggrepel               0.9.6    2024-09-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsignif              0.6.4    2022-10-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gibasa                1.1.2    2025-02-16 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glmnet                4.1-10   2025-07-17 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue                  1.8.0    2024-09-30 [1] RSPM</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable                0.3.6    2024-10-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  hms                   1.1.3    2023-03-21 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools             0.5.8.1  2024-04-04 [1] RSPM</span></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets           1.6.4    2023-12-06 [1] RSPM</span></span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  iterators             1.0.14   2022-02-05 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janeaustenr           1.0.0    2022-08-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite              2.0.0    2025-03-27 [1] RSPM</span></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr                 1.50     2025-03-16 [1] RSPM</span></span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling              0.4.3    2023-08-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lattice               0.22-7   2025-04-02 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  legendry              0.2.4    2025-09-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle             1.0.4    2023-11-07 [1] RSPM</span></span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  locfit                1.5-9.12 2025-03-05 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  LSX                   1.5.0    2025-09-12 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr              2.0.4    2025-09-12 [1] RSPM</span></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  MASS                  7.3-65   2025-02-28 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Matrix                1.7-3    2025-03-11 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  memoise               2.0.1    2021-11-26 [1] RSPM</span></span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  nsyllable             1.0.1    2022-02-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  officer               0.7.0    2025-09-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  openssl               2.3.4    2025-09-30 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar                1.11.1   2025-09-17 [1] RSPM</span></span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig             2.0.3    2019-09-22 [1] RSPM</span></span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  proxyC                0.5.2    2025-04-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr                 1.1.0    2025-07-10 [1] RSPM</span></span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda              4.3.1    2025-07-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda.textmodels   0.9.10   2025-02-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda.textstats    0.97.2   2024-09-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.cache               0.17.0   2025-05-02 [1] RSPM</span></span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3           1.8.2    2022-06-13 [1] RSPM</span></span>
+<span id="cb14-83"><a href="#cb14-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.oo                  1.27.1   2025-05-02 [1] RSPM</span></span>
+<span id="cb14-84"><a href="#cb14-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.utils               2.13.0   2025-02-24 [1] RSPM</span></span>
+<span id="cb14-85"><a href="#cb14-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6                    2.6.1    2025-02-15 [1] RSPM</span></span>
+<span id="cb14-86"><a href="#cb14-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ragg                  1.5.0    2025-09-02 [1] RSPM</span></span>
+<span id="cb14-87"><a href="#cb14-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RColorBrewer          1.1-3    2022-04-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-88"><a href="#cb14-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp                  1.1.0    2025-07-02 [1] RSPM</span></span>
+<span id="cb14-89"><a href="#cb14-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RcppParallel          5.1.11-1 2025-08-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-90"><a href="#cb14-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readr                 2.1.5    2024-01-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-91"><a href="#cb14-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl                1.4.5    2025-03-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-92"><a href="#cb14-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang                 1.1.6    2025-04-11 [1] RSPM</span></span>
+<span id="cb14-93"><a href="#cb14-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown             2.30     2025-09-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-94"><a href="#cb14-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RSpectra              0.16-2   2024-07-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-95"><a href="#cb14-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstatix               0.7.2    2023-02-01 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-96"><a href="#cb14-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  S7                    0.2.0    2024-11-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-97"><a href="#cb14-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales                1.4.0    2025-04-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-98"><a href="#cb14-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo           1.2.3    2025-02-05 [1] RSPM</span></span>
+<span id="cb14-99"><a href="#cb14-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  shape                 1.4.6.1  2024-02-23 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-100"><a href="#cb14-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  SnowballC             0.7.1    2023-04-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-101"><a href="#cb14-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stopwords             2.3      2021-10-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-102"><a href="#cb14-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi               1.8.7    2025-03-27 [1] RSPM</span></span>
+<span id="cb14-103"><a href="#cb14-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringr               1.5.2    2025-09-08 [1] RSPM</span></span>
+<span id="cb14-104"><a href="#cb14-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  styler                1.10.3   2024-04-07 [1] RSPM</span></span>
+<span id="cb14-105"><a href="#cb14-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  survival              3.8-3    2024-12-17 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb14-106"><a href="#cb14-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  systemfonts           1.3.1    2025-10-01 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-107"><a href="#cb14-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  textshaping           1.0.3    2025-09-02 [1] RSPM</span></span>
+<span id="cb14-108"><a href="#cb14-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble                3.3.0    2025-06-08 [1] RSPM</span></span>
+<span id="cb14-109"><a href="#cb14-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr                 1.3.1    2024-01-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-110"><a href="#cb14-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect            1.2.1    2024-03-11 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-111"><a href="#cb14-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidytext              0.4.3    2025-07-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-112"><a href="#cb14-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tokenizers            0.3.0    2022-12-22 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-113"><a href="#cb14-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tzdb                  0.5.0    2025-03-15 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-114"><a href="#cb14-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8                  1.2.6    2025-06-08 [1] RSPM</span></span>
+<span id="cb14-115"><a href="#cb14-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  uuid                  1.2-1    2024-07-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-116"><a href="#cb14-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  V8                    8.0.0    2025-09-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-117"><a href="#cb14-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs                 0.6.5    2023-12-01 [1] RSPM</span></span>
+<span id="cb14-118"><a href="#cb14-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vroom                 1.6.6    2025-09-19 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb14-119"><a href="#cb14-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr                 3.0.2    2024-10-28 [1] RSPM</span></span>
+<span id="cb14-120"><a href="#cb14-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun                  0.53     2025-08-19 [1] RSPM</span></span>
+<span id="cb14-121"><a href="#cb14-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xml2                  1.4.0    2025-08-20 [1] RSPM</span></span>
+<span id="cb14-122"><a href="#cb14-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml                  2.3.10   2024-07-26 [1] RSPM</span></span>
+<span id="cb14-123"><a href="#cb14-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  zip                   2.3.3    2025-05-13 [1] RSPM</span></span>
+<span id="cb14-124"><a href="#cb14-124" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-125"><a href="#cb14-125" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
+<span id="cb14-126"><a href="#cb14-126" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
+<span id="cb14-127"><a href="#cb14-127" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  * ── Packages attached to the search path.</span></span>
+<span id="cb14-128"><a href="#cb14-128" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-129"><a href="#cb14-129" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/paithiov909\.github\.io\/textmining-ja");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "paithiov909/textmining-ja";
+    script.dataset.repoId = "R_kgDOGMY_Ng";
+    script.dataset.category = "Announcements";
+    script.dataset.categoryId = "DIC_kwDOGMY_Ns4Cdg6F";
+    script.dataset.mapping = "pathname";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "top";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "ja";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cb-docs-menu.html" class="pagination-link" aria-label="文書メニュー">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">文書メニュー</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

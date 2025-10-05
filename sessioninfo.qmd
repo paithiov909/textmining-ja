@@ -3,6 +3,9 @@
 ::: {.callout-note collapse="true"}
 ## 更新情報
 
+- **2025-10-05**
+  - [paithiov909/textvis-recipes: Cookbook to draw KHCoder-like visualizations using R](https://github.com/paithiov909/textvis-recipes)の内容をこのサイトのAppendicesとして統合しました。
+  - これにともなって、従来のAppendix Aの位置を見直しました。
 - **2025-04-22**
   - R-4.5を使ってビルドしなおしました
 - **2024-03-10**

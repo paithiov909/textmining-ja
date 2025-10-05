@@ -1,0 +1,222 @@
+# 抽出語メニュー1
+
+```{r}
+#| label: setup
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(duckdb)
+})
+drv <- duckdb::duckdb()
+con <- duckdb::dbConnect(drv, dbdir = "tutorial_jp/kokoro.duckdb", read_only = TRUE)
+
+tbl <-
+  readxl::read_xls("tutorial_jp/kokoro.xls",
+    col_names = c("text", "section", "chapter", "label"),
+    skip = 1
+  ) |>
+  dplyr::mutate(
+    doc_id = factor(dplyr::row_number()),
+    dplyr::across(where(is.character), ~ audubon::strj_normalize(.))
+  ) |>
+  dplyr::filter(!gibasa::is_blank(text)) |>
+  dplyr::relocate(doc_id, text, section, label, chapter)
+```
+
+---
+
+## 抽出語リスト（A.5.1）
+
+活用語をクリックするとそれぞれの活用の出現頻度も見れるUIについては、Rだとどうすれば実現できるかわからないです……。
+
+```{r}
+#| label: freq-list
+dat <- dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    !pos %in% c("その他", "名詞B", "動詞B", "形容詞B", "副詞B", "否定助動詞", "形容詞（非自立）")
+  ) |>
+  dplyr::count(token, pos) |>
+  dplyr::filter(n >= 100) |>
+  dplyr::collect()
+
+reactable::reactable(
+  dat,
+  filterable = TRUE,
+  defaultColDef = reactable::colDef(
+    cell = reactablefmtr::data_bars(dat, text_position = "outside-base")
+  )
+)
+```
+
+## 出現回数の分布（A.5.2）
+
+### 度数分布表
+
+```{r}
+#| label: calc-tf
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    !pos %in% c("その他", "名詞B", "動詞B", "形容詞B", "副詞B", "否定助動詞", "形容詞（非自立）")
+  ) |>
+  dplyr::count(token, pos) |>
+  dplyr::summarise(
+    degree = sum(n, na.rm = TRUE),
+    .by = n
+  ) |>
+  dplyr::mutate(
+    prop = degree / sum(degree, na.rm = TRUE)
+  ) |>
+  dplyr::arrange(n) |>
+  dplyr::compute() |>
+  dplyr::mutate(
+    cum_degree = cumsum(degree),
+    cum_prop = cumsum(prop)
+  ) |>
+  dplyr::collect()
+
+dat
+```
+
+### 折れ線グラフ
+
+```{r}
+#| label: plot-tf-dist
+dat |>
+  dplyr::filter(cum_prop < .8) |>
+  ggplot(aes(x = n, y = degree)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "出現回数", y = "度数")
+```
+
+## 文書数の分布（A.5.3）
+
+### ヒストグラム🍳
+
+段落（`doc_id`）ではなく、章ラベル（`label`）でグルーピングして集計しています。`docfreq`について上でやったのと同様に処理すれば度数分布表にできます。
+
+```{r}
+#| label: calc-df
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::mutate(token = paste(token, pos, sep = "/")) |>
+  dplyr::count(label, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(label, token, n) |>
+  quanteda.textstats::textstat_frequency() |>
+  dplyr::as_tibble()
+
+dat
+```
+
+度数分布をグラフで確認したいだけなら、このかたちからヒストグラムを描いたほうが楽です。
+
+```{r}
+#| label: plot-df-hist
+dat |>
+  ggplot(aes(x = docfreq)) +
+  geom_histogram(binwidth = 3) +
+  scale_y_sqrt() +
+  theme_bw() +
+  labs(x = "文書数", y = "度数")
+```
+
+### Zipf's law🍳
+
+よく見かけるようなグラフです。[言語処理100本ノック 2020](https://nlp100.github.io/ja/ch04.html#39-zipf%E3%81%AE%E6%B3%95%E5%89%87)の39はこれにあたります。
+
+```{r}
+#| label: plot-zipf
+dat |>
+  ggplot(aes(x = rank, y = frequency)) +
+  geom_line() +
+  geom_smooth(method = lm, formula = y ~ x, se = FALSE) +
+  scale_x_log10() +
+  scale_y_log10() +
+  theme_bw()
+```
+
+## 出現回数・文書数のプロット（A.5.4）
+
+図 A.25のようなグラフの例です。ggplot2で`graphics::identify()`のようなことをするやり方がわからなかったので、適当に条件を指定してgghighlightでハイライトしています。
+
+```{r}
+#| label: plot-tf-df
+#| cache: true
+dat |>
+  ggplot(aes(x = frequency, y = docfreq)) +
+  geom_jitter() +
+  gghighlight::gghighlight(
+    frequency > 100 & docfreq < 60
+  ) +
+  ggrepel::geom_text_repel(aes(label = feature)) +
+  scale_x_log10() +
+  theme_bw() +
+  labs(x = "出現回数", y = "文書数")
+```
+
+## KWIC（A.5.5）
+
+### コンコーダンス
+
+コンコーダンスは`quanteda::kwic()`で確認できます。もっとも、KH Coderの提供するコンコーダンス検索やコロケーション統計のほうが明らかにリッチなのと、Rのコンソールは日本語の長めの文字列を表示するのにあまり向いていないというのがあるので、このあたりの機能が必要ならKH Coderを利用したほうがよいでしょう。
+
+```{r}
+#| label: kwic
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(section == "[1]上_先生と私") |>
+  dplyr::select(label, token) |>
+  dplyr::collect() |>
+  dplyr::reframe(token = list(token), .by = label) |>
+  tibble::deframe() |>
+  quanteda::as.tokens() |>
+  quanteda::tokens_select("[[:punct:]]", selection = "remove", valuetype = "regex", padding = FALSE) |>
+  quanteda::tokens_select("^[\\p{Hiragana}]{1,2}$", selection = "remove", valuetype = "regex", padding = TRUE)
+
+quanteda::kwic(dat, pattern = "^向[いくけこ]$", window = 5, valuetype = "regex")
+```
+
+なお、上の例ではひらがな1～2文字の語をpaddingしつつ除外したので、一部の助詞などは表示されていません（それぞれの窓のなかでトークンとして数えられてはいます）。
+
+### コロケーション
+
+たとえば、前後5個のwindow内のコロケーション（nodeを含めて11語の窓ということ）の合計については次のように確認できます。
+
+```{r}
+#| label: collocation-1
+dat |>
+  quanteda::fcm(context = "window", window = 5) |>
+  tidytext::tidy() |>
+  dplyr::rename(node = document, term = term) |>
+  dplyr::filter(node == "向い") |>
+  dplyr::slice_max(count, n = 10)
+```
+
+「左合計」や「右合計」については、たとえば次のようにして確認できます。paddingしなければ`tidyr::separate_wider_delim()`で展開して位置ごとに集計することもできそうです。
+
+```{r}
+#| label: collocation-2
+dat |>
+  quanteda::kwic(pattern = "^向[いくけこ]$", window = 5, valuetype = "regex") |>
+  dplyr::as_tibble() |>
+  dplyr::select(docname, keyword, pre, post) |>
+  tidyr::pivot_longer(
+    c(pre, post),
+    names_to = "window",
+    values_to = "term",
+    values_transform = ~ strsplit(., " ", fixed = TRUE)
+  ) |>
+  tidyr::unnest(term) |>
+  dplyr::count(window, term, sort = TRUE)
+```
+
+---
+
+```{r}
+#| label: cleanup
+duckdb::dbDisconnect(con)
+duckdb::duckdb_shutdown(drv)
+
+sessioninfo::session_info(info = "packages")
+```

@@ -1,0 +1,457 @@
+# 文書メニュー
+
+```{r}
+#| label: setup
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(duckdb)
+})
+drv <- duckdb::duckdb()
+con <- duckdb::dbConnect(drv, dbdir = "tutorial_jp/kokoro.duckdb", read_only = TRUE)
+
+tbl <-
+  readxl::read_xls("tutorial_jp/kokoro.xls",
+    col_names = c("text", "section", "chapter", "label"),
+    skip = 1
+  ) |>
+  dplyr::mutate(
+    doc_id = factor(dplyr::row_number()),
+    dplyr::across(where(is.character), ~ audubon::strj_normalize(.))
+  ) |>
+  dplyr::filter(!gibasa::is_blank(text)) |>
+  dplyr::relocate(doc_id, text, section, label, chapter)
+```
+
+---
+
+## 文書検索（A.6.1）
+
+### TF-IDF
+
+KWICの結果を検索語のTF-IDFの降順で並び替える例です。
+
+```{r}
+#| label: kwic-arranged-tf-idf
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(section == "[1]上_先生と私") |>
+  dplyr::select(label, token) |>
+  dplyr::collect()
+
+dat |>
+  dplyr::reframe(token = list(token), .by = label) |>
+  tibble::deframe() |>
+  quanteda::as.tokens() |>
+  quanteda::tokens_select("[[:punct:]]", selection = "remove", valuetype = "regex", padding = FALSE) |>
+  quanteda::kwic(pattern = "^向[いくけこ]$", window = 5, valuetype = "regex") |>
+  dplyr::as_tibble() |>
+  dplyr::select(docname, pre, keyword, post) |>
+  dplyr::left_join(
+    dat |>
+      dplyr::count(label, token) |>
+      tidytext::bind_tf_idf(token, label, n),
+    by = dplyr::join_by(docname == label, keyword == token)
+  ) |>
+  dplyr::arrange(desc(tf_idf))
+```
+
+### LexRank🍳
+
+[LexRank](https://www.cs.cmu.edu/afs/cs/project/jair/pub/volume22/erkan04a-html/erkan04a.html)は、TF-IDFで重みづけした文書間の類似度行列についてページランクを計算することで、文書集合のなかから「重要な文書」を抽出する手法です。
+
+```{r}
+#| label: create-dfm-1
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", # "名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  )
+
+dfm <- dat |>
+  dplyr::count(label, token) |>
+  dplyr::collect() |>
+  tidytext::bind_tf_idf(token, label, n) |>
+  dplyr::inner_join(
+    dat |>
+      dplyr::select(doc_id, label, token) |>
+      dplyr::collect(),
+    by = dplyr::join_by(label == label, token == token)
+  ) |>
+  tidytext::cast_dfm(doc_id, token, tf_idf)
+```
+
+文書間のコサイン類似度を得て、PageRankを計算します。`quanteda.textstats::textstat_simil()`は`proxyC::simil()`と処理としては同じですが、戻り値が`textstat_simil_symm_sparse`というS4クラスのオブジェクトになっていて、`as.data.frame()`で縦長のデータフレームに変換できます。
+
+```{r}
+#| label: calc-lexrank
+scores <- dfm |>
+  quanteda.textstats::textstat_simil(
+    margin = "documents",
+    method = "cosine",
+    min_simil = .6 # LexRankの文脈でいうところのthreshold
+  ) |>
+  as.data.frame() |>
+  dplyr::mutate(weight = 1) |> # 閾値以上のエッジしかないので、重みはすべて1にする
+  # dplyr::rename(weight = cosine) |> # あるいは、閾値を指定せずに、コサイン類似度をそのまま重みとして使う（continuous LexRank）
+  igraph::graph_from_data_frame(directed = FALSE) |>
+  igraph::page_rank(directed = FALSE, damping = .85) |>
+  purrr::pluck("vector")
+```
+
+LexRankは抽出型の要約アルゴリズムということになっていますが、必ずしも要約的な文書が得られるわけではありません。文書集合のなかでも類似度が比較的高そうな文書をn件取り出してきてサブセットをつくるみたいな使い方ならできるかもしれないです。
+
+```{r}
+#| label: glimpse-lexrank
+sort(scores, decreasing = TRUE) |>
+  tibble::enframe() |>
+  dplyr::left_join(
+    dplyr::select(tbl, doc_id, text, chapter),
+    by = dplyr::join_by(name == doc_id)
+  ) |>
+  dplyr::slice_head(n = 5)
+```
+
+## クラスター分析（A.6.2）
+
+### LSI🍳
+
+文書単語行列（または、単語文書行列）に対して特異値分解をおこなって、行列の次元を削減する手法をLSIといいます。潜在的意味インデキシング（Latent Semantic Indexing, LSI）というのは情報検索の分野での呼び方で、自然言語処理の文脈だと潜在意味解析（Latent Semantic Analysis, LSA）というらしいです。
+
+```{r}
+#| label: create-dfm-2
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", "名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_trim(min_termfreq = 10) |>
+  quanteda::dfm_tfidf(scheme_tf = "prop") |>
+  rlang::as_function(
+    ~ quanteda::dfm_subset(., quanteda::rowSums(.) > 0)
+  )()
+
+dfm
+```
+
+ここでは300列くらいしかないので大したことないですが、特徴量の数が多い文書単語行列を`as.matrix()`すると、メモリ上でのサイズが大きいオブジェクトになってしまい、扱いづらいです。そこで、もとの文書単語行列のもつ情報をできるだけ保持しつつ、行列の次元を削減したいというときに、LSIを利用することができます。
+
+とくに、文書のクラスタリングをおこなう場合では、どの語彙がどのクラスタに属する要因になっているかみたいなことはどうせ確認できないので、特徴量は適当に削減してしまって問題ないと思います。
+
+```{r}
+#| label: check-obj-size
+lobstr::obj_size(dfm)
+lobstr::obj_size(as.matrix(dfm))
+```
+
+`quanteda:textmodels::textmodel_lsa(margin = "documents")`とすると、特異値分解（Truncated SVD）の $D \simeq D_{k} = U_{k}\Sigma{}_{k}V^{T}_{k}$ という式における $V_{k}$ が戻り値にそのまま残ります（`margin="features"`だと $U_{k}$ がそのまま残り、`"both"`で両方ともそのまま残ります）。
+
+特異値分解する行列 $D$ について、いま、行側に文書・列側に単語がある持ち方をしています。ここでは、行列 $D$ をランク $k$ の行列 $D_{k}$ で近似したい（ランク削減したい）というより、特徴量を減らしたい（ $k$ 列の行列にしてしまいたい）と思っているため、`dfm`に $V_{k}$ をかけます。
+
+```{r}
+#| label: lsi
+mat <- quanteda.textmodels::textmodel_lsa(dfm, nd = 50, margin = "documents")
+mat <- dfm %*% mat$features
+
+str(mat)
+```
+
+### 階層的クラスタリング
+
+LSIで次元を削減した行列について、クラスタリングをおこないます。ここでは、文書間の距離としてコサイン距離を使うことにします。
+
+文書間の距離のイメージです。
+
+```{r}
+#| label: plot-simil
+#| fig-height: 8
+g1 <- mat |>
+  proxyC::simil(margin = 1, method = "ejaccard") |>
+  rlang::as_function(~ 1 - .[1:100, 1:100])() |>
+  as.dist() |>
+  factoextra::fviz_dist() +
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  labs(title = "ejaccard")
+
+g2 <- mat |>
+  proxyC::simil(margin = 1, method = "edice") |>
+  rlang::as_function(~ 1 - .[1:100, 1:100])() |>
+  as.dist() |>
+  factoextra::fviz_dist() +
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  labs(title = "edice")
+
+g3 <- mat |>
+  proxyC::simil(margin = 1, method = "cosine") |>
+  rlang::as_function(~ 1 - .[1:100, 1:100])() |>
+  as.dist() |>
+  factoextra::fviz_dist() +
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  labs(title = "cosine")
+
+patchwork::wrap_plots(g1, g2, g3, nrow = 3)
+```
+
+階層的クラスタリングは非階層的なアルゴリズムに比べると計算量が多いため、個体数が増えるとクラスタリングするのにやや時間がかかることがあります。
+
+```{r}
+#| label: hier-clust
+dat <- mat |>
+  proxyC::simil(margin = 1, method = "cosine") |>
+  rlang::as_function(~ 1 - .)()
+
+clusters <-
+  as.dist(dat) |>
+  hclust(method = "ward.D2")
+
+cluster::silhouette(cutree(clusters, k = 5), dist = dat) |>
+  factoextra::fviz_silhouette(print.summary = FALSE) +
+  theme_classic() +
+  theme(axis.text.x = element_blank())
+```
+
+### 非階層的クラスタリング🍳
+
+必ずしもクラスタの階層構造を確認したいわけではない場合、`kmeans()`だと計算が高速かもしれません。
+
+ただ、「K-meansはクラスタ中心からのユークリッド距離でクラスタを分ける」（[機械学習帳](https://chokkan.github.io/mlnote/unsupervised/01kmeans.html#id18)）ため、特徴量の数が増えてくるとクラスタの比率がおかしくなりがちです。
+
+```{r}
+#| label: kmeans
+clusters <- kmeans(mat, centers = 5, iter.max = 100, algorithm = "Lloyd")
+
+cluster::silhouette(clusters$cluster, dist = dat) |>
+  factoextra::fviz_silhouette(print.summary = FALSE) +
+  theme_classic() +
+  theme(axis.text.x = element_blank())
+```
+
+spherical k-meansの実装である[skmeans](https://cran.r-project.org/package=skmeans)だとクラスタの比率はいくらかマシになるかもしれません。
+
+```{r}
+#| label: skmeans
+clusters <-
+  skmeans::skmeans(
+    as.matrix(mat),
+    k = 5,
+    method = "pclust",
+    control = list(maxiter = 100)
+  )
+
+cluster::silhouette(clusters$cluster, dist = dat) |>
+  factoextra::fviz_silhouette(print.summary = FALSE) +
+  theme_classic() +
+  theme(axis.text.x = element_blank())
+```
+
+## トピックモデル（A.6.3-4）
+
+### トピック数の探索
+
+LDAのトピック数の探索は、実際にfitしてみて指標のよかったトピック数を採用するみたいなやり方をするようです。
+
+```{r}
+#| label: create-dfm-3
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", "名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n)
+```
+
+ここでは、トピック数を5から15まで変化させます。`seededlda::textmodel_lda(auto_iter=TRUE)`とすると、ステップが`max_iter`以下であっても条件によってギブスサンプリングを打ち切る挙動になります。
+
+```{r}
+#| label: divergence
+#| cache: true
+divergence <-
+  purrr::map(5:15, \(.x) {
+    lda_fit <-
+      seededlda::textmodel_lda(dfm, k = .x, batch_size = 0.2, auto_iter = TRUE, verbose = FALSE)
+    tibble::tibble(
+      topics = .x,
+      Deveaud2014 = seededlda::divergence(lda_fit, regularize = FALSE),
+      WatanabeBaturo2023 = seededlda::divergence(lda_fit, min_size = .04, regularize = TRUE)
+    )
+  }) |>
+  purrr::list_rbind()
+```
+
+Deveaud2014という列は、[ldatuning](https://cran.r-project.org/package=ldatuning)で確認できる同名の値と同じ指標です。WatanabeBaturo2023という列は、Deveaud2014についてトピックの比率が閾値を下回るときにペナルティを加えるように修正した指標です。どちらも大きいほうがよい指標なので、基本的には値が大きくなっているトピック数を選びます。
+
+```{r}
+#| label: plot-divergence
+ggplot(divergence, aes(topics)) +
+  geom_line(aes(y = Deveaud2014, color = "Deveaud2014")) +
+  geom_line(aes(y = WatanabeBaturo2023, color = "WatanabeBaturo2023")) +
+  scale_x_continuous(breaks = 5:15) +
+  theme_bw() +
+  ylab("Divergence")
+```
+
+### Distributed LDA
+
+```{r}
+#| label: fit-lda
+#| cache: true
+lda_fit <-
+  seededlda::textmodel_lda(dfm, k = 9, batch_size = 0.2, verbose = FALSE)
+
+seededlda::sizes(lda_fit)
+```
+
+### トピックとその出現位置
+
+```{r}
+#| label: topic-position
+dat <- tbl |>
+  dplyr::transmute(
+    doc_id = doc_id,
+    topic = seededlda::topics(lda_fit)[as.character(doc_id)],
+  ) |>
+  dplyr::filter(!is.na(topic)) # dfmをつくった時点で単語を含まない文書はトピックの割り当てがないため、取り除く
+
+dat |>
+  ggplot(aes(x = doc_id)) +
+  geom_raster(aes(y = topic, fill = topic), show.legend = FALSE) +
+  theme_classic() +
+  theme(axis.text.x = element_blank())
+```
+
+### 単語の生起確率
+
+```{r}
+#| label: phi
+dat <-
+  t(lda_fit$phi) |>
+  dplyr::as_tibble(
+    .name_repair = ~ paste0("topic", seq_along(.)),
+    rownames = "word"
+  ) |>
+  tidyr::pivot_longer(starts_with("topic"), names_to = "topic", values_to = "phi") |>
+  dplyr::mutate(phi = signif(phi, 3)) |>
+  dplyr::slice_max(phi, n = 20, by = topic)
+
+reactable::reactable(
+  dat,
+  filterable = TRUE,
+  defaultColDef = reactable::colDef(
+    cell = reactablefmtr::data_bars(dat, text_position = "outside-base")
+  )
+)
+```
+
+## ナイーブベイズ（A.6.6-8）
+
+`quanteda.textmodels::textmodel_nb()`で分類する例です。ここでは、LexRankの節で抽出した`scores`の付いている文書を使って学習します。交差検証はしません。
+
+```{r}
+#| label: naive-bayes
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", # "名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_tfidf(scheme_tf = "prop")
+
+labels <- tbl |>
+  dplyr::mutate(section = factor(section, labels = c("上", "中", "下"))) |>
+  dplyr::filter(doc_id %in% quanteda::docnames(dfm)) |>
+  dplyr::pull(section, doc_id)
+
+nb_fit <- dfm |>
+  quanteda::dfm_subset(
+    quanteda::docnames(dfm) %in% names(scores)
+  ) |>
+  rlang::as_function(~ {
+    # dfmに格納すると文書の順番が入れ替わるので、labelsの順番をあわせなければならない
+    quanteda.textmodels::textmodel_nb(., labels[quanteda::docnames(.)])
+  })()
+
+dat <- tbl |>
+  dplyr::mutate(section = factor(section, labels = c("上", "中", "下"))) |>
+  dplyr::filter(doc_id %in% quanteda::docnames(dfm)) |>
+  dplyr::mutate(.pred = predict(nb_fit, dfm)[as.character(doc_id)]) # 予測値の順番をあわせる必要がある
+
+yardstick::conf_mat(dat, section, .pred) # 混同行列
+
+yardstick::accuracy(dat, section, .pred) # 正解率
+
+yardstick::f_meas(dat, section, .pred) # F値
+```
+
+精度よく分類することよりも、各カテゴリにおける「スコア」を見るのが目的でナイーブベイズを使っているはずなので、確認してみます。
+
+```{r}
+#| label: coef
+dat <-
+  coef(nb_fit) |>
+  dplyr::as_tibble(rownames = "token") |>
+  rlang::as_function(~ {
+    s <- t(coef(nb_fit)) |> colSums()
+    dplyr::mutate(.,
+      across(where(is.numeric), ~ . / s),
+      var = t(coef(nb_fit)) |> cov() |> diag(),
+      across(where(is.numeric), ~ signif(., 3))
+    )
+  })() |>
+  dplyr::slice_max(var, n = 50)
+
+reactable::reactable(
+  dat,
+  filterable = TRUE,
+  defaultColDef = reactable::colDef(
+    cell = reactablefmtr::data_bars(dat, text_position = "outside-base")
+  )
+)
+```
+
+---
+
+```{r}
+#| label: cleanup
+duckdb::dbDisconnect(con)
+duckdb::duckdb_shutdown(drv)
+
+sessioninfo::session_info(info = "packages")
+```

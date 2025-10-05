@@ -33,9 +33,15 @@ book:
     - ngram.qmd
     - weighting.qmd
     - collocation.qmd
+    - misc.qmd
     - sessioninfo.qmd
   appendices:
-    - misc.qmd
+    - cb-preproc-menu.qmd
+    - cb-words-menu-1.qmd
+    - cb-words-menu-2.qmd
+    - cb-words-menu-3.qmd
+    - cb-docs-menu.qmd
+    - cb-codes-menu.qmd
   comments:
     giscus:
       repo: paithiov909/textmining-ja

@@ -38,4 +38,12 @@ rsconnect/
 *.log
 
 /.quarto/
-/model/
+*_cache
+*_files
+!docs/**/*
+
+/tutorial_jp/**
+!/tutorial_jp/kokoro.duckdb
+!/tutorial_jp/kokoro.xls
+
+**/*.quarto_ipynb

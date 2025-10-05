@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://paithiov909.github.io/textmining-ja/index.html</loc>
-    <lastmod>2025-04-19T01:04:29.218Z</lastmod>
+    <lastmod>2025-10-05T01:28:08.729Z</lastmod>
   </url>
   <url>
     <loc>https://paithiov909.github.io/textmining-ja/intro.html</loc>
@@ -25,11 +25,35 @@
     <lastmod>2024-04-25T11:05:58.305Z</lastmod>
   </url>
   <url>
-    <loc>https://paithiov909.github.io/textmining-ja/sessioninfo.html</loc>
-    <lastmod>2025-04-21T18:31:33.407Z</lastmod>
+    <loc>https://paithiov909.github.io/textmining-ja/misc.html</loc>
+    <lastmod>2025-10-05T03:15:41.318Z</lastmod>
   </url>
   <url>
-    <loc>https://paithiov909.github.io/textmining-ja/misc.html</loc>
-    <lastmod>2025-04-19T00:22:10.166Z</lastmod>
+    <loc>https://paithiov909.github.io/textmining-ja/sessioninfo.html</loc>
+    <lastmod>2025-10-05T03:14:21.513Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-preproc-menu.html</loc>
+    <lastmod>2025-10-05T02:31:17.254Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-words-menu-1.html</loc>
+    <lastmod>2025-10-05T02:35:15.048Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-words-menu-2.html</loc>
+    <lastmod>2025-10-05T02:44:05.528Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-words-menu-3.html</loc>
+    <lastmod>2025-10-05T02:51:46.498Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-docs-menu.html</loc>
+    <lastmod>2025-10-05T03:09:05.580Z</lastmod>
+  </url>
+  <url>
+    <loc>https://paithiov909.github.io/textmining-ja/cb-codes-menu.html</loc>
+    <lastmod>2025-10-05T03:03:12.985Z</lastmod>
   </url>
 </urlset>

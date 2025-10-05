@@ -1,0 +1,380 @@
+# 抽出語メニュー2
+
+```{r}
+#| label: setup
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(duckdb)
+  library(arules)
+  library(arulesViz)
+  library(ca)
+})
+drv <- duckdb::duckdb()
+con <- duckdb::dbConnect(drv, dbdir = "tutorial_jp/kokoro.duckdb", read_only = TRUE)
+
+tbl <-
+  readxl::read_xls("tutorial_jp/kokoro.xls",
+    col_names = c("text", "section", "chapter", "label"),
+    skip = 1
+  ) |>
+  dplyr::mutate(
+    doc_id = factor(dplyr::row_number()),
+    dplyr::across(where(is.character), ~ audubon::strj_normalize(.))
+  ) |>
+  dplyr::filter(!gibasa::is_blank(text)) |>
+  dplyr::relocate(doc_id, text, section, label, chapter)
+```
+
+---
+
+## 関連語検索（A.5.6）
+
+### 関連語のリスト
+
+「確率差」や「確率比」については、いちおう計算はできた気がしますが、あっているのかよくわからないです。また、このやり方はそれなりの数の共起について計算をしなければならず、共起行列が大きくなると大変そうなため、あまりおすすめしません。
+
+```{r}
+#| label: calc-co-measures
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    section == "[1]上_先生と私",
+    pos %in% c(
+      "名詞", #"名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_weight(scheme = "boolean")
+
+dat <- dfm |>
+  quanteda::fcm() |>
+  tidytext::tidy() |>
+  dplyr::rename(target = document, co_occur = count) |>
+  rlang::as_function(~ {
+    col_sums <- quanteda::colSums(dfm)
+    dplyr::reframe(.,
+      term = term,
+      target_occur = col_sums[target],
+      term_occur = col_sums[term],
+      co_occur = co_occur,
+      .by = target
+    )
+  })() |>
+  dplyr::mutate(
+    p_x = target_occur / quanteda::ndoc(dfm),
+    p_y = term_occur / quanteda::ndoc(dfm),
+    p_xy = (co_occur / quanteda::ndoc(dfm)) / p_x,
+    differential = p_xy - p_y, # 確率差
+    lift = p_xy / p_y, # 確率比（リフト）,
+    jaccard = co_occur / (target_occur + term_occur - co_occur),
+    dice = 2 * co_occur / (target_occur + term_occur)
+  ) |>
+  dplyr::select(target, term, differential, lift, jaccard, dice)
+
+dat
+```
+
+### 共起ネットワーク
+
+「先生/名詞」と関連の強そうな語の共起を図示した例です。
+
+「先生/名詞」と共起している語のうち、出現回数が上位20位以内である語が`target`である共起を抽出したうえで、それらのなかからJaccard係数が大きい順に75個だけ残しています。「先生/名詞」という語そのものは図に含めていません。
+
+```{r}
+#| label: plot-co-measures
+#| cache: true
+dat |>
+  dplyr::inner_join(
+    dplyr::filter(dat, target == "先生/名詞") |> dplyr::select(term),
+    by = dplyr::join_by(target == term)
+  ) |>
+  dplyr::filter(target %in% names(quanteda::topfeatures(dfm, 20))) |>
+  dplyr::slice_max(jaccard, n = 75) |>
+  tidygraph::as_tbl_graph(directed = FALSE) |>
+  tidygraph::to_minimum_spanning_tree() |>
+  purrr::pluck("mst") |>
+  dplyr::mutate(
+    community = factor(tidygraph::group_leading_eigen())
+  ) |>
+  ggraph::ggraph(layout = "fr") +
+  ggraph::geom_edge_link(aes(width = sqrt(lift), alpha = jaccard)) +
+  ggraph::geom_node_point(aes(colour = community), show.legend = FALSE) +
+  ggraph::geom_node_text(aes(label = name, colour = community), repel = TRUE, show.legend = FALSE) +
+  ggraph::theme_graph()
+```
+
+### アソシエーション分析🍳
+
+英語だとこのメニューの名前は「Word Association」となっているので、ふつうにアソシエーション分析すればいいと思いました。
+
+arulesの`transactions`オブジェクトをつくるには、quantedaの`fcm`オブジェクトから変換すればOKです（arulesをアタッチしている必要があります）。
+
+```{r}
+#| label: create-transactions
+library(arules)
+library(arulesViz)
+
+dat <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", #"名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_weight(scheme = "boolean") |>
+  quanteda::fcm() |>
+  as("nMatrix") |>
+  as("transactions")
+```
+
+`arules::apriori()`でアソシエーションルールを抽出します。
+
+```{r}
+#| label: apriori
+#| cache: true
+rules <-
+  arules::apriori(
+    dat,
+    parameter = list(
+      support = 0.075,
+      confidence = 0.8,
+      minlen = 2,
+      maxlen = 2, # LHS+RHSの長さ。変えないほうがよい
+      maxtime = 5
+    ),
+    control = list(verbose = FALSE)
+  )
+```
+
+この形式のオブジェクトは`as(rules, "data.frame")`のようにしてデータフレームに変換できます。`tibble`にしたい場合には次のようにすればよいです。
+
+```{r}
+#| label: glimpse-rules
+as(rules, "data.frame") |>
+  dplyr::mutate(across(where(is.numeric), ~ signif(., digits = 3))) |>
+  tidyr::separate_wider_delim(rules, delim = " => ", names = c("lhs", "rhs")) |>
+  dplyr::arrange(desc(lift))
+```
+
+### 散布図🍳
+
+```{r}
+#| label: plot-rules-scatter
+plot(rules, engine = "html")
+```
+
+### バルーンプロット🍳
+
+```{r}
+#| label: plot-rules-grouped
+plot(rules, method = "grouped", engine = "html")
+```
+
+### ネットワーク図🍳
+
+```{r}
+#| label: plot-rules-graph
+plot(rules, method = "graph", engine = "html")
+```
+
+## 対応分析（A.5.7）
+
+### コレスポンデンス分析
+
+段落（`doc_id`）内の頻度で語彙を削ってから部（`section`）ごとに集計するために、ややめんどうなことをしています。
+
+```{r}
+#| label: create-dfm
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", "名詞B", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_trim(
+    min_termfreq = 75,
+    termfreq_type = "rank",
+    min_docfreq = 30,
+    docfreq_type = "count"
+  )
+```
+
+こうして`doc_id`ごとに集計した`dfm`オブジェクトを一度`tidytext::tidy()`して3つ組のデータフレームに戻し、`section`のラベルを結合します。このデータフレームをもう一度`tidytext::cast_dfm()`で疎行列に変換して、`quanteda.textmodels::textmodel_ca()`を使って対応分析にかけます。
+
+```{r}
+#| label: fit-ca
+#| cache: true
+ca_fit <- dfm |>
+  tidytext::tidy() |>
+  dplyr::left_join(
+    dplyr::select(tbl, doc_id, section),
+    by = dplyr::join_by(document == doc_id)
+  ) |>
+  tidytext::cast_dfm(section, term, count) |>
+  quanteda.textmodels::textmodel_ca(nd = 2, sparse = TRUE)
+```
+
+この関数は疎行列に対して計算をおこなえるため、比較的大きな行列を渡しても大丈夫そうです。
+
+### バイプロット
+
+caパッケージを読み込んでいると`plot()`でバイプロットを描けます。`factoextra::fviz_ca_biplot()`でも描けますが、見た目は`plot()`のとあまり変わらないです。
+
+```{r}
+#| label: plot-ca-1
+library(ca)
+dat <- plot(ca_fit)
+```
+
+### バイプロット（バブルプロット）
+
+ggplot2でバイプロットを描画するには、たとえば次のようにします。`ggrepel::geom_text_repel()`でラベルを出す語彙の選択の仕方は、もうすこし工夫したほうがよいかもしれないです。
+
+なお、このコードは[Correspondence Analysis visualization using ggplot | R-bloggers](https://www.r-bloggers.com/2019/08/correspondence-analysis-visualization-using-ggplot/)を参考にしました。
+
+```{r}
+#| label: plot-ca-2
+tf <- dfm |>
+  tidytext::tidy() |>
+  dplyr::left_join(
+    dplyr::select(tbl, doc_id, section),
+    by = dplyr::join_by(document == doc_id)
+  ) |>
+  dplyr::summarise(tf = sum(count), .by = term) |>
+  dplyr::pull(tf, term)
+
+# modified from https://www.r-bloggers.com/2019/08/correspondence-analysis-visualization-using-ggplot/
+make_ca_plot_df <- function(ca.plot.obj, row.lab = "Rows", col.lab = "Columns") {
+  tibble::tibble(
+    Label = c(
+      rownames(ca.plot.obj$rows),
+      rownames(ca.plot.obj$cols)
+    ),
+    Dim1 = c(
+      ca.plot.obj$rows[, 1],
+      ca.plot.obj$cols[, 1]
+    ),
+    Dim2 = c(
+      ca.plot.obj$rows[, 2],
+      ca.plot.obj$cols[, 2]
+    ),
+    Variable = c(
+      rep(row.lab, nrow(ca.plot.obj$rows)),
+      rep(col.lab, nrow(ca.plot.obj$cols))
+    )
+  )
+}
+dat <- dat |>
+  make_ca_plot_df(row.lab = "Construction", col.lab = "Medium") |>
+  dplyr::mutate(
+    Size = dplyr::if_else(Variable == "Construction", mean(tf), tf[Label])
+  )
+# 非ASCII文字のラベルに対してwarningを出さないようにする
+suppressWarnings({
+  ca_sum <- summary(ca_fit)
+  dim_var_percs <- ca_sum$scree[, "values2"]
+})
+
+dat |>
+  ggplot(aes(x = Dim1, y = Dim2, col = Variable, label = Label)) +
+  geom_vline(xintercept = 0, lty = "dashed", alpha = .5) +
+  geom_hline(yintercept = 0, lty = "dashed", alpha = .5) +
+  geom_jitter(aes(size = Size), alpha = .3, show.legend = FALSE) +
+  ggrepel::geom_label_repel(
+    data = \(x) dplyr::filter(x, Variable == "Construction"),
+    show.legend = FALSE
+  ) +
+  ggrepel::geom_text_repel(
+    data = \(x) dplyr::filter(x, Variable == "Medium", sqrt(Dim1^2 + Dim2^2) > 0.25),
+    show.legend = FALSE
+  ) +
+  scale_x_continuous(
+    limits = range(dat$Dim1) +
+      c(diff(range(dat$Dim1)) * -0.2, diff(range(dat$Dim1)) * 0.2)) +
+  scale_y_continuous(
+    limits = range(dat$Dim2) +
+      c(diff(range(dat$Dim2)) * -0.2, diff(range(dat$Dim2)) * 0.2)) +
+  scale_size_area(max_size = 16) +
+  labs(
+    x = paste0("Dimension 1 (", signif(dim_var_percs[1], 3), "%)"),
+    y = paste0("Dimension 2 (", signif(dim_var_percs[2], 3), "%)")
+  ) +
+  theme_classic()
+```
+
+## 多次元尺度構成法（A.5.8）
+
+### MDS・バブルプロット
+
+`MASS::isoMDS()`より`MASS::sammon()`のほうがたぶん見やすいです。
+
+```{r}
+#| label: mds-2d
+#| cache: true
+simil <- dfm |>
+  quanteda::dfm_weight(scheme = "boolean") |>
+  proxyC::simil(margin = 2, method = "jaccard")
+
+dat <- MASS::sammon(1 - simil, k = 2) |>
+  purrr::pluck("points")
+```
+
+```{r}
+#| label: plot-mds-2d
+dat <- dat |>
+  dplyr::as_tibble(
+    rownames = "label",
+    .name_repair = ~ c("Dim1", "Dim2")
+  ) |>
+  dplyr::mutate(
+    size = tf[label],
+    clust = (hclust(
+      proxyC::dist(dat, method = "euclidean") |> as.dist(),
+      method = "ward.D2"
+    ) |> cutree(k = 6))[label]
+  )
+
+dat |>
+  ggplot(aes(x = Dim1, y = Dim2, label = label, col = factor(clust))) +
+  geom_point(aes(size = size), alpha = .3, show.legend = FALSE) +
+  ggrepel::geom_text_repel(show.legend = FALSE) +
+  scale_size_area(max_size = 16) +
+  theme_classic()
+```
+
+---
+
+```{r}
+#| label: cleanup
+duckdb::dbDisconnect(con)
+duckdb::duckdb_shutdown(drv)
+
+sessioninfo::session_info(info = "packages")
+```

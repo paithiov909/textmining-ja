@@ -1,23 +1,53 @@
 Package: textminingja
 Title: What the Package Does (One Line, Title Case)
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person("Akiru", "Kato", , "paithiov909@gmail.com", role = c("aut", "cre"))
 Description: This is a dummy description file for package installation.
 License: MIT + file LICENSE
 Suggests:
+    arules,
+    arulesViz,
     audubon,
+    aweSOM,
+    ca,
+    cluster,
+    crosstable,
+    dbplyr,
+    dtplyr,
+    duckdb,
+    factoextra,
+    fastICA,
+    gghighlight,
+    ggpubr,
     ggplot2,
+    ggraph,
+    ggrepel,
     gibasa,
     here,
+    kohonen,
+    legendry,
+    lobstr,
+    LSX,
+    moments,
     microbenchmark,
+    patchwork,
+    proxyC,
     quanteda,
+    quanteda.textmodels,
+    quanteda.textstats,
     reactable,
+    reactablefmtr,
+    seededlda,
     servr,
     sessioninfo,
+    skmeans,
+    tidygraph,
     tidylo,
+    tidyr,
     tidytext,
     udpipe,
-    withr
+    withr,
+    yardstick
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

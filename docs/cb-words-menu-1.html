@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
+
+<title>Appendix B — 抽出語メニュー1 – RとMeCabによる日本語テキストマイニングの前処理</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./cb-words-menu-2.html" rel="next">
+<link href="./cb-preproc-menu.html" rel="prev">
+<link href="./favicon.ico" rel="icon">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9b100948f3b98b6ce090cf5806fdf877.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+<script src="site_libs/react-18.2.0/react.min.js"></script>
+<script src="site_libs/react-18.2.0/react-dom.min.js"></script>
+<script src="site_libs/reactwidget-2.0.0/react-tools.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/reactable-0.4.4/reactable.css" rel="stylesheet">
+<script src="site_libs/reactable-binding-0.4.4/reactable.js"></script>
+
+
+<link rel="stylesheet" href="style.css">
+<meta property="og:title" content="Appendix B — 抽出語メニュー1 – RとMeCabによる日本語テキストマイニングの前処理">
+<meta property="og:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
+<meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cb-words-menu-1_files/figure-html/plot-tf-dist-1.png">
+<meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
+<meta property="og:locale" content="ja">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="Appendix B — 抽出語メニュー1 – RとMeCabによる日本語テキストマイニングの前処理">
+<meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
+<meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cb-words-menu-1_files/figure-html/plot-tf-dist-1.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cb-preproc-menu.html">Appendices</a></li><li class="breadcrumb-item"><a href="./cb-words-menu-1.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">抽出語メニュー1</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">RとMeCabによる日本語テキストマイニングの前処理</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/paithiov909/textmining-ja" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.facebook.com/sharer/sharer.php?u=|url|">
+              <i class="bi bi-facebook pe-1"></i>
+            Facebook
+            </a>
+          </li>
+      </ul>
+    </div>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">はじめに</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">gibasaの基本的な使い方</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./dtm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">トークンの集計と文書単語行列への整形</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ngram.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">N-gram</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./weighting.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">単語頻度の重みづけ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./collocation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./misc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">gibasaのセットアップ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sessioninfo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">セッション情報</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-preproc-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">前処理メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">抽出語メニュー1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">抽出語メニュー2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">抽出語メニュー3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-docs-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">文書メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-codes-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">コーディングメニュー</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#抽出語リストa.5.1" id="toc-抽出語リストa.5.1" class="nav-link active" data-scroll-target="#抽出語リストa.5.1"><span class="header-section-number">B.1</span> 抽出語リスト（A.5.1）</a></li>
+  <li><a href="#出現回数の分布a.5.2" id="toc-出現回数の分布a.5.2" class="nav-link" data-scroll-target="#出現回数の分布a.5.2"><span class="header-section-number">B.2</span> 出現回数の分布（A.5.2）</a>
+  <ul class="collapse">
+  <li><a href="#度数分布表" id="toc-度数分布表" class="nav-link" data-scroll-target="#度数分布表"><span class="header-section-number">B.2.1</span> 度数分布表</a></li>
+  <li><a href="#折れ線グラフ" id="toc-折れ線グラフ" class="nav-link" data-scroll-target="#折れ線グラフ"><span class="header-section-number">B.2.2</span> 折れ線グラフ</a></li>
+  </ul></li>
+  <li><a href="#文書数の分布a.5.3" id="toc-文書数の分布a.5.3" class="nav-link" data-scroll-target="#文書数の分布a.5.3"><span class="header-section-number">B.3</span> 文書数の分布（A.5.3）</a>
+  <ul class="collapse">
+  <li><a href="#ヒストグラム" id="toc-ヒストグラム" class="nav-link" data-scroll-target="#ヒストグラム"><span class="header-section-number">B.3.1</span> ヒストグラム🍳</a></li>
+  <li><a href="#zipfs-law" id="toc-zipfs-law" class="nav-link" data-scroll-target="#zipfs-law"><span class="header-section-number">B.3.2</span> Zipf’s law🍳</a></li>
+  </ul></li>
+  <li><a href="#出現回数文書数のプロットa.5.4" id="toc-出現回数文書数のプロットa.5.4" class="nav-link" data-scroll-target="#出現回数文書数のプロットa.5.4"><span class="header-section-number">B.4</span> 出現回数・文書数のプロット（A.5.4）</a></li>
+  <li><a href="#kwica.5.5" id="toc-kwica.5.5" class="nav-link" data-scroll-target="#kwica.5.5"><span class="header-section-number">B.5</span> KWIC（A.5.5）</a>
+  <ul class="collapse">
+  <li><a href="#コンコーダンス" id="toc-コンコーダンス" class="nav-link" data-scroll-target="#コンコーダンス"><span class="header-section-number">B.5.1</span> コンコーダンス</a></li>
+  <li><a href="#コロケーション" id="toc-コロケーション" class="nav-link" data-scroll-target="#コロケーション"><span class="header-section-number">B.5.2</span> コロケーション</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./cb-preproc-menu.html">Appendices</a></li><li class="breadcrumb-item"><a href="./cb-words-menu-1.html"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">抽出語メニュー1</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Appendix B — 抽出語メニュー1</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(duckdb)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>drv <span class="ot">&lt;-</span> duckdb<span class="sc">::</span><span class="fu">duckdb</span>()</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> duckdb<span class="sc">::</span><span class="fu">dbConnect</span>(drv, <span class="at">dbdir =</span> <span class="st">"tutorial_jp/kokoro.duckdb"</span>, <span class="at">read_only =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>tbl <span class="ot">&lt;-</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  readxl<span class="sc">::</span><span class="fu">read_xls</span>(<span class="st">"tutorial_jp/kokoro.xls"</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"text"</span>, <span class="st">"section"</span>, <span class="st">"chapter"</span>, <span class="st">"label"</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">skip =</span> <span class="dv">1</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">doc_id =</span> <span class="fu">factor</span>(dplyr<span class="sc">::</span><span class="fu">row_number</span>()),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> audubon<span class="sc">::</span><span class="fu">strj_normalize</span>(.))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span>gibasa<span class="sc">::</span><span class="fu">is_blank</span>(text)) <span class="sc">|&gt;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">relocate</span>(doc_id, text, section, label, chapter)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+<section id="抽出語リストa.5.1" class="level2" data-number="B.1">
+<h2 data-number="B.1" class="anchored" data-anchor-id="抽出語リストa.5.1"><span class="header-section-number">B.1</span> 抽出語リスト（A.5.1）</h2>
+<p>活用語をクリックするとそれぞれの活用の出現頻度も見れるUIについては、Rだとどうすれば実現できるかわからないです……。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>pos <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"その他"</span>, <span class="st">"名詞B"</span>, <span class="st">"動詞B"</span>, <span class="st">"形容詞B"</span>, <span class="st">"副詞B"</span>, <span class="st">"否定助動詞"</span>, <span class="st">"形容詞（非自立）"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(token, pos) <span class="sc">|&gt;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(n <span class="sc">&gt;=</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>()</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>reactable<span class="sc">::</span><span class="fu">reactable</span>(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  dat,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">filterable =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">defaultColDef =</span> reactable<span class="sc">::</span><span class="fu">colDef</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">cell =</span> reactablefmtr<span class="sc">::</span><span class="fu">data_bars</span>(dat, <span class="at">text_position =</span> <span class="st">"outside-base"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="reactable html-widget html-fill-item" id="htmlwidget-a54d01ebb921d1b91cda" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a54d01ebb921d1b91cda">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"token":["見","出","妻","今","人","母","言葉","思っ","お嬢さん","K","自分","心","先生","二人","聞い","考え","顔","父","前","眼","奥さん"],"pos":["動詞","動詞","名詞C","副詞可能","名詞C","名詞C","名詞","動詞","名詞","未知語","名詞","名詞C","名詞","タグ","動詞","動詞","名詞C","名詞C","副詞可能","名詞C","名詞"],"n":[157,140,105,140,176,170,127,109,168,411,264,103,595,115,110,107,130,269,169,123,388]},"columns":[{"id":"token","name":"token","type":"character","cell":["見","出","妻","今","人","母","言葉","思っ","お嬢さん","K","自分","心","先生","二人","聞い","考え","顔","父","前","眼","奥さん"]},{"id":"pos","name":"pos","type":"character","cell":["動詞","動詞","名詞C","副詞可能","名詞C","名詞C","名詞","動詞","名詞","未知語","名詞","名詞C","名詞","タグ","動詞","動詞","名詞C","名詞C","副詞可能","名詞C","名詞"]},{"id":"n","name":"n","type":"numeric","cell":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 157",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"26.3865546218487%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 140",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"23.5294117647059%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 105",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"17.6470588235294%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 140",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"23.5294117647059%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 176",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"29.5798319327731%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 170",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"28.5714285714286%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 127",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"21.344537815126%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 109",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"18.3193277310924%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 168",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"28.2352941176471%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 411",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"69.0756302521008%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 264",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"44.3697478991597%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 103",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"17.3109243697479%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 595",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"100%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 115",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"19.327731092437%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 110",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"18.4873949579832%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 107",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"17.9831932773109%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 130",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"21.8487394957983%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 269",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"45.2100840336134%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 169",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"28.4033613445378%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 123",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"20.672268907563%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]},{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center","color":"black","fontSize":null,"fontWeight":"normal"}},"children":[" 388",{"name":"div","attribs":{"style":{"flexGrow":1,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","marginLeft":"6px","background":"#EEEEEE"}},"children":[{"name":"div","attribs":{"style":{"display":"flex","alignItems":"center"}},"children":[{"name":"div","attribs":{"style":{"boxShadow":null,"borderTopLeftRadius":"0px","borderBottomLeftRadius":"0px","borderTopRightRadius":"0px","borderBottomRightRadius":"0px","background":"#15607AFF","backgroundImage":null,"border":"  ","color":"black","width":"65.2100840336134%","height":18,"transition":"width 1s ease","display":"flex","alignItems":"center"}},"children":[""]}]}]}]}]}],"filterable":true,"dataKey":"657c11f3dc9f19bdfae16bc89f3e1b93"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="出現回数の分布a.5.2" class="level2" data-number="B.2">
+<h2 data-number="B.2" class="anchored" data-anchor-id="出現回数の分布a.5.2"><span class="header-section-number">B.2</span> 出現回数の分布（A.5.2）</h2>
+<section id="度数分布表" class="level3" data-number="B.2.1">
+<h3 data-number="B.2.1" class="anchored" data-anchor-id="度数分布表"><span class="header-section-number">B.2.1</span> 度数分布表</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>pos <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"その他"</span>, <span class="st">"名詞B"</span>, <span class="st">"動詞B"</span>, <span class="st">"形容詞B"</span>, <span class="st">"副詞B"</span>, <span class="st">"否定助動詞"</span>, <span class="st">"形容詞（非自立）"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(token, pos) <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">degree =</span> <span class="fu">sum</span>(n, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.by =</span> n</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop =</span> degree <span class="sc">/</span> <span class="fu">sum</span>(degree, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(n) <span class="sc">|&gt;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">compute</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">cum_degree =</span> <span class="fu">cumsum</span>(degree),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">cum_prop =</span> <span class="fu">cumsum</span>(prop)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>()</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>dat</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 98 × 5</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        n degree   prop cum_degree cum_prop</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1     1   2938 0.111        2938    0.111</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2     2   1934 0.0729       4872    0.184</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3     3   1506 0.0568       6378    0.240</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4     4   1248 0.0470       7626    0.287</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5     5    955 0.0360       8581    0.323</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6     6    768 0.0289       9349    0.352</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7     7    868 0.0327      10217    0.385</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8     8    592 0.0223      10809    0.407</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9     9    531 0.0200      11340    0.427</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10    10    570 0.0215      11910    0.449</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 88 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="折れ線グラフ" class="level3" data-number="B.2.2">
+<h3 data-number="B.2.2" class="anchored" data-anchor-id="折れ線グラフ"><span class="header-section-number">B.2.2</span> 折れ線グラフ</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(cum_prop <span class="sc">&lt;</span> .<span class="dv">8</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n, <span class="at">y =</span> degree)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"出現回数"</span>, <span class="at">y =</span> <span class="st">"度数"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-words-menu-1_files/figure-html/plot-tf-dist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="文書数の分布a.5.3" class="level2" data-number="B.3">
+<h2 data-number="B.3" class="anchored" data-anchor-id="文書数の分布a.5.3"><span class="header-section-number">B.3</span> 文書数の分布（A.5.3）</h2>
+<section id="ヒストグラム" class="level3" data-number="B.3.1">
+<h3 data-number="B.3.1" class="anchored" data-anchor-id="ヒストグラム"><span class="header-section-number">B.3.1</span> ヒストグラム🍳</h3>
+<p>段落（<code>doc_id</code>）ではなく、章ラベル（<code>label</code>）でグルーピングして集計しています。<code>docfreq</code>について上でやったのと同様に処理すれば度数分布表にできます。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">token =</span> <span class="fu">paste</span>(token, pos, <span class="at">sep =</span> <span class="st">"/"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(label, token) <span class="sc">|&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">cast_dfm</span>(label, token, n) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  quanteda.textstats<span class="sc">::</span><span class="fu">textstat_frequency</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>dat</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 7,140 × 5</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    feature   frequency  rank docfreq group</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 の/その他      5801     1     110 all  </span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 た/その他      5396     2     110 all  </span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 。/その他      4648     3     110 all  </span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 は/その他      4148     4     110 all  </span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 に/その他      4104     5     110 all  </span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 、/その他      3646     6     110 all  </span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 て/その他      3403     7     110 all  </span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 を/その他      3216     8     110 all  </span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 私/その他      2694     9     110 all  </span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 が/その他      2194    10     110 all  </span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 7,130 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>度数分布をグラフで確認したいだけなら、このかたちからヒストグラムを描いたほうが楽です。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> docfreq)) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_sqrt</span>() <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"文書数"</span>, <span class="at">y =</span> <span class="st">"度数"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-words-menu-1_files/figure-html/plot-df-hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="zipfs-law" class="level3" data-number="B.3.2">
+<h3 data-number="B.3.2" class="anchored" data-anchor-id="zipfs-law"><span class="header-section-number">B.3.2</span> Zipf’s law🍳</h3>
+<p>よく見かけるようなグラフです。<a href="https://nlp100.github.io/ja/ch04.html#39-zipf%E3%81%AE%E6%B3%95%E5%89%87">言語処理100本ノック 2020</a>の39はこれにあたります。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> rank, <span class="at">y =</span> frequency)) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_log10</span>() <span class="sc">+</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-words-menu-1_files/figure-html/plot-zipf-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="出現回数文書数のプロットa.5.4" class="level2" data-number="B.4">
+<h2 data-number="B.4" class="anchored" data-anchor-id="出現回数文書数のプロットa.5.4"><span class="header-section-number">B.4</span> 出現回数・文書数のプロット（A.5.4）</h2>
+<p>図 A.25のようなグラフの例です。ggplot2で<code>graphics::identify()</code>のようなことをするやり方がわからなかったので、適当に条件を指定してgghighlightでハイライトしています。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> frequency, <span class="at">y =</span> docfreq)) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  gghighlight<span class="sc">::</span><span class="fu">gghighlight</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    frequency <span class="sc">&gt;</span> <span class="dv">100</span> <span class="sc">&amp;</span> docfreq <span class="sc">&lt;</span> <span class="dv">60</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ggrepel<span class="sc">::</span><span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> feature)) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"出現回数"</span>, <span class="at">y =</span> <span class="st">"文書数"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="cb-words-menu-1_files/figure-html/plot-tf-df-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="kwica.5.5" class="level2" data-number="B.5">
+<h2 data-number="B.5" class="anchored" data-anchor-id="kwica.5.5"><span class="header-section-number">B.5</span> KWIC（A.5.5）</h2>
+<section id="コンコーダンス" class="level3" data-number="B.5.1">
+<h3 data-number="B.5.1" class="anchored" data-anchor-id="コンコーダンス"><span class="header-section-number">B.5.1</span> コンコーダンス</h3>
+<p>コンコーダンスは<code>quanteda::kwic()</code>で確認できます。もっとも、KH Coderの提供するコンコーダンス検索やコロケーション統計のほうが明らかにリッチなのと、Rのコンソールは日本語の長めの文字列を表示するのにあまり向いていないというのがあるので、このあたりの機能が必要ならKH Coderを利用したほうがよいでしょう。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">tbl</span>(con, <span class="st">"tokens"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(section <span class="sc">==</span> <span class="st">"[1]上_先生と私"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(label, token) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">collect</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">reframe</span>(<span class="at">token =</span> <span class="fu">list</span>(token), <span class="at">.by =</span> label) <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">deframe</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">as.tokens</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_select</span>(<span class="st">"[[:punct:]]"</span>, <span class="at">selection =</span> <span class="st">"remove"</span>, <span class="at">valuetype =</span> <span class="st">"regex"</span>, <span class="at">padding =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">tokens_select</span>(<span class="st">"^[</span><span class="sc">\\</span><span class="st">p{Hiragana}]{1,2}$"</span>, <span class="at">selection =</span> <span class="st">"remove"</span>, <span class="at">valuetype =</span> <span class="st">"regex"</span>, <span class="at">padding =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>quanteda<span class="sc">::</span><span class="fu">kwic</span>(dat, <span class="at">pattern =</span> <span class="st">"^向[いくけこ]$"</span>, <span class="at">window =</span> <span class="dv">5</span>, <span class="at">valuetype =</span> <span class="st">"regex"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Keyword-in-context with 18 matches.                                                                    </span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [上・二, 183]            海 方 | 向い |  立っ                  </span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [上・二, 527]            沖 方 | 向い |  行っ それから 引き返し</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [上・七, 740]            外 方 | 向い |  今 手                 </span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [上・八, 622]            私 方 | 向い |  私                    </span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [上・八, 697]            私 方 | 向い |  子供                  </span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十二, 568]        花 そちら | 向い |  眼 峙                 </span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十二, 628]          方角 足 | 向け |  それから 私           </span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十四, 247]            庭 方 | 向い |  庭 この間             </span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十五, 661]      奥さん 差し | 向い |  話 なけれ             </span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十六, 265]            眼 私 | 向け |  そうして 客 来        </span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    [上・十七, 447]    世の中 どっち | 向い |  面白                  </span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・二十五, 557]        世間 背中 | 向け |  人 苦味               </span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・二十六, 480]                  | 向い |  歩い やがて 若葉      </span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・三十三, 686]            庭 方 | 向い |  澄まし 烟草           </span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・三十三, 771] 先生 ちょっと 顔 | 向け | 直し 奥さん 言葉       </span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・三十四, 415]               下 | 向い |  私 父                 </span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・三十四, 436]   突然 奥さん 方 | 向い |  静 お前               </span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [上・三十五, 425]            庭 方 | 向い |  笑っ しかし</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>なお、上の例ではひらがな1～2文字の語をpaddingしつつ除外したので、一部の助詞などは表示されていません（それぞれの窓のなかでトークンとして数えられてはいます）。</p>
+</section>
+<section id="コロケーション" class="level3" data-number="B.5.2">
+<h3 data-number="B.5.2" class="anchored" data-anchor-id="コロケーション"><span class="header-section-number">B.5.2</span> コロケーション</h3>
+<p>たとえば、前後5個のwindow内のコロケーション（nodeを含めて11語の窓ということ）の合計については次のように確認できます。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">fcm</span>(<span class="at">context =</span> <span class="st">"window"</span>, <span class="at">window =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  tidytext<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">node =</span> document, <span class="at">term =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(node <span class="sc">==</span> <span class="st">"向い"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(count, <span class="at">n =</span> <span class="dv">10</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 30 × 3</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    node  term     count</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 向い  庭           4</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 向い  奥さん       2</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 向い  立っ         1</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 向い  眼           1</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 向い  やがて       1</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 向い  沖           1</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 向い  それから     1</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 向い  引き返し     1</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 向い  烟草         1</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 向い  しかし       1</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 20 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>「左合計」や「右合計」については、たとえば次のようにして確認できます。paddingしなければ<code>tidyr::separate_wider_delim()</code>で展開して位置ごとに集計することもできそうです。</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dat <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  quanteda<span class="sc">::</span><span class="fu">kwic</span>(<span class="at">pattern =</span> <span class="st">"^向[いくけこ]$"</span>, <span class="at">window =</span> <span class="dv">5</span>, <span class="at">valuetype =</span> <span class="st">"regex"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(docname, keyword, pre, post) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(pre, post),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"window"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"term"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_transform =</span> <span class="sc">~</span> <span class="fu">strsplit</span>(., <span class="st">" "</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unnest</span>(term) <span class="sc">|&gt;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(window, term, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 57 × 3</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    window term           n</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;  &lt;chr&gt;      &lt;int&gt;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1 post   ""            17</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2 pre    ""            14</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3 pre    "方"           9</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4 post   "私"           3</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5 pre    "庭"           3</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6 pre    "私"           3</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7 post   "それから"     2</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8 pre    "奥さん"       2</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9 post   "お前"         1</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 post   "この間"       1</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>duckdb<span class="sc">::</span><span class="fu">dbDisconnect</span>(con)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>duckdb<span class="sc">::</span><span class="fu">duckdb_shutdown</span>(drv)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>sessioninfo<span class="sc">::</span><span class="fu">session_info</span>(<span class="at">info =</span> <span class="st">"packages"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ═ Session info ═══════════════════════════════════════════════════════════════</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  package            * version  date (UTC) lib source</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  audubon              0.5.2    2024-04-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  blob                 1.2.4    2023-03-17 [1] RSPM</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cachem               1.1.0    2024-05-16 [1] RSPM</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger           1.1.0    2016-07-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli                  3.6.5    2025-04-23 [1] RSPM</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  codetools            0.2-20   2024-03-31 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  crosstalk            1.2.2    2025-08-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  curl                 7.0.0    2025-08-19 [1] RSPM</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI                * 1.2.3    2024-06-02 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr               2.5.1    2025-09-10 [1] RSPM</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest               0.6.37   2024-08-19 [1] RSPM</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr                1.1.4    2023-11-17 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  duckdb             * 1.4.0    2025-09-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate             1.0.5    2025-08-27 [1] RSPM</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver               2.1.2    2024-05-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap              1.2.0    2024-05-15 [1] RSPM</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmatch            1.1-6    2024-12-23 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics             0.1.4    2025-05-09 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gghighlight          0.5.0    2025-06-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2            * 4.0.0    2025-09-11 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggrepel              0.9.6    2024-09-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gibasa               1.1.2    2025-02-16 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue                 1.8.0    2024-09-30 [1] RSPM</span></span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable               0.3.6    2024-10-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools            0.5.8.1  2024-04-04 [1] RSPM</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets          1.6.4    2023-12-06 [1] RSPM</span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janeaustenr          1.0.0    2022-08-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite             2.0.0    2025-03-27 [1] RSPM</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr                1.50     2025-03-16 [1] RSPM</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling             0.4.3    2023-08-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lattice              0.22-7   2025-04-02 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle            1.0.4    2023-11-07 [1] RSPM</span></span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr             2.0.4    2025-09-12 [1] RSPM</span></span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Matrix               1.7-3    2025-03-11 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  memoise              2.0.1    2021-11-26 [1] RSPM</span></span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  mgcv                 1.9-3    2025-04-04 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  nlme                 3.1-168  2025-03-31 [2] CRAN (R 4.5.1)</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  nsyllable            1.0.1    2022-02-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar               1.11.1   2025-09-17 [1] RSPM</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig            2.0.3    2019-09-22 [1] RSPM</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr                1.1.0    2025-07-10 [1] RSPM</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda             4.3.1    2025-07-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda.textstats   0.97.2   2024-09-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.cache              0.17.0   2025-05-02 [1] RSPM</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3          1.8.2    2022-06-13 [1] RSPM</span></span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.oo                 1.27.1   2025-05-02 [1] RSPM</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.utils              2.13.0   2025-02-24 [1] RSPM</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6                   2.6.1    2025-02-15 [1] RSPM</span></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RColorBrewer         1.1-3    2022-04-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp                 1.1.0    2025-07-02 [1] RSPM</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RcppParallel         5.1.11-1 2025-08-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reactable            0.4.4    2023-03-12 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reactablefmtr        2.0.0    2022-03-16 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reactR               0.6.1    2024-09-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl               1.4.5    2025-03-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang                1.1.6    2025-04-11 [1] RSPM</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown            2.30     2025-09-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  S7                   0.2.0    2024-11-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sass                 0.4.10   2025-04-11 [1] RSPM</span></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales               1.4.0    2025-04-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo          1.2.3    2025-02-05 [1] RSPM</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  SnowballC            0.7.1    2023-04-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stopwords            2.3      2021-10-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi              1.8.7    2025-03-27 [1] RSPM</span></span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringr              1.5.2    2025-09-08 [1] RSPM</span></span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  styler               1.10.3   2024-04-07 [1] RSPM</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble               3.3.0    2025-06-08 [1] RSPM</span></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr                1.3.1    2024-01-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect           1.2.1    2024-03-11 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidytext             0.4.3    2025-07-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tokenizers           0.3.0    2022-12-22 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8                 1.2.6    2025-06-08 [1] RSPM</span></span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  V8                   8.0.0    2025-09-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs                0.6.5    2023-12-01 [1] RSPM</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr                3.0.2    2024-10-28 [1] RSPM</span></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun                 0.53     2025-08-19 [1] RSPM</span></span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml                 2.3.10   2024-07-26 [1] RSPM</span></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  * ── Packages attached to the search path.</span></span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/paithiov909\.github\.io\/textmining-ja");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "paithiov909/textmining-ja";
+    script.dataset.repoId = "R_kgDOGMY_Ng";
+    script.dataset.category = "Announcements";
+    script.dataset.categoryId = "DIC_kwDOGMY_Ns4Cdg6F";
+    script.dataset.mapping = "pathname";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "top";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "ja";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./cb-preproc-menu.html" class="pagination-link" aria-label="前処理メニュー">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">前処理メニュー</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./cb-words-menu-2.html" class="pagination-link" aria-label="抽出語メニュー2">
+        <span class="nav-page-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">抽出語メニュー2</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

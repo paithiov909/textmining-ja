@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.27">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="description" content="Rによる自然言語処理・テキスト分析の練習">
 
-<title>Appendix A — gibasa・MeCabの使い方 – RとMeCabによる日本語テキストマイニングの前処理</title>
+<title>6&nbsp; gibasaのセットアップ – RとMeCabによる日本語テキストマイニングの前処理</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -66,18 +66,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./sessioninfo.html" rel="prev">
+<link href="./sessioninfo.html" rel="next">
+<link href="./collocation.html" rel="prev">
 <link href="./favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-985aa47af68dae11cd4d235c71fb941e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0b6a564b385910f135abf41c6d48502a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-9b100948f3b98b6ce090cf5806fdf877.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -108,14 +110,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <link rel="stylesheet" href="style.css">
-<meta property="og:title" content="Appendix A — gibasa・MeCabの使い方 – RとMeCabによる日本語テキストマイニングの前処理">
+<meta property="og:title" content="6&nbsp; gibasaのセットアップ – RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta property="og:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta property="og:site_name" content="RとMeCabによる日本語テキストマイニングの前処理">
 <meta property="og:locale" content="ja">
 <meta property="og:image:height" content="423">
 <meta property="og:image:width" content="423">
-<meta name="twitter:title" content="Appendix A — gibasa・MeCabの使い方 – RとMeCabによる日本語テキストマイニングの前処理">
+<meta name="twitter:title" content="6&nbsp; gibasaのセットアップ – RとMeCabによる日本語テキストマイニングの前処理">
 <meta name="twitter:description" content="gibasaやその他のRパッケージを使って、RMeCabでできるようなテキストマイニングの前処理をより見通しよくおこなうやり方を紹介します">
 <meta name="twitter:image" content="https://paithiov909.github.io/textmining-ja/cover-s.png">
 <meta name="twitter:card" content="summary">
@@ -132,7 +134,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./misc.html">Appendices</a></li><li class="breadcrumb-item"><a href="./misc.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">gibasa・MeCabの使い方</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./misc.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">gibasaのセットアップ</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -145,7 +147,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">RとMeCabによる日本語テキストマイニングの前処理</a> 
         <div class="sidebar-tools-main">
@@ -215,8 +219,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./misc.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">gibasaのセットアップ</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./sessioninfo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">セッション情報</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">セッション情報</span></span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
@@ -230,8 +240,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./misc.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">gibasa・MeCabの使い方</span></span></a>
+  <a href="./cb-preproc-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">前処理メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">抽出語メニュー1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">抽出語メニュー2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-words-menu-3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">抽出語メニュー3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-docs-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">E</span>&nbsp; <span class="chapter-title">文書メニュー</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cb-codes-menu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">F</span>&nbsp; <span class="chapter-title">コーディングメニュー</span></span></a>
   </div>
 </li>
       </ul>
@@ -246,18 +286,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#posit-cloud旧rstudio-cloudでのgibasaの使い方" id="toc-posit-cloud旧rstudio-cloudでのgibasaの使い方" class="nav-link active" data-scroll-target="#posit-cloud旧rstudio-cloudでのgibasaの使い方"><span class="header-section-number">A.1</span> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
+  <li><a href="#posit-cloud旧rstudio-cloudでのgibasaの使い方" id="toc-posit-cloud旧rstudio-cloudでのgibasaの使い方" class="nav-link active" data-scroll-target="#posit-cloud旧rstudio-cloudでのgibasaの使い方"><span class="header-section-number">6.1</span> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</a>
   <ul class="collapse">
-  <li><a href="#辞書ipadic-unidic-liteの配置" id="toc-辞書ipadic-unidic-liteの配置" class="nav-link" data-scroll-target="#辞書ipadic-unidic-liteの配置"><span class="header-section-number">A.1.1</span> 辞書（ipadic, unidic-lite）の配置</a></li>
-  <li><a href="#gibasaのインストール" id="toc-gibasaのインストール" class="nav-link" data-scroll-target="#gibasaのインストール"><span class="header-section-number">A.1.2</span> gibasaのインストール</a></li>
-  <li><a href="#試すには" id="toc-試すには" class="nav-link" data-scroll-target="#試すには"><span class="header-section-number">A.1.3</span> 試すには</a></li>
+  <li><a href="#辞書ipadic-unidic-liteの配置" id="toc-辞書ipadic-unidic-liteの配置" class="nav-link" data-scroll-target="#辞書ipadic-unidic-liteの配置"><span class="header-section-number">6.1.1</span> 辞書（ipadic, unidic-lite）の配置</a></li>
+  <li><a href="#gibasaのインストール" id="toc-gibasaのインストール" class="nav-link" data-scroll-target="#gibasaのインストール"><span class="header-section-number">6.1.2</span> gibasaのインストール</a></li>
+  <li><a href="#試すには" id="toc-試すには" class="nav-link" data-scroll-target="#試すには"><span class="header-section-number">6.1.3</span> 試すには</a></li>
   </ul></li>
-  <li><a href="#mecabの辞書をビルドするには" id="toc-mecabの辞書をビルドするには" class="nav-link" data-scroll-target="#mecabの辞書をビルドするには"><span class="header-section-number">A.2</span> MeCabの辞書をビルドするには</a>
+  <li><a href="#mecabの辞書をビルドするには" id="toc-mecabの辞書をビルドするには" class="nav-link" data-scroll-target="#mecabの辞書をビルドするには"><span class="header-section-number">6.2</span> MeCabの辞書をビルドするには</a>
   <ul class="collapse">
-  <li><a href="#必要な品詞情報を確認する" id="toc-必要な品詞情報を確認する" class="nav-link" data-scroll-target="#必要な品詞情報を確認する"><span class="header-section-number">A.2.1</span> 必要な品詞情報を確認する</a></li>
-  <li><a href="#ユーザー辞書のビルド" id="toc-ユーザー辞書のビルド" class="nav-link" data-scroll-target="#ユーザー辞書のビルド"><span class="header-section-number">A.2.2</span> ユーザー辞書のビルド</a></li>
-  <li><a href="#生起コストを調整する" id="toc-生起コストを調整する" class="nav-link" data-scroll-target="#生起コストを調整する"><span class="header-section-number">A.2.3</span> 生起コストを調整する</a></li>
-  <li><a href="#システム辞書のビルド" id="toc-システム辞書のビルド" class="nav-link" data-scroll-target="#システム辞書のビルド"><span class="header-section-number">A.2.4</span> システム辞書のビルド</a></li>
+  <li><a href="#必要な品詞情報を確認する" id="toc-必要な品詞情報を確認する" class="nav-link" data-scroll-target="#必要な品詞情報を確認する"><span class="header-section-number">6.2.1</span> 必要な品詞情報を確認する</a></li>
+  <li><a href="#ユーザー辞書のビルド" id="toc-ユーザー辞書のビルド" class="nav-link" data-scroll-target="#ユーザー辞書のビルド"><span class="header-section-number">6.2.2</span> ユーザー辞書のビルド</a></li>
+  <li><a href="#生起コストを調整する" id="toc-生起コストを調整する" class="nav-link" data-scroll-target="#生起コストを調整する"><span class="header-section-number">6.2.3</span> 生起コストを調整する</a></li>
+  <li><a href="#システム辞書のビルド" id="toc-システム辞書のビルド" class="nav-link" data-scroll-target="#システム辞書のビルド"><span class="header-section-number">6.2.4</span> システム辞書のビルド</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -265,9 +305,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./misc.html">Appendices</a></li><li class="breadcrumb-item"><a href="./misc.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">gibasa・MeCabの使い方</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span id="misc" class="quarto-section-identifier">Appendix A — gibasa・MeCabの使い方</span></h1>
+<h1 class="title"><span id="misc" class="quarto-section-identifier"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">gibasaのセットアップ</span></span></h1>
 </div>
 
 
@@ -284,41 +324,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="posit-cloud旧rstudio-cloudでのgibasaの使い方" class="level2" data-number="A.1">
-<h2 data-number="A.1" class="anchored" data-anchor-id="posit-cloud旧rstudio-cloudでのgibasaの使い方"><span class="header-section-number">A.1</span> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</h2>
+<section id="posit-cloud旧rstudio-cloudでのgibasaの使い方" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="posit-cloud旧rstudio-cloudでのgibasaの使い方"><span class="header-section-number">6.1</span> Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方</h2>
 <p>Rによるデータ分析を手軽に試したい場合には、Posit Cloud（旧・RStudio Cloud）のようなクラウド環境が便利かもしれません。</p>
 <p>一方で、Posit Cloudはユーザー権限しかない環境のため、gibasaを使えるようにするまでにはややコツが要ります。とはいえ、gibasaはRMeCabとは異なり、MeCabのバイナリはなくても使える（辞書とmecabrcがあればよい）ので、RMeCabを使う場合ほど複雑なことをする必要はないはずです。</p>
 <p>ここでは、Posit Cloudでgibasaを利用できるようにするための手順を簡単に説明します（RMeCabもあわせて試したいという場合には、MeCabのバイナリを自分でビルドする必要があります。その場合は<a href="https://blog.mana.bi/2022/12/21/posit-cloud-mecab/">この記事</a>などを参考にしてください）。</p>
-<section id="辞書ipadic-unidic-liteの配置" class="level3" data-number="A.1.1">
-<h3 data-number="A.1.1" class="anchored" data-anchor-id="辞書ipadic-unidic-liteの配置"><span class="header-section-number">A.1.1</span> 辞書（ipadic, unidic-lite）の配置</h3>
+<section id="辞書ipadic-unidic-liteの配置" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="辞書ipadic-unidic-liteの配置"><span class="header-section-number">6.1.1</span> 辞書（ipadic, unidic-lite）の配置</h3>
 <p>MeCabの辞書は、Terminalタブからpipでインストールできます。ここでは、IPA辞書（<a href="https://pypi.org/project/ipadic/">ipadic</a>）をインストールします。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install ipadic</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"import ipadic; print('dicdir=' + ipadic.DICDIR);"</span> <span class="op">&gt;</span> ~/.mecabrc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install ipadic</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-c</span> <span class="st">"import ipadic; print('dicdir=' + ipadic.DICDIR);"</span> <span class="op">&gt;</span> ~/.mecabrc</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="gibasaのインストール" class="level3" data-number="A.1.2">
-<h3 data-number="A.1.2" class="anchored" data-anchor-id="gibasaのインストール"><span class="header-section-number">A.1.2</span> gibasaのインストール</h3>
+<section id="gibasaのインストール" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="gibasaのインストール"><span class="header-section-number">6.1.2</span> gibasaのインストール</h3>
 <p><a href="https://github.com/paithiov909/gibasa">gibasa</a>をインストールします。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"gibasa"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"gibasa"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="試すには" class="level3" data-number="A.1.3">
-<h3 data-number="A.1.3" class="anchored" data-anchor-id="試すには"><span class="header-section-number">A.1.3</span> 試すには</h3>
+<section id="試すには" class="level3" data-number="6.1.3">
+<h3 data-number="6.1.3" class="anchored" data-anchor-id="試すには"><span class="header-section-number">6.1.3</span> 試すには</h3>
 <p>うまくいっていると、辞書を指定しない場合はIPA辞書が使われます。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">"こんにちは"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">"こんにちは"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 </section>
-<section id="mecabの辞書をビルドするには" class="level2" data-number="A.2">
-<h2 data-number="A.2" class="anchored" data-anchor-id="mecabの辞書をビルドするには"><span class="header-section-number">A.2</span> MeCabの辞書をビルドするには</h2>
+<section id="mecabの辞書をビルドするには" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="mecabの辞書をビルドするには"><span class="header-section-number">6.2</span> MeCabの辞書をビルドするには</h2>
 <p>v1.0.1から、gibasaを使ってMeCabのシステム辞書やユーザー辞書をビルドできるようになりました。以下では、gibasaを使ってMeCabの辞書をビルドする方法を紹介します。</p>
 <p>MeCabの辞書は、各行が次のようなデータからなる「ヘッダーなしCSVファイル」を用意して、それらをもとに生成します。 <code>...</code>の部分は見出し語の品詞情報で、ビルドしたい辞書によって異なります。IPA辞書の場合、<code>品詞,品詞細分類1,品詞細分類2,品詞細分類3,活用型,活用形,原形,読み,発音</code>をこの通りの順番で記述します。</p>
 <pre><code>表層形,左文脈ID,右文脈ID,コスト,...</code></pre>
 <p>左文脈IDと右文脈IDは、品詞情報が正確に書かれている場合、空にしておくと自動で補完されます。 しかし、品詞情報を正確に書くには、おそらく当の左文脈IDと右文脈IDを含む出力を確認する必要があるため、ふつうに確認した値で埋めてしまったほうが確実です。</p>
 <p>ここでは例として、「<a href="https://www.nijisanji.jp/talents/l/mito-tsukino">月ノ美兎</a>」（ANYCOLOR社が運営する「にじさんじ」所属のVTuberの名前）という語彙を含む文をIPA辞書を使いつつ狙いどおりに解析してみましょう。</p>
-<section id="必要な品詞情報を確認する" class="level3" data-number="A.2.1">
-<h3 data-number="A.2.1" class="anchored" data-anchor-id="必要な品詞情報を確認する"><span class="header-section-number">A.2.1</span> 必要な品詞情報を確認する</h3>
+<section id="必要な品詞情報を確認する" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="必要な品詞情報を確認する"><span class="header-section-number">6.2.1</span> 必要な品詞情報を確認する</h3>
 <p><code>gibasa::posDebugRcpp</code>は、与えられた文字列について、MeCabの<code>-a</code>オプションに相当する解析結果（解析結果になりえるすべての形態素の組み合わせ）を出力する関数です。 ここでの最適解（<code>is_best == "01"</code>）である結果について確認すると、「月ノ美兎」という語彙は次のように複数の形態素に分割されてしまっていることがわかります。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"月ノ美兎は箱の中"</span>) <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"月ノ美兎は箱の中"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">"01"</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    doc_id pos_id surface                                 feature stat lcAttr</span></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1       1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0</span></span>
@@ -341,11 +381,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7    1285 -22729.50    585.00      01    1  6142 30306</span></span>
 <span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8     368 -23010.00    865.50      01    1  4816 30680</span></span>
 <span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9    1313 -24007.50   1863.00      01    1  6528 32010</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10      0 -22144.50      0.00      01    1     0 29526</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10      0 -22144.50      0.00      01    1     0 29526</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>このような語については、<a href="https://paithiov909.github.io/gibasa/articles/partial.html">こちらのビネット</a>で説明しているように、制約付き解析を使って次のように強制的に抽出することもできます。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"月ノ</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">美兎</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">は箱の中"</span>, <span class="at">partial =</span> <span class="cn">TRUE</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"月ノ</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">美兎</span><span class="sc">\t</span><span class="st">*</span><span class="sc">\n</span><span class="st">は箱の中"</span>, <span class="at">partial =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                 feature stat lcAttr</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1      0                         BOS/EOS,*,*,*,*,*,*,*,*   02      0</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2      1     38    月ノ                     名詞,一般,*,*,*,*,*   01   1285</span></span>
@@ -363,11 +403,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5   1285 -20148.75    585.00      01    1  6142 26865</span></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6    368 -20429.25    865.50      01    1  4816 27239</span></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7   1313 -21426.75   1863.00      01    1  6528 28569</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8      0 -19563.75      0.00      01    1     0 26085</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8      0 -19563.75      0.00      01    1     0 26085</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>一方で、IPA辞書には、たとえば「早見」のような<code>名詞,固有名詞,人名,姓,...</code>という品詞と、「沙織」のような<code>名詞,固有名詞,人名,名,...</code>という品詞があります。 このような解析結果としてより望ましい品詞を確認するには、正しく解析させたい語（ここでは「月ノ美兎」）と同じような使われ方をする語（たとえば「早見沙織」）を実際に解析してみて、その結果を確認するとよいでしょう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"早見沙織のラジオ番組"</span>) <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">posDebugRcpp</span>(<span class="st">"早見沙織のラジオ番組"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(is_best <span class="sc">==</span> <span class="st">"01"</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id pos_id surface                                      feature stat</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1      1      0                              BOS/EOS,*,*,*,*,*,*,*,*   02</span></span>
@@ -384,41 +424,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4    368    368  -6658.50  -3446.25      01    1  4816  8878</span></span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5   1285   1285  -7886.25  -2218.50      01    1  3942 10515</span></span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6   1285   1285 -10534.50    429.75      01    1  3469 14046</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7      0      0 -10104.75      0.00      01    1     0 13473</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7      0      0 -10104.75      0.00      01    1     0 13473</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>この結果は狙いどおりのものであるため、「月ノ美兎」を正しく解析するために用意するCSVファイルは、仮に次のように作成しておくことができそうです。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"月ノ,1290,1290,7472,名詞,固有名詞,人名,姓,*,*,月ノ,ツキノ,ツキノ"</span>,</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"美兎,1291,1291,8462,名詞,固有名詞,人名,名,*,*,美兎,ミト,ミト"</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ),</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">con =</span> (csv_file <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".csv"</span>))</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="ユーザー辞書のビルド" class="level3" data-number="A.2.2">
-<h3 data-number="A.2.2" class="anchored" data-anchor-id="ユーザー辞書のビルド"><span class="header-section-number">A.2.2</span> ユーザー辞書のビルド</h3>
+<section id="ユーザー辞書のビルド" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="ユーザー辞書のビルド"><span class="header-section-number">6.2.2</span> ユーザー辞書のビルド</h3>
 <p>試しに、ユーザー辞書をビルドしてみましょう。gibasaでユーザー辞書をビルドするには、<code>gibasa::build_user_dic</code>を使います。 ユーザー辞書をビルドするにはシステム辞書が必要なため、あらかじめシステム辞書（ここではIPA辞書）が適切に配置されていることを確認しておいてください。</p>
 <p>次のようにしてユーザー辞書をビルドできます。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_user_dic</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">build_user_dic</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dic_dir =</span> stringr<span class="sc">::</span><span class="fu">str_sub</span>(gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>()<span class="sc">$</span>file_path, <span class="at">end =</span> <span class="sc">-</span><span class="dv">8</span>),</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> (user_dic <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".dic"</span>)),</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">"utf8"</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/file80f37ed65488.csv ... 2</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/file92eb7aae95ff.csv ... 2</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; done!</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; done!</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>なお、gibasaによる辞書のビルド時の注意点として、「<a href="https://taku910.github.io/mecab/dic.html">MeCab: 単語の追加方法</a>」で案内されている「コストの自動推定機能」はgibasaからは利用できません。 追加したい見出し語の生起コストは空にせず、必ず適当な値で埋めるようにしてください。</p>
 <p>さて、ビルドしたユーザー辞書を使ってみましょう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">dictionary_info</span>(<span class="at">user_dic =</span> user_dic)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                              file_path charset lsize rsize   size type version</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    /var/lib/mecab/dic/debian/sys.dic   UTF-8  1316  1316 392127    0     102</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 /tmp/RtmptdKOi4/file80f3117a0445.dic    utf8  1316  1316      2    1     102</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 /tmp/RtmplNJUWc/file92eb15c13bae.dic    utf8  1316  1316      2    1     102</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">"月ノ美兎は箱の中"</span>, <span class="at">user_dic =</span> user_dic)</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                     </span></span>
@@ -428,16 +468,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 1                1        3 は    助詞,係助詞,*,*,*,*,は,ハ,ワ                </span></span>
 <span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 1                1        4 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ              </span></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 1                1        5 の    助詞,連体化,*,*,*,*,の,ノ,ノ                </span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>狙いどおりに解析できているようです。</p>
 </section>
-<section id="生起コストを調整する" class="level3" data-number="A.2.3">
-<h3 data-number="A.2.3" class="anchored" data-anchor-id="生起コストを調整する"><span class="header-section-number">A.2.3</span> 生起コストを調整する</h3>
+<section id="生起コストを調整する" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="生起コストを調整する"><span class="header-section-number">6.2.3</span> 生起コストを調整する</h3>
 <p>ここまでに紹介したようなやり方で辞書を整備することで、おおむね狙いどおりの解析結果を得られるようになると思われますが、 追加した語のかたちによっては、生起コストをより小さな値に調整しないと、一部の文において正しく切り出されない場合があるかもしれません。</p>
 <p>たとえば、<a href="https://analytics-note.xyz/programming/mecab-cost-fix/">こちらの記事</a>で紹介されているように、 仮に<code>高等学校,1285,1285,5078,名詞,一般,*,*,*,*,高等学校,コウトウガッコウ,コートーガッコー</code>という見出し語を追加したとしても、 与える文によっては<code>高等学校</code>が狙いどおりに切り出されません。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"高等学校,1285,1285,5078,名詞,一般,*,*,*,*,高等学校,コウトウガッコウ,コートーガッコー"</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  ),</span>
@@ -449,7 +489,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">"utf8"</span></span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/file80f328fcec21.csv ... 1</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/file92eb44df27bc.csv ... 1</span></span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>gibasa<span class="sc">::</span><span class="fu">tokenize</span>(</span>
@@ -470,12 +510,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2      地元 の 高等 学校 に 進学 し た     </span></span>
 <span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 3      帝京 高等 学校 の エース として 活躍</span></span>
 <span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 4      開成 高等 学校 117 人 が 現役 合格  </span></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 5      マンガ を 高等 学校 の 授業 で 使う</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 5      マンガ を 高等 学校 の 授業 で 使う</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>この例のように、複数の既存の見出し語のほうが優先されてしまう場合には、追加する見出し語の生起コストを小さくすることによって、 狙いどおりの解析結果を得ることができます。</p>
 <p>先ほどの記事のなかで紹介されているのと同じやり方で、適切な生起コストをgibasaを使って求めるには、たとえば次のような関数を用意します（やや複雑なのでバグがあるかもしれません）。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>calc_adjusted_cost <span class="ot">&lt;-</span> \(sentences, target_word, <span class="at">sys_dic =</span> <span class="st">""</span>, <span class="at">user_dic =</span> <span class="st">""</span>) {</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>calc_adjusted_cost <span class="ot">&lt;-</span> \(sentences, target_word, <span class="at">sys_dic =</span> <span class="st">""</span>, <span class="at">user_dic =</span> <span class="st">""</span>) {</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  sentences_mod <span class="ot">&lt;-</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    stringi<span class="sc">::</span><span class="fu">stri_replace_all_regex</span>(</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>      sentences,</span>
@@ -518,11 +558,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">adjusted_cost =</span> wcost <span class="sc">+</span> (cost1[doc_id] <span class="sc">-</span> cost2[doc_id] <span class="sc">-</span> <span class="dv">1</span>)</span>
 <span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
 <span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">slice_min</span>(adjusted_cost, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">by =</span> surface)</span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>この関数を使って、実際に適切な生起コストを計算してみます。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>adjusted_cost <span class="ot">&lt;-</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>adjusted_cost <span class="ot">&lt;-</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">calc_adjusted_cost</span>(</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"九州高等学校ゴルフ選手権"</span>,</span>
@@ -533,11 +573,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">target_word =</span> <span class="st">"高等学校"</span>,</span>
 <span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">user_dic =</span> user_dic</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>adjusted_cost</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   stat  surface pos_id</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1   00 高等学校      1</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                        feature lcAttr rcAttr</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 名詞,一般,*,*,*,*,高等学校,コウトウガッコウ,コートーガッコー   1285   1285</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   current_cost adjusted_cost</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1         5078          2539</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>この生起コストを使って改めてユーザー辞書をビルドし、結果を確認してみましょう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>adjusted_cost <span class="sc">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>adjusted_cost <span class="sc">|&gt;</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">unite</span>(</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    csv_body,</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    surface, lcAttr, rcAttr, adjusted_cost, feature,</span>
@@ -552,7 +600,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">csv_file =</span> csv_file,</span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">"utf8"</span></span>
 <span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/file80f36e4c4a36.csv ... 1</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/file92eb7334d99b.csv ... 1</span></span>
 <span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -574,16 +622,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 2      地元 の 高等学校 に 進学 し た     </span></span>
 <span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 3      帝京 高等学校 の エース として 活躍</span></span>
 <span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 4      開成 高等学校 117 人 が 現役 合格  </span></span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 5      マンガ を 高等学校 の 授業 で 使う</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 5      マンガ を 高等学校 の 授業 で 使う</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>今度はうまくいっていそうです。</p>
 </section>
-<section id="システム辞書のビルド" class="level3" data-number="A.2.4">
-<h3 data-number="A.2.4" class="anchored" data-anchor-id="システム辞書のビルド"><span class="header-section-number">A.2.4</span> システム辞書のビルド</h3>
+<section id="システム辞書のビルド" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="システム辞書のビルド"><span class="header-section-number">6.2.4</span> システム辞書のビルド</h3>
 <p>ユーザー辞書ではなく、システム辞書をビルドすることもできます。 ただ、ふつうに入手できるIPA辞書のソースの文字コードは<code>EUC-JP</code>であり、UTF-8のCSVファイルと混在させることができないため、扱いに注意が必要です。</p>
 <p>また、UniDicの2.3.xについては、同梱されているファイルに問題があるようで、そのままではビルドできないという話があるようです（<a href="https://ja.stackoverflow.com/questions/74178/">参考</a>）。 UniDicはIPA辞書に比べるとビルドするのにそれなりにメモリが必要なことからも、とくに事情がないかぎりはビルド済みのバイナリ辞書をダウンロードしてきて使ったほうがよいでしょう。</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ipadic_temp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".tar.gz"</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ipadic_temp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".tar.gz"</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">"https://github.com/shogo82148/mecab/releases/download/v0.996.11/mecab-ipadic-2.7.0-20070801.tar.gz"</span>, <span class="at">destfile =</span> ipadic_temp)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">untar</span>(ipadic_temp, <span class="at">exdir =</span> <span class="fu">tempdir</span>())</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -592,34 +640,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">out_dir =</span> <span class="fu">tempdir</span>(),</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">encoding =</span> <span class="st">"euc-jp"</span></span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
-<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
-<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
-<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
-<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
-<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
-<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmptdKOi4/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/unk.def ... 40</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Adverb.csv ... 3032</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Conjunction.csv ... 171</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Suffix.csv ... 1393</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.adverbal.csv ... 795</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.others.csv ... 151</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.org.csv ... 16668</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Verb.csv ... 130750</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.place.csv ... 72999</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.csv ... 60477</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Adnominal.csv ... 135</span></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.number.csv ... 42</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.verbal.csv ... 12146</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Filler.csv ... 19</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Others.csv ... 2</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.adjv.csv ... 3328</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Interjection.csv ... 252</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Postp-col.csv ... 91</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.nai.csv ... 42</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Prefix.csv ... 221</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.name.csv ... 34202</span></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Symbol.csv ... 208</span></span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Adj.csv ... 27210</span></span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.demonst.csv ... 120</span></span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Noun.proper.csv ... 27327</span></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Postp.csv ... 146</span></span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/Auxil.csv ... 199</span></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; reading /tmp/RtmplNJUWc/mecab-ipadic-2.7.0-20070801/matrix.def ... 1316x1316</span></span>
 <span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; done!</span></span>
 <span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a></span>
@@ -631,25 +679,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb15-46"><a href="#cb15-46" aria-hidden="true" tabindex="-1"></a><span class="co"># `mecabrc`ファイルを偽装している。</span></span>
 <span id="cb15-47"><a href="#cb15-47" aria-hidden="true" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">with_envvar</span>(</span>
 <span id="cb15-48"><a href="#cb15-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
-<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MECABRC"</span> <span class="ot">=</span> <span class="cf">if</span> (.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">"windows"</span>) {</span>
-<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>      <span class="st">"nul"</span></span>
-<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>      <span class="st">"/dev/null"</span></span>
-<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">"月ノ美兎は箱の中"</span>, <span class="at">sys_dic =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 5</span></span>
-<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                </span></span>
-<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                  </span></span>
-<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1                1        1 月    名詞,一般,*,*,*,*,月,ツキ,ツキ         </span></span>
-<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 1                1        2 ノ    記号,一般,*,*,*,*,ノ,ノ,ノ             </span></span>
-<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 1                1        3 美    名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ </span></span>
-<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 1                1        4 兎    名詞,一般,*,*,*,*,兎,ウサギ,ウサギ     </span></span>
-<span id="cb15-64"><a href="#cb15-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 1                1        5 は    助詞,係助詞,*,*,*,*,は,ハ,ワ           </span></span>
-<span id="cb15-65"><a href="#cb15-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ         </span></span>
-<span id="cb15-66"><a href="#cb15-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 1                1        7 の    助詞,連体化,*,*,*,*,の,ノ,ノ           </span></span>
-<span id="cb15-67"><a href="#cb15-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 1                1        8 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-49"><a href="#cb15-49" aria-hidden="true" tabindex="-1"></a>    <span class="st">"MECABRC"</span> <span class="ot">=</span> <span class="fu">nullfile</span>()</span>
+<span id="cb15-50"><a href="#cb15-50" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb15-51"><a href="#cb15-51" aria-hidden="true" tabindex="-1"></a>  gibasa<span class="sc">::</span><span class="fu">tokenize</span>(<span class="st">"月ノ美兎は箱の中"</span>, <span class="at">sys_dic =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb15-52"><a href="#cb15-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-53"><a href="#cb15-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8 × 5</span></span>
+<span id="cb15-54"><a href="#cb15-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doc_id sentence_id token_id token feature                                </span></span>
+<span id="cb15-55"><a href="#cb15-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;        &lt;int&gt;    &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                                  </span></span>
+<span id="cb15-56"><a href="#cb15-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1                1        1 月    名詞,一般,*,*,*,*,月,ツキ,ツキ         </span></span>
+<span id="cb15-57"><a href="#cb15-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 1                1        2 ノ    記号,一般,*,*,*,*,ノ,ノ,ノ             </span></span>
+<span id="cb15-58"><a href="#cb15-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 1                1        3 美    名詞,固有名詞,人名,名,*,*,美,ヨシ,ヨシ </span></span>
+<span id="cb15-59"><a href="#cb15-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 1                1        4 兎    名詞,一般,*,*,*,*,兎,ウサギ,ウサギ     </span></span>
+<span id="cb15-60"><a href="#cb15-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 1                1        5 は    助詞,係助詞,*,*,*,*,は,ハ,ワ           </span></span>
+<span id="cb15-61"><a href="#cb15-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 1                1        6 箱    名詞,一般,*,*,*,*,箱,ハコ,ハコ         </span></span>
+<span id="cb15-62"><a href="#cb15-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 1                1        7 の    助詞,連体化,*,*,*,*,の,ノ,ノ           </span></span>
+<span id="cb15-63"><a href="#cb15-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 1                1        8 中    名詞,非自立,副詞可能,*,*,*,中,ナカ,ナカ</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
@@ -708,13 +752,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
@@ -1056,17 +1101,45 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
   });
   </script>
-<script src="https://giscus.app/client.js" data-repo="paithiov909/textmining-ja" data-repo-id="R_kgDOGMY_Ng" data-category="Announcements" data-category-id="DIC_kwDOGMY_Ns4Cdg6F" data-mapping="pathname" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="ja" crossorigin="anonymous" data-loading="lazy" async="">
-</script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark">
+<script>
+  function loadGiscus() {
+    // Function to get the theme based on body class
+    const getTheme = () => {
+      let baseTheme = document.getElementById('giscus-base-theme').value;
+      let altTheme = document.getElementById('giscus-alt-theme').value;
+      return document.body.classList.contains('quarto-dark') ? altTheme : baseTheme;
+    };
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.async = true;
+    script.dataset.repo = "paithiov909/textmining-ja";
+    script.dataset.repoId = "R_kgDOGMY_Ng";
+    script.dataset.category = "Announcements";
+    script.dataset.categoryId = "DIC_kwDOGMY_Ns4Cdg6F";
+    script.dataset.mapping = "pathname";
+    script.dataset.reactionsEnabled = "1";
+    script.dataset.emitMetadata = "0";
+    script.dataset.inputPosition = "top";
+    script.dataset.theme = getTheme();
+    script.dataset.lang = "ja";
+    script.crossOrigin = "anonymous";
+    // Append the script to the desired div instead of at the end of the body
+    document.getElementById("quarto-content").appendChild(script);
+  }
+  loadGiscus();
+</script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./sessioninfo.html" class="pagination-link" aria-label="セッション情報">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">セッション情報</span></span>
+      <a href="./collocation.html" class="pagination-link" aria-label="コロケーション">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">コロケーション</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./sessioninfo.html" class="pagination-link" aria-label="セッション情報">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">セッション情報</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

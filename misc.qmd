@@ -1,4 +1,4 @@
-# gibasa・MeCabの使い方 {#misc}
+# gibasaのセットアップ {#misc}
 
 ## Posit Cloud（旧・RStudio Cloud）でのgibasaの使い方
 
@@ -212,6 +212,8 @@ adjusted_cost <-
     target_word = "高等学校",
     user_dic = user_dic
   )
+
+adjusted_cost
 ```
 
 この生起コストを使って改めてユーザー辞書をビルドし、結果を確認してみましょう。
@@ -273,11 +275,7 @@ file.copy(file.path(tempdir(), "mecab-ipadic-2.7.0-20070801/dicrc"), tempdir())
 # `mecabrc`ファイルを偽装している。
 withr::with_envvar(
   c(
-    "MECABRC" = if (.Platform$OS.type == "windows") {
-      "nul"
-    } else {
-      "/dev/null"
-    }
+    "MECABRC" = nullfile()
   ),
   gibasa::tokenize("月ノ美兎は箱の中", sys_dic = tempdir())
 )

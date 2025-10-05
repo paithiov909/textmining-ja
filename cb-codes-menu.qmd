@@ -1,0 +1,328 @@
+# コーディングメニュー
+
+```{r}
+#| label: setup
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(ca)
+  library(duckdb)
+})
+drv <- duckdb::duckdb()
+con <- duckdb::dbConnect(drv, dbdir = "tutorial_jp/kokoro.duckdb", read_only = TRUE)
+
+tbl <-
+  readxl::read_xls("tutorial_jp/kokoro.xls",
+    col_names = c("text", "section", "chapter", "label"),
+    skip = 1
+  ) |>
+  dplyr::mutate(
+    doc_id = factor(dplyr::row_number()),
+    dplyr::across(where(is.character), ~ audubon::strj_normalize(.))
+  ) |>
+  dplyr::filter(!gibasa::is_blank(text)) |>
+  dplyr::relocate(doc_id, text, section, label, chapter)
+```
+
+---
+
+## 単純集計（A.7.1）
+
+```{r}
+#| label: create-codes
+rules <- list(
+  "人の死" = c("死後", "死病", "死期", "死因", "死骸", "生死", "自殺", "殉死", "頓死", "変死", "亡", "死ぬ", "亡くなる", "殺す", "亡くす", "死"),
+  "恋愛" = c("愛", "恋", "愛す", "愛情", "恋人", "愛人", "恋愛", "失恋", "恋しい"),
+  "友情" = c("友達", "友人", "旧友", "親友", "朋友", "友", "級友"),
+  "信用・不信" = c("信用", "信じる", "信ずる", "不信", "疑い", "疑惑", "疑念", "猜疑", "狐疑", "疑問", "疑い深い", "疑う", "疑る", "警戒"),
+  "病気" = c("医者", "病人", "病室", "病院", "病症", "病状", "持病", "死病", "主治医", "精神病", "仮病", "病気", "看病", "大病", "病む", "病")
+) |>
+  quanteda::dictionary()
+
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(original), token, original)) |>
+  dplyr::count(doc_id, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(doc_id, token, n) |>
+  quanteda::dfm_lookup(rules)
+
+dfm |>
+  quanteda::convert(to = "data.frame") |>
+  dplyr::mutate(`コードなし` = as.numeric(rowSums(dplyr::pick(where(is.numeric))) == 0)) |>
+  tidyr::pivot_longer(cols = !doc_id, names_to = "code", values_to = "count") |>
+  dplyr::summarise(
+    total = sum(count),
+    prop = total / dplyr::n(),
+    .by = code
+  )
+```
+
+## クロス集計（A.7.2）
+
+### クロス表
+
+```{r}
+#| label: count-codes
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(original), token, original)) |>
+  dplyr::count(label, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(label, token, n) |>
+  quanteda::dfm_lookup(rules)
+
+dfm |>
+  quanteda::convert(to = "data.frame") |>
+  dplyr::mutate(`コードなし` = as.numeric(rowSums(dplyr::pick(where(is.numeric))) == 0)) |>
+  tidyr::pivot_longer(cols = !doc_id, names_to = "code", values_to = "count") |>
+  dplyr::left_join(
+    dplyr::distinct(tbl, label, section),
+    by = dplyr::join_by(doc_id == label)
+  ) |>
+  tidyr::uncount(count) |>
+  crosstable::crosstable(section, by = code, total = "both") |>
+  crosstable::as_flextable()
+```
+
+### ヒートマップ
+
+横に長すぎてラベルが見づらいです。
+
+```{r}
+#| label: plot-codes-heatmap
+#| fig-width: 12
+dfm |>
+  quanteda::convert(to = "data.frame") |>
+  dplyr::mutate(`コードなし` = as.numeric(rowSums(dplyr::pick(where(is.numeric))) == 0)) |>
+  tidyr::pivot_longer(cols = !doc_id, names_to = "code", values_to = "count") |>
+  dplyr::filter(count > 0) |>
+  ggplot(aes(x = factor(doc_id, levels = unique(tbl$label)), y = code)) +
+  geom_raster(aes(fill = count)) +
+  labs(x = element_blank(), y = element_blank()) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 1, hjust = 1))
+```
+
+### バルーンプロット
+
+```{r}
+#| label: plot-codes-balloon
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(original), token, original)) |>
+  dplyr::count(section, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(section, token, n) |>
+  quanteda::dfm_lookup(rules)
+
+dat <- dfm |>
+  quanteda::convert(to = "data.frame") |>
+  dplyr::mutate(`コードなし` = as.numeric(rowSums(dplyr::pick(where(is.numeric))) == 0)) |>
+  tidyr::pivot_longer(cols = !doc_id, names_to = "code", values_to = "count")
+
+clusters <- dat |>
+  tidytext::cast_dfm(doc_id, code, count) |>
+  proxyC::dist(margin = 2, method = "euclidean") |>
+  as.dist() |>
+  hclust(method = "ward.D2")
+
+dat |>
+  ggpubr::ggballoonplot(x = "doc_id", y = "code", size = "count", color = "gray", fill = "#f5f5f5", show.label = TRUE) +
+  legendry::scale_y_dendro(clust = clusters)
+```
+
+## 類似度行列（A.7.3）
+
+```{r}
+#| label: calc-simil
+dfm <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::mutate(token = dplyr::if_else(is.na(original), token, original)) |>
+  dplyr::count(label, token) |>
+  dplyr::collect() |>
+  tidytext::cast_dfm(label, token, n) |>
+  quanteda::dfm_lookup(rules) |>
+  quanteda::dfm_weight(scheme = "boolean")
+
+quanteda.textstats::textstat_simil(dfm, margin = "features", method = "jaccard")
+```
+
+## その他の分析（A.7.4-8）
+
+基本的に抽出語メニューのときと同じやり方でグラフをつくることができるはずです。階層的クラスター分析、共起ネットワーク、SOMについては省略しています。
+
+### 対応分析
+
+```{r}
+#| label: plot-ca
+library(ca)
+
+quanteda.textmodels::textmodel_ca(dfm, nd = 2, sparse = TRUE) |>
+  plot()
+```
+
+### 多次元尺度構成法（MDS）
+
+```{r}
+#| label: mds
+#| cache: true
+simil <- dfm |>
+  proxyC::simil(margin = 2, method = "jaccard")
+
+dat <- MASS::sammon(1 - simil, k = 2) |>
+  purrr::pluck("points")
+```
+
+```{r}
+#| label: plot-mds
+dat <- dat |>
+  dplyr::as_tibble(
+    rownames = "label",
+    .name_repair = ~ c("Dim1", "Dim2")
+  ) |>
+  dplyr::mutate(
+    clust = (hclust(
+      proxyC::dist(dat, method = "euclidean") |> as.dist(),
+      method = "ward.D2"
+    ) |> cutree(k = 3))[label]
+  )
+
+dat |>
+  ggplot(aes(x = Dim1, y = Dim2, label = label, col = factor(clust))) +
+  geom_point(alpha = .3, show.legend = FALSE) +
+  ggrepel::geom_label_repel(show.legend = FALSE) +
+  theme_classic()
+```
+
+### LSS🍳
+
+極性をあらわす少数の種語を使いつつ、指定した語と共起する語や文書について1次元の極性を与える手法だそうです。[LSX](https://cran.r-project.org/package=LSX)というパッケージとして実装されています。
+
+本来は`k`（Truncated SVDにおけるランク）は200～300程度を指定するため、相当の量の文書が必要とされます。提案論文では、おおむね40文程度の長さの文書が5,000～10,000文書くらい必要と書かれています。ここでは分析にかける文書が足りていないので、意味を解釈できる結果は得られていないと思います。
+
+```{r}
+#| label: prep-lss
+rules <-
+  list(
+    "人の死" = c("死後", "死病", "死期", "死因", "死骸", "生死", "自殺", "殉死", "頓死", "変死", "亡", "死ぬ", "亡くなる", "殺す", "亡くす", "死"),
+    "恋愛" = c("愛", "恋", "愛す", "愛情", "恋人", "愛人", "恋愛", "失恋", "恋しい"),
+    "友情" = c("友達", "友人", "旧友", "親友", "朋友", "友", "級友"),
+    "信用・不信" = c("信用", "信じる", "信ずる", "不信", "疑い", "疑惑", "疑念", "猜疑", "狐疑", "疑問", "疑い深い", "疑う", "疑る", "警戒"),
+    "病気" = c("医者", "病人", "病室", "病院", "病症", "病状", "持病", "死病", "主治医", "精神病", "仮病", "病気", "看病", "大病", "病む", "病")
+  ) |>
+    quanteda::dictionary()
+
+# 日本語評価極性辞書（用言編） https://www.cl.ecei.tohoku.ac.jp/Open_Resources-Japanese_Sentiment_Polarity_Dictionary.html
+pn <-
+  readr::read_tsv(
+    "https://www.cl.ecei.tohoku.ac.jp/resources/sent_lex/wago.121808.pn",
+    col_names = c("polarity", "word"),
+    show_col_types = FALSE
+  )
+
+# 極性辞書をもとに種語を用意する
+seed <- pn |>
+  dplyr::inner_join(
+    dplyr::tbl(con, "tokens") |>
+    dplyr::filter(pos == "動詞") |>
+    dplyr::select(token, pos, original) |>
+    dplyr::distinct() |>
+    dplyr::collect(),
+    by = c("word" = "token")
+  ) |>
+  dplyr::mutate(
+    polarity = dplyr::if_else(
+      stringr::str_detect(polarity, "ネガ"),
+      "negative",
+      "positive"
+    ),
+    token = dplyr::if_else(is.na(original), word, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::distinct(polarity, token) |>
+  dplyr::reframe(dict = list(token), .by = polarity) |>
+  tibble::deframe()
+
+seed <- seed |>
+  quanteda::dictionary() |>
+  LSX::as.seedwords(upper = 2, lower = 1) # ここではpositiveが2番目, negativeが1番目
+
+toks <-
+  dplyr::tbl(con, "tokens") |>
+  dplyr::filter(
+    pos %in% c(
+      "名詞", "名詞C",
+      "地名", "人名", "組織名", "固有名詞",
+      "動詞", "未知語", "タグ"
+    )
+  ) |>
+  dplyr::mutate(
+    token = dplyr::if_else(is.na(original), token, original),
+    token = paste(token, pos, sep = "/")
+  ) |>
+  dplyr::select(label, token) |>
+  dplyr::collect() |>
+  dplyr::reframe(dict = list(token), .by = label) |>
+  tibble::deframe() |>
+  quanteda::as.tokens()
+
+term <-
+  LSX::char_context(
+    toks,
+    pattern = rules$`信用・不信`,
+    window = 10,
+    valuetype = "regex",
+    case_insensitive = FALSE,
+    min_count = 2,
+    p = 0.05
+  ) |>
+    toupper()
+```
+
+```{r}
+#| label: fit-lss
+#| cache: true
+lss <-
+  LSX::textmodel_lss(
+    quanteda::dfm(toks),
+    seeds = seed,
+    terms = term,
+    k = 20,
+    include_data = TRUE,
+    group_data = TRUE
+  )
+```
+
+単語の極性です。
+
+```{r}
+#| label: plot-polarity-1
+LSX::textplot_terms(lss)
+```
+
+文書の極性です。ここでは文書の数が少ないのでこのようにプロットしていますが、実際にはもっと大量の文書を分析にかけるはずなので、文書を横軸にとって`polarity`の曲線を描く可視化例がパッケージのvignetteで紹介されています。
+
+```{r}
+#| label: plot-polarity-2
+#| fig-height: 12
+tibble::tibble(
+  docs = factor(unique(tbl$label), levels = unique(tbl$label)),
+  polarity = predict(lss)[as.character(docs)],
+  section = tbl$section[match(docs, tbl$label)]
+) |>
+  dplyr::filter(!is.na(polarity)) |>
+  ggplot(aes(x = docs, y = polarity, fill = section)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  coord_flip() +
+  theme_bw()
+```
+
+---
+
+```{r}
+#| label: cleanup
+duckdb::dbDisconnect(con)
+duckdb::duckdb_shutdown(drv)
+
+sessioninfo::session_info(info = "packages")
+```

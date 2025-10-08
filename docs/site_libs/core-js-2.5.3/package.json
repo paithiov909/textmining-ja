@@ -43,7 +43,7 @@
     "karma-phantomjs-launcher": "~1.0.4",
     "karma-qunit": "^4.0.0",
     "lerna": "^3.19.0",
-    "moon-unit": "^0.2.2",
+    "moon-unit": "^0.3.0",
     "phantomjs-prebuilt": "~2.1.16",
     "promises-aplus-tests": "^2.1.2",
     "puppeteer": "~2.0.0",

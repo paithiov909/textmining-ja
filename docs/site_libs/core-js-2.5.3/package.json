@@ -19,7 +19,7 @@
     "@babel/plugin-transform-shorthand-properties": "^7.7.4",
     "@babel/plugin-transform-spread": "^7.7.4",
     "@babel/plugin-transform-template-literals": "^7.7.4",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^10.0.0",
     "babel-plugin-transform-es2015-modules-simple-commonjs": "~0.3.0",
     "babel-plugin-transform-for-of-as-array": "^1.1.1",
     "es-observable": "git+https://github.com/tc39/proposal-observable.git#bf4d87144b6189e793593868e3c022eb51a7d292",

@@ -1,6 +1,6 @@
 Package: textminingja
 Title: What the Package Does (One Line, Title Case)
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Akiru", "Kato", , "paithiov909@gmail.com", role = c("aut", "cre"))
 Description: This is a dummy description file for package installation.
 License: MIT + file LICENSE
@@ -36,7 +36,7 @@ Suggests:
     quanteda.textmodels,
     quanteda.textstats,
     reactable,
-    reactablefmtr,
+    kcuilla/reactablefmtr,
     seededlda,
     servr,
     sessioninfo,

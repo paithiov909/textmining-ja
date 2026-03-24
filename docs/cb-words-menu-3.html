@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Appendix D — 抽出語メニュー3 – RとMeCabによる日本語テキストマイニングの前処理</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -71,15 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./favicon.ico" rel="icon">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-9b100948f3b98b6ce090cf5806fdf877.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-86186f61146166c2d13f45cb18a8fee0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -150,9 +152,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">RとMeCabによる日本語テキストマイニングの前処理</a> 
         <div class="sidebar-tools-main">
@@ -383,12 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  proxyC<span class="sc">::</span><span class="fu">simil</span>(<span class="at">margin =</span> <span class="dv">2</span>, <span class="at">method =</span> <span class="st">"dice"</span>) <span class="sc">|&gt;</span></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  rlang<span class="sc">::</span><span class="fu">as_function</span>(<span class="sc">~</span> <span class="dv">1</span> <span class="sc">-</span> .)()</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dist</span>(<span class="fu">as.dist</span>(dat))</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: `aes_string()` was deprecated in ggplot2 3.0.0.</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Please use tidy evaluation idioms with `aes()`.</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ See also `vignette("ggplot2-in-packages")` for more information.</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the factoextra package.</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Please report the issue at &lt;https://github.com/kassambara/factoextra/issues&gt;.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dist</span>(<span class="fu">as.dist</span>(dat))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -439,15 +434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="D.1.4" class="anchored" data-anchor-id="デンドログラム"><span class="header-section-number">D.1.4</span> デンドログラム</h3>
 <p>デンドログラムについては、似たような表現を手軽に実現できる方法が見つけられません。ラベルの位置が左右反転していますが、<code>factoextra::fviz_dend(horiz = TRUE)</code>とするのが簡単かもしれないです。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dend</span>(clusters, <span class="at">k =</span> <span class="dv">5</span>, <span class="at">horiz =</span> <span class="cn">TRUE</span>, <span class="at">labels_track_height =</span> <span class="fl">0.3</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Please use `linewidth` instead.</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the factoextra package.</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Please report the issue at &lt;https://github.com/kassambara/factoextra/issues&gt;.</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: The `&lt;scale&gt;` argument of `guides()` cannot be `FALSE`. Use "none" instead as</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; of ggplot2 3.3.4.</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the factoextra package.</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Please report the issue at &lt;https://github.com/kassambara/factoextra/issues&gt;.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_dend</span>(clusters, <span class="at">k =</span> <span class="dv">5</span>, <span class="at">horiz =</span> <span class="cn">TRUE</span>, <span class="at">labels_track_height =</span> <span class="fl">0.3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -763,7 +750,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 data-number="D.3.2" class="anchored" data-anchor-id="u-matrix"><span class="header-section-number">D.3.2</span> U-Matrix</h3>
 <p>U-matrixは「各ノードの参照ベクトルが近傍ノードと異なる度合いで色づけする方法」（<a href="https://www.brain.kyutech.ac.jp/~furukawa/data/SOMtext.pdf">自己組織化マップ入門</a>）です。暖色の箇所はデータ密度が低い「山間部」で、寒色の箇所はデータ密度が高い「平野部」みたいなイメージ、写像の勾配が急峻になっている箇所を境にしてクラスタが分かれていると判断するみたいな見方をします。</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>aweSOM<span class="sc">::</span><span class="fu">aweSOMsmoothdist</span>(som_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>aweSOM<span class="sc">::</span><span class="fu">aweSOMsmoothdist</span>(som_fit)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: `aes_string()` was deprecated in ggplot2 3.0.0.</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Please use tidy evaluation idioms with `aes()`.</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ See also `vignette("ggplot2-in-packages")` for more information.</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the aweSOM package.</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Please report the issue to the authors.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -825,121 +817,110 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  package      * version  date (UTC) lib source</span></span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  abind          1.4-8    2024-09-12 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  audubon        0.5.2    2024-04-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  audubon        0.6.2    2026-01-09 [1] RSPM (R 4.5.0)</span></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  aweSOM         1.3      2022-08-30 [1] RSPM (R 4.5.0)</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  backports      1.5.0    2024-05-23 [1] RSPM</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  blob           1.2.4    2023-03-17 [1] RSPM</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  broom          1.0.10   2025-09-13 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cachem         1.1.0    2024-05-16 [1] RSPM</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  car            3.1-3    2024-09-27 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  carData        3.0-5    2022-01-06 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger     1.1.0    2016-07-27 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  class          7.3-23   2025-01-01 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli            3.6.5    2025-04-23 [1] RSPM</span></span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cluster        2.1.8.1  2025-03-12 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  codetools      0.2-20   2024-03-31 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  curl           7.0.0    2025-08-19 [1] RSPM</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI          * 1.2.3    2024-06-02 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr         2.5.1    2025-09-10 [1] RSPM</span></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dendextend     1.19.1   2025-07-15 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest         0.6.37   2024-08-19 [1] RSPM</span></span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dotCall64      1.2      2024-10-04 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr          1.1.4    2023-11-17 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  duckdb       * 1.4.0    2025-09-18 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  e1071          1.7-16   2024-09-16 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate       1.0.5    2025-08-27 [1] RSPM</span></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  factoextra     1.0.7    2020-04-01 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver         2.1.2    2024-05-13 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap        1.2.0    2024-05-15 [1] RSPM</span></span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmatch      1.1-6    2024-12-23 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fields         17.1     2025-09-08 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Formula        1.2-5    2023-02-24 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics       0.1.4    2025-05-09 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggforce        0.5.0    2025-06-18 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2      * 4.0.0    2025-09-11 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggpubr         0.6.1    2025-06-27 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggraph         2.2.2    2025-08-24 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggrepel        0.9.6    2024-09-07 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsignif       0.6.4    2022-10-13 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gibasa         1.1.2    2025-02-16 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue           1.8.0    2024-09-30 [1] RSPM</span></span>
-<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  graphlayouts   1.2.2    2025-01-23 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gridExtra      2.3      2017-09-09 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable         0.3.6    2024-10-25 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools      0.5.8.1  2024-04-04 [1] RSPM</span></span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets    1.6.4    2023-12-06 [1] RSPM</span></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  httpuv         1.6.16   2025-04-16 [1] RSPM</span></span>
-<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  igraph         2.1.4    2025-01-23 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  isoband        0.2.7    2022-12-20 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janeaustenr    1.0.0    2022-08-26 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite       2.0.0    2025-03-27 [1] RSPM</span></span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr          1.50     2025-03-16 [1] RSPM</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  kohonen        3.0.12   2023-06-09 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling       0.4.3    2023-08-29 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  later          1.4.4    2025-08-27 [1] RSPM</span></span>
-<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lattice        0.22-7   2025-04-02 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  legendry       0.2.4    2025-09-14 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle      1.0.4    2023-11-07 [1] RSPM</span></span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr       2.0.4    2025-09-12 [1] RSPM</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  maps           3.4.3    2025-05-26 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  MASS           7.3-65   2025-02-28 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Matrix         1.7-3    2025-03-11 [2] CRAN (R 4.5.1)</span></span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  memoise        2.0.1    2021-11-26 [1] RSPM</span></span>
-<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  mime           0.13     2025-03-17 [1] RSPM</span></span>
-<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar         1.11.1   2025-09-17 [1] RSPM</span></span>
-<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig      2.0.3    2019-09-22 [1] RSPM</span></span>
-<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  plyr           1.8.9    2023-10-02 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  polyclip       1.10-7   2024-07-23 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  promises       1.3.3    2025-05-29 [1] RSPM</span></span>
-<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  proxy          0.4-27   2022-06-09 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  proxyC         0.5.2    2025-04-25 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr          1.1.0    2025-07-10 [1] RSPM</span></span>
-<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda       4.3.1    2025-07-10 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.cache        0.17.0   2025-05-02 [1] RSPM</span></span>
-<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3    1.8.2    2022-06-13 [1] RSPM</span></span>
-<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.oo           1.27.1   2025-05-02 [1] RSPM</span></span>
-<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.utils        2.13.0   2025-02-24 [1] RSPM</span></span>
-<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6             2.6.1    2025-02-15 [1] RSPM</span></span>
-<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RColorBrewer   1.1-3    2022-04-03 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp           1.1.0    2025-07-02 [1] RSPM</span></span>
-<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RcppParallel   5.1.11-1 2025-08-27 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-87"><a href="#cb19-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl         1.4.5    2025-03-07 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-88"><a href="#cb19-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  reshape2       1.4.4    2020-04-09 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang          1.1.6    2025-04-11 [1] RSPM</span></span>
-<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown      2.30     2025-09-28 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstatix        0.7.2    2023-02-01 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  S7             0.2.0    2024-11-07 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales         1.4.0    2025-04-24 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo    1.2.3    2025-02-05 [1] RSPM</span></span>
-<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  shiny          1.11.1   2025-07-03 [1] RSPM</span></span>
-<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  SnowballC      0.7.1    2023-04-25 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  spam           2.11-1   2025-01-20 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stopwords      2.3      2021-10-28 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi        1.8.7    2025-03-27 [1] RSPM</span></span>
-<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringr        1.5.2    2025-09-08 [1] RSPM</span></span>
-<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  styler         1.10.3   2024-04-07 [1] RSPM</span></span>
-<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble         3.3.0    2025-06-08 [1] RSPM</span></span>
-<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidygraph      1.3.1    2024-01-30 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr          1.3.1    2024-01-24 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect     1.2.1    2024-03-11 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidytext       0.4.3    2025-07-25 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tokenizers     0.3.0    2022-12-22 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tweenr         2.0.3    2024-02-26 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8           1.2.6    2025-06-08 [1] RSPM</span></span>
-<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  V8             8.0.0    2025-09-27 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs          0.6.5    2023-12-01 [1] RSPM</span></span>
-<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridis        0.6.5    2024-01-29 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridisLite    0.4.2    2023-05-02 [1] RSPM (R 4.5.0)</span></span>
-<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr          3.0.2    2024-10-28 [1] RSPM</span></span>
-<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun           0.53     2025-08-19 [1] RSPM</span></span>
-<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xtable         1.8-4    2019-04-21 [1] RSPM</span></span>
-<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml           2.3.10   2024-07-26 [1] RSPM</span></span>
-<span id="cb19-118"><a href="#cb19-118" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-119"><a href="#cb19-119" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
-<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
-<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  * ── Packages attached to the search path.</span></span>
-<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  blob           1.3.0    2026-01-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  broom          1.0.12   2026-01-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  car            3.1-5    2026-02-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  carData        3.0-6    2026-01-30 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cellranger     1.1.0    2016-07-27 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  class          7.3-23   2025-01-01 [2] CRAN (R 4.5.3)</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cli            3.6.5    2025-04-23 [1] RSPM</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  cluster        2.1.8.2  2026-02-05 [2] CRAN (R 4.5.3)</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  curl           7.0.0    2025-08-19 [1] RSPM</span></span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  DBI          * 1.3.0    2026-02-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dbplyr         2.5.2    2026-02-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dendextend     1.19.1   2025-07-15 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  digest         0.6.39   2025-11-19 [1] RSPM</span></span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dotCall64      1.2      2024-10-04 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dplyr          1.2.0    2026-02-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  duckdb       * 1.5.0    2026-03-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  e1071          1.7-17   2025-12-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  evaluate       1.0.5    2025-08-27 [1] RSPM</span></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  factoextra     2.0.0    2026-03-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  farver         2.1.2    2024-05-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmap        1.2.0    2024-05-15 [1] RSPM</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fastmatch      1.1-8    2026-01-17 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  fields         17.1     2025-09-08 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Formula        1.2-5    2023-02-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  generics       0.1.4    2025-05-09 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggplot2      * 4.0.2    2026-02-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggpubr         0.6.3    2026-02-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggrepel        0.9.8    2026-03-17 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ggsignif       0.6.4    2022-10-13 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gibasa         1.1.3    2026-03-24 [1] Github (paithiov909/gibasa@4d450d2)</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  glue           1.8.0    2024-09-30 [1] RSPM</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gridExtra      2.3      2017-09-09 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  gtable         0.3.6    2024-10-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmltools      0.5.9    2025-12-04 [1] RSPM</span></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  htmlwidgets    1.6.4    2023-12-06 [1] RSPM</span></span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  httpuv         1.6.17   2026-03-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  igraph         2.2.2    2026-02-12 [1] RSPM</span></span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  isoband        0.3.0    2025-12-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  janeaustenr    1.0.0    2022-08-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  jsonlite       2.0.0    2025-03-27 [1] RSPM</span></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  knitr          1.51     2025-12-20 [1] RSPM</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  kohonen        3.0.13   2026-01-22 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  labeling       0.4.3    2023-08-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  later          1.4.8    2026-03-05 [1] RSPM</span></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lattice        0.22-9   2026-02-09 [2] CRAN (R 4.5.3)</span></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  legendry       0.2.4    2025-09-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  lifecycle      1.0.5    2026-01-08 [1] RSPM</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  magrittr       2.0.4    2025-09-12 [1] RSPM</span></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  maps           3.4.3    2025-05-26 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Matrix         1.7-4    2025-08-28 [2] CRAN (R 4.5.3)</span></span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  mime           0.13     2025-03-17 [1] RSPM</span></span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  otel           0.2.0    2025-08-29 [1] RSPM</span></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pillar         1.11.1   2025-09-17 [1] RSPM</span></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  pkgconfig      2.0.3    2019-09-22 [1] RSPM</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  promises       1.5.0    2025-11-01 [1] RSPM</span></span>
+<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  proxy          0.4-29   2025-12-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  proxyC         0.5.2    2025-04-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  purrr          1.2.1    2026-01-09 [1] RSPM</span></span>
+<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  quanteda       4.3.1    2025-07-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.cache        0.17.0   2025-05-02 [1] RSPM</span></span>
+<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.methodsS3    1.8.2    2022-06-13 [1] RSPM</span></span>
+<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.oo           1.27.1   2025-05-02 [1] RSPM</span></span>
+<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R.utils        2.13.0   2025-02-24 [1] RSPM</span></span>
+<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  R6             2.6.1    2025-02-15 [1] RSPM</span></span>
+<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RColorBrewer   1.1-3    2022-04-03 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Rcpp           1.1.1    2026-01-10 [1] RSPM</span></span>
+<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  RcppParallel   5.1.11-2 2026-03-05 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  readxl         1.4.5    2025-03-07 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rlang          1.1.7    2026-01-09 [1] RSPM</span></span>
+<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rmarkdown      2.30     2025-09-28 [1] RSPM</span></span>
+<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  rstatix        0.7.3    2025-10-18 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  S7             0.2.1    2025-11-14 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  scales         1.4.0    2025-04-24 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  sessioninfo    1.2.3    2025-02-05 [1] RSPM</span></span>
+<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  shiny          1.13.0   2026-02-20 [1] RSPM</span></span>
+<span id="cb19-87"><a href="#cb19-87" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  SnowballC      0.7.1    2023-04-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-88"><a href="#cb19-88" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  spam           2.11-3   2026-01-08 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stopwords      2.3      2021-10-28 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  stringi        1.8.7    2025-03-27 [1] RSPM</span></span>
+<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  styler         1.11.0   2025-10-13 [1] RSPM</span></span>
+<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tibble         3.3.1    2026-01-11 [1] RSPM</span></span>
+<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidygraph      1.3.1    2024-01-30 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyr          1.3.2    2025-12-19 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidyselect     1.2.1    2024-03-11 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tidytext       0.4.3    2025-07-25 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tokenizers     0.3.0    2022-12-22 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  utf8           1.2.6    2025-06-08 [1] RSPM</span></span>
+<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  V8             8.0.1    2025-10-10 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  vctrs          0.7.2    2026-03-21 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-101"><a href="#cb19-101" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridis        0.6.5    2024-01-29 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-102"><a href="#cb19-102" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  viridisLite    0.4.3    2026-02-04 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  withr          3.0.2    2024-10-28 [1] RSPM</span></span>
+<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xfun           0.57     2026-03-20 [1] RSPM (R 4.5.0)</span></span>
+<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  xtable         1.8-8    2026-02-22 [1] RSPM</span></span>
+<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  yaml           2.3.12   2025-12-10 [1] RSPM</span></span>
+<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] /usr/local/lib/R/site-library</span></span>
+<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2] /usr/local/lib/R/library</span></span>
+<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  * ── Packages attached to the search path.</span></span>
+<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ──────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 
 
